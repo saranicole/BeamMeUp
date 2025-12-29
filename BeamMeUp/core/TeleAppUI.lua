@@ -6,6 +6,8 @@ local teleporterVars    = BMU.var
 local appName           = teleporterVars.appName
 local wm                = WINDOW_MANAGER
 
+local zo_Menu = ZO_Menu --INS251229 Baertram ZO_Menu speed-up variable (so _G is not searched each time context menus are used)
+
 local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
 
 if BMU.IsNotKeyboard() then
