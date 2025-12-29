@@ -168,6 +168,8 @@ local BMU_ThrottledUpdate = BMU.ThrottledUpdate
 
 -- -^- INS251229 Baertram END 0
 
+local zo_Menu = ZO_Menu --INS251229 Baertram ZO_Menu speed-up variable (so _G is not searched each time context menus are used)
+
 local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
 
 if BMU.IsNotKeyboard() then
