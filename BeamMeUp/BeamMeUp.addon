@@ -38,6 +38,7 @@ Console/core/autoUnlock.lua
 Console/Settings.lua
 
 core/List.lua
+core/SettingsMenu.lua
 core/TeleAppUI.lua
 core/TeleSlashCommands.lua
 core/TeleporterChecker.lua
