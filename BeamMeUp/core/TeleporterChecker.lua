@@ -12,86 +12,21 @@ local allZoneIds = {} -- stores the number of hits of a zoneId at index (allzone
 ----variables (defined now, as they were loaded before this file -> see manifest .txt)
 --ZOs variables
 local SM = SCENE_MANAGER
-local tos = tostring
+local worldName = GetWorldName()
 local numberType = "number"
 local stringType = "string"
 local tableType = "table"
 --Other addon variables
-local BMU_LibZone = BMU.LibZone
 --BMU variables
-local BMU_indexListMain 					= BMU.indexListMain
-local BMU_indexListCurrentZone 				= BMU.indexListCurrentZone
-local BMU_indexListSearchPlayer 			= BMU.indexListSearchPlayer
-local BMU_indexListSearchZone 				= BMU.indexListSearchZone
-local BMU_indexListItems					= BMU.indexListItems
-local BMU_indexListDelves 					= BMU.indexListDelves
-local BMU_indexListZoneHidden				= BMU.indexListZoneHidden
-local BMU_indexListSource 					= BMU.indexListSource
-local BMU_indexListZone						= BMU.indexListZone
-local BMU_indexListQuests 					= BMU.indexListQuests
-local BMU_indexListOwnHouses				= BMU.indexListOwnHouses
-local BMU_indexListPTFHouses 				= BMU.indexListPTFHouses
-local BMU_indexListGuilds 					= BMU.indexListGuilds
-local BMU_indexListDungeons					= BMU.indexListDungeons
-
-local BMU_SOURCE_INDEX_FRIEND 				= BMU.SOURCE_INDEX_FRIEND
-local BMU_SOURCE_INDEX_GROUP   				= BMU.SOURCE_INDEX_GROUP
-local BMU_SOURCE_INDEX_GUILD     			= BMU.SOURCE_INDEX_GUILD
-local BMU_SOURCE_INDEX_OWNHOUSES 			= BMU.SOURCE_INDEX_OWNHOUSES
-
-local BMU_ZONE_CATEGORY_UNKNOWN = BMU.ZONE_CATEGORY_UNKNOWN
-local BMU_ZONE_CATEGORY_DELVE = BMU.ZONE_CATEGORY_DELVE
-local BMU_ZONE_CATEGORY_PUBDUNGEON = BMU.ZONE_CATEGORY_PUBDUNGEON
-local BMU_ZONE_CATEGORY_HOUSE = BMU.ZONE_CATEGORY_HOUSE
-local BMU_ZONE_CATEGORY_GRPDUNGEON = BMU.ZONE_CATEGORY_GRPDUNGEON
-local BMU_ZONE_CATEGORY_TRAIL = BMU.ZONE_CATEGORY_TRAIL
-local BMU_ZONE_CATEGORY_ENDLESSD = BMU.ZONE_CATEGORY_ENDLESSD
-local BMU_ZONE_CATEGORY_GRPZONES = BMU.ZONE_CATEGORY_GRPZONES
-local BMU_ZONE_CATEGORY_GRPARENA = BMU.ZONE_CATEGORY_GRPARENA
-local BMU_ZONE_CATEGORY_SOLOARENA = BMU.ZONE_CATEGORY_SOLOARENA
-local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
-
-
 local BMU_textures                          = BMU.textures
-local textureAcceptGreen = BMU_textures.acceptGreenStr
-local textureDeclineRed = BMU_textures.declineRedStr
-local textureTooltipSeparator = BMU_textures.tooltipSeperatorStr
-local leadTypeCompletedTextureStr = BMU_textures.leadTypeCompletedStr20
-local timerTextureStr             = BMU_textures.timerStr20
-
-local surveyData = teleporterVars.surveyData
-local surveyTypeContainers = surveyData.surveyTypeContainers
-local surveyTypesHeader = surveyData.surveyTypesHeader
-
-local treasureData = teleporterVars.treasureData
-local treasureTypeContainers = treasureData.treasureTypeContainers
-local treasureTypes = treasureData.treasureTypes
-local treaureType_Treasure = treasureTypes[1]
-local subType_Treasure = treaureType_Treasure
-local clueData = teleporterVars.clueData
-local subTypeClue = clueData.clueTypes[1] --"clue"
-
-local colorNames = teleporterVars.colorNames
-local colorOrange 							= colorNames[1]
-local colorWhite 							= colorNames[2]
-local colorTeal 							= colorNames[3]
-local colorGold 							= colorNames[4]
-local colorGreen 							= colorNames[5]
-local colorBlue 							= colorNames[6]
-local colorRed 								= colorNames[7]
-local colorGray 							= colorNames[8]
-local formatStringFirstUppercase = teleporterVars.formatStringFirstUppercase
+local subTypeClue = "clue"
 ----functions
 --ZOs functions
 local string = string
 local string_sub = string.sub
 local string_match = string.match
 local string_lower = string.lower
-local string_upper = string.upper
 local string_gsub = string.gsub
-local string_find = string.find
-local string_format = string.format
---local houseWithNicknameStrPattern = "%q (%s)" --For future feature INS BAERTRAM20260124
 local zo_strformat = zo_strformat
 local zo_plainstrfind = zo_plainstrfind
 local table = table
@@ -103,43 +38,25 @@ local GetItemType = GetItemType
 local GetItemName = GetItemName
 local GetBagSize = GetBagSize
 --BMU functions
-local BMU_SI_Get                            = SI.get
+local BMU_SI_get                            = SI.get
 local BMU_colorizeText 						= BMU.colorizeText
-local BMU_printToChat 						= BMU.printToChat
 local BMU_changeState 						= BMU.changeState
 local BMU_isFavoriteZone 					= BMU.isFavoriteZone
 local BMU_isFavoritePlayer 					= BMU.isFavoritePlayer
-local BMU_updateRelatedItemsCounterPanel 	= BMU.updateRelatedItemsCounterPanel
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
-local BMU_LibZoneGivenZoneData
 --BMU functions
 local BMU_getParentZoneId, BMU_getMapIndex, BMU_categorizeZone, BMU_getCurrentZoneId, BMU_isBlacklisted, BMU_checkOnceOnly,
 	  BMU_has_value, BMU_has_value_special, BMU_getExistingEntry, BMU_removeExistingEntry, BMU_addInfo_1, BMU_addInfo_2,
 	  BMU_filterAndDecide, BMU_sortByStringFindPosition, BMU_syncWithQuests, BMU_syncWithItems, BMU_numOfSurveyTypesChecked,
       BMU_getDataMapInfo, BMU_itemIsRelated, BMU_createZoneLessItemsInfo, BMU_createClickableZoneRecord, BMU_addItemInformation,
-   	  BMU_addLeadInformation, BMU_cleanUnrelatedRecords, BMU_cleanUnrelatedRecords2, BMU_findExactQuestLocation, BMU_createNoResultsInfo,
-      BMU_decidePrioDisplay, BMU_addNumberPlayers, BMU_getZoneGuideDiscoveryInfo, BMU_createPublicDungeonAchiementInfo,
-	  BMU_createBlankRecord, BMU_createDungeonRecord, BMU_createTableGuilds, BMU_getIndexFromValue, BMU_leadIsRelated, BMU_dropdownSecLangChoicesShort
+   	 BMU_addLeadInformation, BMU_cleanUnrelatedRecords, BMU_cleanUnrelatedRecords2, BMU_findExactQuestLocation, BMU_createNoResultsInfo
 ----functions (defined inline in code below, upon first usage, as they are still nil at this line)
 
 --String text variables
 --Lowercase constants for string comparisons
-local surveyMapStrLower   = 		string_lower(BMU_SI_Get(SI_CONSTANT_SURVEY_MAP))
-local treasureMapStrLower = 		string_lower(BMU_SI_Get(SI_CONSTANT_TREASURE_MAP))
-local surveyMapContainerStrLower   = string_lower(BMU_SI_Get(SI_CONSTANT_SURVEY_MAP_CONTAINER))
-local treasureMapContainerStrLower = string_lower(BMU_SI_Get(SI_CONSTANT_TREASURE_MAP_CONTAINER))
-
-local levelUpRewardSkillPointHeaderStr = GetString(SI_LEVEL_UP_REWARDS_SKILL_POINT_TOOLTIP_HEADER)
-local groupStr = GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_GROUP_MEMBERS)
-local friendsStr = GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_FRIENDS)
-local ownHouseStr = BMU_SI_Get(SI_TELE_UI_BTN_PORT_TO_OWN_HOUSE)
-local itemCountSummaryStr = GetString(SI_ITEM_SET_SUMMARY_ITEM_COUNT_LABEL)
-local currencyLocation1Str = GetString(SI_CURRENCYLOCATION1) --Bank
-local noItemSetMatchesStr = GetString(SI_ITEM_SETS_BOOK_SEARCH_NO_MATCHES)
-local housingFurnishingLimit0Str = GetString(SI_HOUSINGFURNISHINGLIMITTYPE0)
-local guildTraderOnwershipHeaderStr = GetString(SI_GUILD_TRADER_OWNERSHIP_HEADER)
-local bankIconStr20                 = BMU_textures["bankStr20"]
+local surveyMapStrLower   = 		string_lower(BMU_SI_get(SI.CONSTANT_SURVEY_MAP))
+local treasureMapStrLower = 		string_lower(BMU_SI_get(SI.CONSTANT_TREASURE_MAP))
 -- -^- INS251229 Baertram END 0
 
 
@@ -189,7 +106,7 @@ function BMU.formatName(unformatted, flag)
 		end
 	end
 
-	return zo_strformat(formatStringFirstUppercase, formatted)
+	return zo_strformat("<<C:1>>", formatted)
 end
 local BMU_formatName = BMU.formatName                                                      --INS251229 Baertram
 
@@ -233,25 +150,18 @@ BMU_getCurrentZoneId = BMU.getCurrentZoneId
 -- dontResetSlider: flag if the slider/scroll bar should not be reset (reset to top of the list)
 -- noOwnHouses: flag if the owned houses shall not appear in result list
 function BMU.createTable(args)
-	-- -v- INS251229 Baertram Local reference updates for functions further down below in the file
-	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
-	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
-	BMU_checkOnceOnly = BMU_checkOnceOnly or BMU.checkOnceOnly
-	BMU_has_value = BMU_has_value or BMU.has_value
-	BMU_has_value_special = BMU_has_value_special or BMU.has_value_special
-	BMU_addInfo_1 = BMU_addInfo_1 or BMU.addInfo_1
-	BMU_addInfo_2 = BMU_addInfo_2 or BMU.addInfo_2
-	BMU_filterAndDecide = BMU_filterAndDecide or BMU.filterAndDecide
-	BMU_sortByStringFindPosition = BMU_sortByStringFindPosition or BMU.sortByStringFindPosition
-	BMU_syncWithItems = BMU_syncWithItems or BMU.syncWithItems
-	BMU_syncWithQuests = BMU_syncWithQuests or BMU.syncWithQuests
-	BMU_createNoResultsInfo = BMU_createNoResultsInfo or BMU.createNoResultsInfo
-	BMU_addNumberPlayers = BMU_addNumberPlayers or BMU.addNumberPlayers
-	BMU_decidePrioDisplay = BMU_decidePrioDisplay or BMU.decidePrioDisplay
-	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
-	local BMU_savedVarsAcc = BMU.savedVarsAcc
-	local BMU_savedVarsChar = BMU.savedVarsChar
-	-- -^- INS251229 Baertram
+	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex 										    --INS251229 Baertram
+	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId                                --INS251229 Baertram
+	BMU_checkOnceOnly = BMU_checkOnceOnly or BMU.checkOnceOnly                                		--INS251229 Baertram
+	BMU_has_value = BMU_has_value or BMU.has_value                                					--INS251229 Baertram
+	BMU_has_value_special = BMU_has_value_special or BMU.has_value_special        					--INS251229 Baertram
+	BMU_addInfo_2 = BMU_addInfo_2 or BMU.addInfo_2        											--INS251229 Baertram
+	BMU_filterAndDecide = BMU_filterAndDecide or BMU.filterAndDecide								--INS251229 Baertram
+	BMU_sortByStringFindPosition = BMU_sortByStringFindPosition or BMU.sortByStringFindPosition		--INS251229 Baertram
+	BMU_syncWithItems = BMU_syncWithItems or BMU.syncWithItems										--INS251229 Baertram
+	BMU_syncWithQuests = BMU_syncWithQuests or BMU.syncWithQuests									--INS251229 Baertram
+	BMU_createNoResultsInfo = BMU_createNoResultsInfo or BMU.createNoResultsInfo					--INS251229 Baertram
+	local BMU_savedVarsAcc = BMU.savedVarsAcc														--INS251229 Baertram
 
 	local index = args.index or 0
 	local inputString = args.inputString or ""
@@ -262,7 +172,7 @@ function BMU.createTable(args)
 	local noOwnHouses = args.noOwnHouses or false
 
 	-- simple checks
-	if type(index) ~= numberType or (index == BMU_indexListSource and type(filterSourceIndex) ~= numberType) or (index == BMU_indexListZone and type(fZoneId) ~= numberType) then
+	if type(index) ~= numberType or (index == BMU.indexListSource and type(filterSourceIndex) ~= numberType) or (index == BMU.indexListZone and type(fZoneId) ~= numberType) then
 		return
 	end
 
@@ -279,7 +189,7 @@ function BMU.createTable(args)
 	end
 
 	-- print status (debug)
-	BMU_printToChat("Refreshed - state: " .. tos(index) .. " - String: " .. tos(inputString), BMU.MSG_DB)
+	BMU.printToChat("Refreshed - state: " .. tostring(index) .. " - String: " .. tostring(inputString), BMU.MSG_DB)
 
 	-- change state for correct persistent MouseOver and for auto refresh
 	if not dontDisplay then -- dont change when result should not be displayed in list
@@ -338,7 +248,7 @@ function BMU.createTable(args)
 				-- save displayName
 				consideredPlayers[e.displayName] = true
 				-- add bunch of information to the record
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GROUP)
+				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU.SOURCE_INDEX_GROUP)
 
 				-- second big filter level
 				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
@@ -361,12 +271,12 @@ function BMU.createTable(args)
 
 		-- first big layer of filtering, second layer is placed in seperate function
         -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
-		if e.displayName ~= GetDisplayName() and e.status ~= PLAYER_STATUS_OFFLINE and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+		if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
 
 			-- save displayName
 			consideredPlayers[e.displayName] = true
 			-- do some formating stuff
-			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_FRIEND)
+			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU.SOURCE_INDEX_FRIEND)
 
 			-- second big filter level
 			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
@@ -396,7 +306,7 @@ function BMU.createTable(args)
 				-- save displayName
 				consideredPlayers[e.displayName] = true
 				-- do some formating stuff
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
+				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU.SOURCE_INDEX_GUILD[i])
 
 				-- second big filter level
 				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
@@ -409,20 +319,13 @@ function BMU.createTable(args)
 		end
 	end
 
-	--4. Own houses
 	if not BMU_savedVarsAcc.hideOwnHouses and not noOwnHouses then
 		-- 4. go over own houses
 		-- player can port outside own houses -> check own houses and add parent zone entries if not already in list
-		local ownedHouses = {}
-		if BMU.IsNotKeyboard() then
-		  ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
-		else
-		  ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
-    end
-		for _, house in pairs(ownedHouses) do
+		for _, house in pairs(COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()) do
 			local houseZoneId = GetHouseZoneId(house.houseId)
-			--local mapIndex = BMU_getMapIndex(houseZoneId)
-			local parentZoneId = BMU_getParentZoneId(houseZoneId)
+			local mapIndex = BMU_getMapIndex(houseZoneId)
+			local parentZoneId = BMU.getParentZoneId(houseZoneId)
 			-- check if parent zone not already in result list
 			---if not allZoneIds[parentZoneId] then
 			local e = {}
@@ -447,7 +350,7 @@ function BMU.createTable(args)
 				e = BMU_addInfo_2(e)
 				-- overwrite
 				e.mapIndex = BMU_getMapIndex(houseZoneId)
-				e.parentZoneId = BMU_getParentZoneId(houseZoneId)
+				e.parentZoneId = BMU.getParentZoneId(houseZoneId)
 				-- add manually
 				--allZoneIds[e.zoneId] = allZoneIds[e.zoneId] + 1
 				table_insert(TeleportAllPlayersTable, e)
@@ -455,8 +358,7 @@ function BMU.createTable(args)
 		end
 	end
 
-	--5. Zones without players
-	if BMU_savedVarsAcc.showZonesWithoutPlayers2 or index == BMU_indexListSearchZone then
+	if BMU_savedVarsAcc.showZonesWithoutPlayers2 or index == BMU.indexListSearchZone then
 		-- 5. add all overland zones without players
 		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
 			local e = {}
@@ -467,8 +369,8 @@ function BMU.createTable(args)
 			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, "")
 			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
 				e = BMU_addInfo_2(e)
-				e.textColorDisplayName = colorRed
-				e.textColorZoneName = colorRed
+				e.textColorDisplayName = "red"
+				e.textColorZoneName = "red"
 				table_insert(TeleportAllPlayersTable, e)
 			end
 		end
@@ -478,23 +380,21 @@ function BMU.createTable(args)
 
 	-- display number of hits (port alternatives)
 	-- not needed in case of only current zone and favorite zoneId
-	if BMU_savedVarsAcc.showNumberPlayers and not (index == BMU_indexListCurrentZone or index == BMU_indexListZoneHidden or index == BMU_indexListZone) then
-		portalPlayers = BMU_addNumberPlayers(portalPlayers)
+	if BMU_savedVarsAcc.showNumberPlayers and not (index == BMU.indexListCurrentZone or index == BMU.indexListZoneHidden or index == BMU.indexListZone) then
+		portalPlayers = BMU.addNumberPlayers(portalPlayers)
 	end
 
-	---------------------------------------------------------------------------------------------------
-	--Results list building & Sorting
-	if index == BMU_indexListItems then
+	if index == BMU.indexListItems then
 		-- related items
 		portalPlayers = BMU_syncWithItems(portalPlayers) -- returns already sorted list
-	elseif index == BMU_indexListQuests then
+	elseif index == BMU.indexListQuests then
 		-- related quests
 		portalPlayers = BMU_syncWithQuests(portalPlayers) -- returns already sorted list
-	elseif index == BMU_indexListSearchPlayer then
+	elseif index == BMU.indexListSearchPlayer then
 		-- search by player name
 		-- sort by string match position (displayName and characterName)
 		portalPlayers = BMU_sortByStringFindPosition(portalPlayers, inputString, "displayName", "characterName")
-	elseif index == BMU_indexListSearchZone then
+	elseif index == BMU.indexListSearchZone then
 		-- search by zone name
 		-- sort by string match position (zoneName, zoneNameSecondLanguage)
 		portalPlayers = BMU_sortByStringFindPosition(portalPlayers, inputString, "zoneName", "zoneNameSecondLanguage")
@@ -519,7 +419,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 3 then
+		elseif BMU.savedVarsChar.sorting == 3 then
 			-- sort by prio, most used, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -540,7 +440,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 4 then
+		elseif BMU.savedVarsChar.sorting == 4 then
 			-- sort by prio, most used, category, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -565,7 +465,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 5 then
+		elseif BMU.savedVarsChar.sorting == 5 then
 			-- sort by prio, number players, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -586,7 +486,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 6 then
+		elseif BMU.savedVarsChar.sorting == 6 then
 			-- sort by prio, number of undiscovered wayshrines, zone category, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -615,7 +515,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 7 then
+		elseif BMU.savedVarsChar.sorting == 7 then
 			-- sort by prio, number of undiscovered skyshards, zone category, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -644,7 +544,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 8 then
+		elseif BMU.savedVarsChar.sorting == 8 then
 			-- sort by prio, last used, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -665,7 +565,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 9 then
+		elseif BMU.savedVarsChar.sorting == 9 then
 			-- sort by prio, last used, category, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -690,7 +590,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 10 then
+		elseif BMU.savedVarsChar.sorting == 10 then
 			-- sort by prio, number of missing set items, category, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -725,7 +625,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		elseif BMU_savedVarsChar.sorting == 11 then
+		elseif BMU.savedVarsChar.sorting == 11 then
 			-- sort by prio, category, zones without players, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -750,7 +650,7 @@ function BMU.createTable(args)
 				return BMU_decidePrioDisplay(a, b)
 			end)
 
-		else -- BMU_savedVarsChar.sorting == 1
+		else -- BMU.savedVarsChar.sorting == 1
 			-- sort by prio, zoneName, prio by source
 			table_sort(portalPlayers, function(a, b)
 				-- prio
@@ -773,7 +673,7 @@ function BMU.createTable(args)
 	end
 
 	-- get end time and print runtime in milliseconds (debug)
-	BMU_printToChat("RunTime: " .. (GetGameTimeMilliseconds() - startTime) .. " ms", BMU.MSG_DB)
+	BMU.printToChat("RunTime: " .. (GetGameTimeMilliseconds() - startTime) .. " ms", BMU.MSG_DB)
 
 	-- display or return result
 	if dontDisplay == true then
@@ -859,7 +759,7 @@ function BMU.addInfo_1(e, currentZoneId, playersZoneId, sourceIndexLeading)
 	end
 
 	-- add second zone name
-	e.zoneNameSecondLanguage = BMU_getZoneNameSecondLanguage(e.zoneId)
+	e.zoneNameSecondLanguage = BMU.getZoneNameSecondLanguage(e.zoneId)
 
 	if e.displayName ~= "" and e.displayName ~= nil then
 		-- format character name
@@ -871,15 +771,15 @@ function BMU.addInfo_1(e, currentZoneId, playersZoneId, sourceIndexLeading)
 		e.sourceIndexLeading = sourceIndexLeading -- first source where the player was found
 
 		-- is in Group?
-		if sourceIndexLeading == BMU_SOURCE_INDEX_GROUP then
-			table_insert(e.sources, BMU_SOURCE_INDEX_GROUP)
-			table_insert(e.sourcesText, BMU_colorizeText(groupStr, colorOrange))
+		if sourceIndexLeading == BMU.SOURCE_INDEX_GROUP then
+			table_insert(e.sources, BMU.SOURCE_INDEX_GROUP)
+			table_insert(e.sourcesText, BMU_colorizeText(GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_GROUP_MEMBERS), "orange"))
 		end
 
 		-- is Friend?
-		if sourceIndexLeading == BMU_SOURCE_INDEX_FRIEND or IsFriend(e.displayName) then
-			table_insert(e.sources, BMU_SOURCE_INDEX_FRIEND)
-			table_insert(e.sourcesText, BMU_colorizeText(friendsStr, colorGreen))
+		if sourceIndexLeading == BMU.SOURCE_INDEX_FRIEND or IsFriend(e.displayName) then
+			table_insert(e.sources, BMU.SOURCE_INDEX_FRIEND)
+			table_insert(e.sourcesText, BMU_colorizeText(GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_FRIENDS), "green"))
 		end
 
 		-- is in Guild?
@@ -887,8 +787,8 @@ function BMU.addInfo_1(e, currentZoneId, playersZoneId, sourceIndexLeading)
 		for i = 1, numGuilds do
 			local guildId = GetGuildId(i)
 			if GetGuildMemberIndexFromDisplayName(guildId, e.displayName) ~= nil then
-				table_insert(e.sources, BMU_SOURCE_INDEX_GUILD[i])
-				table_insert(e.sourcesText, BMU_colorizeText(GetGuildName(guildId), colorWhite))
+				table_insert(e.sources, BMU.SOURCE_INDEX_GUILD[i])
+				table_insert(e.sourcesText, BMU_colorizeText(GetGuildName(guildId), "white"))
 			end
 		end
 	end
@@ -900,13 +800,9 @@ BMU_addInfo_1 = BMU.addInfo_1				--INS251229 Baertram
 
 -- adds second bunch of information after filterAndDecide
 function BMU.addInfo_2(e)
-	-- -v- INS251229 Baertram local references to functions defined later in this file
-	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
-	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
-	BMU_categorizeZone = BMU_categorizeZone or BMU.categorizeZone
-	BMU_getZoneGuideDiscoveryInfo = BMU_getZoneGuideDiscoveryInfo or BMU.getZoneGuideDiscoveryInfo
-	BMU_createPublicDungeonAchiementInfo = BMU_createPublicDungeonAchiementInfo or BMU.createPublicDungeonAchiementInfo
-	-- -^- INS251229 Baertram
+	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex				--INS251229 Baertram
+	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId	--INS251229 Baertram
+	BMU_categorizeZone = BMU_categorizeZone or BMU.categorizeZone		--INS251229 Baertram
 
 	-- inititialize more values
 	e.relatedItems = {}
@@ -931,7 +827,7 @@ function BMU.addInfo_2(e)
 	-- add public dungeon completeness info (for zone tooltip)
 	-- e.zonePublicDungeonDiscoveryInfo, e.zonePublicDungeonDiscovered, e.zonePublicDungeonTotal = BMU_getZoneGuideDiscoveryInfo(e.zoneId, ZONE_COMPLETION_TYPE_PUBLIC_DUNGEONS)
 	-- add delve completeness info (for zone tooltip)
-	-- e.zoneDelveDiscoveryInfo, e.zoneDelveDiscovered, e.zoneDelveTotal = BMU_getZoneGuideDiscoveryInfo(e.zoneId, ZONE_COMPLETION_TYPE_DELVES)
+	-- e.zoneDelveDiscoveryInfo, e.zoneDelveDiscovered, e.zoneDelveTotal = BMU.getZoneGuideDiscoveryInfo(e.zoneId, ZONE_COMPLETION_TYPE_DELVES)
 
 	-- categorize zone
 	e.category = BMU_categorizeZone(e.zoneId)
@@ -963,8 +859,8 @@ function BMU.addInfo_2(e)
 		e.textColorDisplayName = colorGreen
 		e.textColorZoneName = colorGreen
 	else
-		e.textColorDisplayName = colorWhite
-		e.textColorZoneName = colorWhite
+		e.textColorDisplayName = "white"
+		e.textColorZoneName = "white"
 	end
 
 	--set prio
@@ -1005,6 +901,36 @@ function BMU.addInfo_2(e)
 end
 BMU_addInfo_2 = BMU.addInfo_2
 
+
+-- create tooltip text info about public dungeon achievement completion (group event / skill point)
+function BMU.createPublicDungeonAchiementInfo(overlandZoneId, onlyPublicDungeonZoneId)
+	local info = {}
+	if BMU.overlandDelvesPublicDungeons[overlandZoneId] and BMU.overlandDelvesPublicDungeons[overlandZoneId].publicDungeonsAchievements then
+		-- only for a specific public dungeon
+		if onlyPublicDungeonZoneId then
+			local publicDungeonAchvText = BMU.getColorizedPublicDungeonAchievementText(overlandZoneId, onlyPublicDungeonZoneId)
+			if publicDungeonAchvText then
+				table_insert(info, publicDungeonAchvText)
+			end
+
+		-- for all public dungeons of the zone
+		else
+			for publicDungeonZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons[overlandZoneId].publicDungeonsAchievements) do
+				local publicDungeonAchvText = BMU.getColorizedPublicDungeonAchievementText(overlandZoneId, publicDungeonZoneId)
+				if publicDungeonAchvText then
+					table_insert(info, publicDungeonAchvText)
+				end
+			end
+		end
+
+		-- add header and return info
+		if #info > 0 then
+			table_insert(info, 1, GetString(SI_LEVEL_UP_REWARDS_SKILL_POINT_TOOLTIP_HEADER) .. " (" .. BMU_SI_get(SI.TELE_UI_GROUP_EVENT) .. "):")
+			return info
+		end
+	end
+end
+
 -- generate colorized text for a specific public dungeon (group event / skill point)
 function BMU.getColorizedPublicDungeonAchievementText(overlandZoneId, publicDungeonZoneId)
 	local achievmentId = BMU.overlandDelvesPublicDungeons[overlandZoneId].publicDungeonsAchievements[publicDungeonZoneId]
@@ -1012,9 +938,9 @@ function BMU.getColorizedPublicDungeonAchievementText(overlandZoneId, publicDung
 		-- local name, _, _, _, completed, _, _ = GetAchievementInfo(achievmentId)
 		local completed = IsAchievementComplete(achievmentId)
 		if completed then
-			return textureAcceptGreen .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
+			return BMU.textures.acceptGreen .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
 		else
-			return textureDeclineRed .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
+			return BMU.textures.declineRed .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
 		end
 	end
 end
@@ -1031,21 +957,19 @@ function BMU.createPublicDungeonAchiementInfo(overlandZoneId, onlyPublicDungeonZ
 				table_insert(info, publicDungeonAchvText)
 			end
 
-		-- for all public dungeons of the zone
-		else
-			for publicDungeonZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons[overlandZoneId].publicDungeonsAchievements) do
-				local publicDungeonAchvText = BMU_getColorizedPublicDungeonAchievementText(overlandZoneId, publicDungeonZoneId)
-				if publicDungeonAchvText then
-					table_insert(info, publicDungeonAchvText)
-				end
-			end
-		end
+-- add alternative zone name (second language) if feature active (see translation array)
+function BMU.getZoneNameSecondLanguage(zoneId)
+	-- check if enabled
+	if BMU.savedVarsAcc.secondLanguage ~= 1 then
+		local language = BMU.dropdownSecLangChoices[BMU.savedVarsAcc.secondLanguage]
+		local localizedZoneIdData = BMU.LibZoneGivenZoneData[language]
+		if localizedZoneIdData == nil then return nil end
+		local localizedZoneName = localizedZoneIdData[zoneId]
+		if localizedZoneName == nil or type(localizedZoneName) ~= stringType then return nil end
 
-		-- add header and return info
-		if #info > 0 then
-			table_insert(info, 1, levelUpRewardSkillPointHeaderStr .. " (" .. BMU_SI_Get(SI_TELE_UI_GROUP_EVENT) .. "):")
-			return info
-		end
+		return localizedZoneName
+	else
+		return nil
 	end
 end
 BMU_createPublicDungeonAchiementInfo = BMU.createPublicDungeonAchiementInfo --INS251229 Baertram
@@ -1065,7 +989,7 @@ function BMU.getNumSetCollectionProgressPieces(zoneId, category, parentZoneId)
 			workingZoneId = zoneId
 		end
 
-		if not (numUnlocked and numTotal) and (category == BMU_ZONE_CATEGORY_DELVE or category == BMU_ZONE_CATEGORY_PUBDUNGEON) and parentZoneId then
+		if not (numUnlocked and numTotal) and (category == BMU.ZONE_CATEGORY_DELVE or category == BMU.ZONE_CATEGORY_PUBDUNGEON) and parentZoneId then
 			-- catch possible exceptions | pcall returns false if function call fails, otherwise true
 			if pcall(function() BMU.LibSets.GetNumItemSetCollectionZoneUnlockedPieces(parentZoneId) end) then
 				numUnlocked, numTotal = BMU.LibSets.GetNumItemSetCollectionZoneUnlockedPieces(parentZoneId)
@@ -1085,7 +1009,7 @@ function BMU.getSetCollectionProgressString(zoneId, category, parentZoneId)
 		local progressString = string_format("%d/%d", numUnlocked, numTotal)
 		if numUnlocked == numTotal then
 			-- colorize string
-			progressString = BMU_colorizeText(progressString, colorGreen)
+			progressString = BMU_colorizeText(progressString, "green")
 		end
 		return itemCountSummaryStr .. ": " .. progressString
 	end
@@ -1125,27 +1049,27 @@ function BMU.filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filt
 	end
 
 	-- only own zone
-	if index == BMU_indexListCurrentZone then
+	if index == BMU.indexListCurrentZone then
 		-- only add records of the current (displayed) zone (and ensure that a record without player (dark red) is only added if there is no other record -> see BMU_checkOnceOnly())
 		-- OR if displayed zone is not overland and zone is parent of current zone (e.g. to see the parent overland zone in the list if the player is in a delve)
-		if (e.currentZone and BMU_checkOnceOnly(false, e)) or (BMU_categorizeZone(currentZoneId) ~= BMU_ZONE_CATEGORY_OVERLAND and e.zoneId == BMU_getParentZoneId(currentZoneId) and BMU_checkOnceOnly(true, e)) then
+		if (e.currentZone and BMU_checkOnceOnly(false, e)) or (BMU_categorizeZone(currentZoneId) ~= BMU.ZONE_CATEGORY_OVERLAND and e.zoneId == BMU_getParentZoneId(currentZoneId) and BMU_checkOnceOnly(true, e)) then
 			return true
 		end
 
 	-- filter by player name
-	elseif index == BMU_indexListSearchPlayer then
+	elseif index == BMU.indexListSearchPlayer then
 		if (string_match(string_lower(e.displayName), string_lower(inputString)) or (BMU_savedVarsAcc.searchCharacterNames and string_match(string_lower(e.characterName), string_lower(inputString)))) then -- and not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e)
 			return true
 		end
 
 	-- filter by zone name
-	elseif index == BMU_indexListSearchZone then
+	elseif index == BMU.indexListSearchZone then
 		if (string_match(string_lower(e.zoneName), string_lower(inputString)) or (BMU_savedVarsAcc.secondLanguage ~= 1 and string_match(string_lower(e.zoneNameSecondLanguage), string_lower(inputString)))) and not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e) then
 			return true
 		end
 
 	-- search for related items
-	elseif index == BMU_indexListItems then
+	elseif index == BMU.indexListItems then
 		if not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) and BMU_checkOnceOnly(true, e) then
 			return true
 		end
@@ -1156,7 +1080,7 @@ function BMU.filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filt
 			-- add all delves and public dungeons
 			-- zone is delve or public dungeon + not blacklisted + add only once to list
 			local zoneCategory = BMU_categorizeZone(e.zoneId)
-			if (zoneCategory == BMU_ZONE_CATEGORY_DELVE or zoneCategory == BMU_ZONE_CATEGORY_PUBDUNGEON) and not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, false) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e) then
+			if (zoneCategory == BMU.ZONE_CATEGORY_DELVE or zoneCategory == BMU.ZONE_CATEGORY_PUBDUNGEON) and not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, false) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e) then
 				return true
 			end
 		else
@@ -1179,18 +1103,13 @@ function BMU.filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filt
 	-- looking for specific sourceIndex
 	elseif index == BMU_indexListSource then
 		-- add only player with given sourceIndex
-		---or add houses to general list, if filter was set to own houses only
-		if filterSourceIndex == BMU_SOURCE_INDEX_OWNHOUSES then
-			if e.houseId ~= nil then return true end
-		end
-
 		if BMU_has_value(e.sources, filterSourceIndex) then
 			return true
 		end
 
-	-- add all / no filters (index == BMU_indexListMain)
+	-- add all / no filters (index == BMU.indexListMain)
 	else
-		if (not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) or BMU_isFavoritePlayer(e.displayName)) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e) then
+		if (not BMU_isBlacklisted(e.zoneId, e.sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) or BMU.isFavoritePlayer(e.displayName)) and BMU_checkOnceOnly(BMU_savedVarsAcc.zoneOnceOnly, e) then
 			return true
 		end
 	end
@@ -1321,12 +1240,9 @@ end
 -- increments counter according to case
 -- returns if the record can be used
 function BMU.checkOnceOnly(activ, record)
-	-- -v- INS251229 Baertram local reference updates for functions further down in this file
-	BMU_has_value = BMU_has_value or BMU.has_value
-	BMU_getExistingEntry = BMU_getExistingEntry or BMU.getExistingEntry
-	BMU_removeExistingEntry = BMU_removeExistingEntry or BMU.removeExistingEntry
-	BMU_decidePrioDisplay = BMU_decidePrioDisplay or BMU.decidePrioDisplay
-	-- -^- INS251229 Baertram
+	BMU_has_value = BMU_has_value or BMU.has_value                                 					--INS251229 Baertram
+	BMU_getExistingEntry = BMU_getExistingEntry or BMU.getExistingEntry           					--INS251229 Baertram
+	BMU_removeExistingEntry = BMU_removeExistingEntry or BMU.removeExistingEntry  					--INS251229 Baertram
 
 	-- in general: dont add a record without player (dark red) if there is already another record for this zone
 	if allZoneIds[record.zoneId] and record.zoneWithoutPlayer then
@@ -1402,46 +1318,22 @@ BMU_categorizeZone = BMU.categorizeZone
 
 
 -- connect survey and treasure maps from bags to port options and zones
-local function isStackableContainer(specializedItemType)
-	return specializedItemType == SPECIALIZED_ITEMTYPE_CONTAINER_STACKABLE
-end
-local function isStackableSurveyContainer(itemName, specializedItemType)
-	local isStackableContainerItem = isStackableContainer(specializedItemType)
-	return (isStackableContainerItem == true and string_match(string_lower(itemName), surveyMapContainerStrLower)) or false
-end
-local function isStackableTreasureMapContainer(itemName, specializedItemType)
-	local isStackableContainerItem = isStackableContainer(specializedItemType)
-	return (isStackableContainerItem == true and string_match(string_lower(itemName), treasureMapContainerStrLower)) or false
-end
-
 --CHG251229 Baertram Removed local functions from within function BMU.syncWithItems below, so they do not get gedefined & created on each function call of BMU.syncWithItems! -> memory and performance gain
 -- local function to identify the item as survey or treasure map (check itemType and custom mapping as backup)
 local function isSurveyMap(itemName, specializedItemType)
-	return (specializedItemType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT or string_match(string_lower(itemName), surveyMapStrLower)) --CHG251229 Baertram Defined local lower string variables at the top so they aren't rechecked and build expensively on each string comparison again and again and ...
+	return (specializedItemType == SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT or string_match(string_lower(itemName), surveyMapStrLower)) --CHG251229 Baertram Defined local lower string variables at the top so they aren't rechecked and build expensively on eac string comparison again and again and ...
 end
 local function isTreasureMap(itemName, specializedItemType)
-	return (specializedItemType == SPECIALIZED_ITEMTYPE_TROPHY_TREASURE_MAP or string_match(string_lower(itemName), treasureMapStrLower)) --CHG251229 Baertram Defined local lower string variables at the top so they aren't rechecked and build expensively on each string comparison again and again and ...
+	return (specializedItemType == SPECIALIZED_ITEMTYPE_TROPHY_TREASURE_MAP or string_match(string_lower(itemName), treasureMapStrLower)) --CHG251229 Baertram Defined local lower string variables at the top so they aren't rechecked and build expensively on eac string comparison again and again and ...
 end
 local function isClueMap(itemId, specializedItemType)
-	BMU_getDataMapInfo = BMU_getDataMapInfo or BMU.getDataMapInfo
-	local subType, _ = BMU_getDataMapInfo(itemId)
+	local subType, _ = BMU.getDataMapInfo(itemId)
 	return (specializedItemType == SPECIALIZED_ITEMTYPE_TROPHY_TRIBUTE_CLUE or subType == subTypeClue) --CHG251229 Baertram Defined local string variable at the top so they aren't redefined on each string comparison again and again and ...
 end
 -- local function check if the map type (coming from BMU.treasureAndSurveyMaps) is enabled by the user
 local function isSubtypeEnabled(subType)
 	return BMU.savedVarsChar.displayMaps[subType] or false
 end
-
-local function leadsTableSortByNameFunc(entryA, entryB)
-	return entryA.name < entryB.name
-end
-local function tableSortRelatedItemsOrZoneName(a, b)
-	if a.countRelatedItems ~= b.countRelatedItems then
-		return a.countRelatedItems > b.countRelatedItems
-	end
-	return a.zoneName < b.zoneName
-end
-
 function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram Renamed param portalPlayers: Shadows the in line 6 defined table portalPlayers with same name!
 	BMU_numOfSurveyTypesChecked = BMU_numOfSurveyTypesChecked or BMU.numOfSurveyTypesChecked 		--INS251229 Baertram
 	BMU_getDataMapInfo = BMU_getDataMapInfo or BMU.getDataMapInfo 									--INS251229 Baertram
@@ -1451,7 +1343,6 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 	BMU_addItemInformation = BMU_addItemInformation or BMU.addItemInformation						--INS251229 Baertram
 	BMU_addLeadInformation = BMU_addLeadInformation or BMU.addLeadInformation						--INS251229 Baertram
 	BMU_cleanUnrelatedRecords = BMU_cleanUnrelatedRecords or BMU.cleanUnrelatedRecords				--INS251229 Baertram
-	BMU_leadIsRelated = BMU_leadIsRelated or BMU.leadIsRelated										--INS260204 Beartram
 	local BMU_savedVarsChar = BMU.savedVarsChar 													--INS251229 Baertram
 
 	local newTable ={}
@@ -1472,43 +1363,32 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 			local itemType, specializedItemType = GetItemType(bagId, slotIndex)
 			local itemId = GetItemId(bagId, slotIndex)
 			-- filter for relevant items and consider active option
-			if (BMU_savedVarsChar.displayMaps.treasure and (isTreasureMap(itemName, specializedItemType) or isStackableTreasureMapContainer(itemName, specializedItemType)))
-					or (BMU_numOfSurveyTypesChecked() > 0 and (isSurveyMap(itemName, specializedItemType) or isStackableSurveyContainer(itemName, specializedItemType)))
-					or (BMU_savedVarsChar.displayMaps.clue and isClueMap(itemId, specializedItemType)) then
+			if (BMU_savedVarsChar.displayMaps.treasure and isTreasureMap(itemName, specializedItemType)) or (BMU_numOfSurveyTypesChecked() > 0 and isSurveyMap(itemName, specializedItemType)) or (BMU_savedVarsChar.displayMaps.clue and isClueMap(itemId, specializedItemType)) then
 				-- determine subType and itemZoneId from global list
-				local subType, itemZoneId, isContainerItem = BMU_getDataMapInfo(itemId)
+				local subType, itemZoneId = BMU_getDataMapInfo(itemId)
 				if subType then
 					-- filter valid subTypes
 					if isSubtypeEnabled(subType) then
-						if isContainerItem then
-							if not zonelessRecord then
-								-- create new zoneless info record
-								zonelessRecord = BMU_createZoneLessItemsInfo()
-							end
-							-- add item data to record
-							zonelessRecord = BMU_addItemInformation(zonelessRecord, bagId, slotIndex)
+						-- create item data
+						-- check if item is related to an entry in portalPlayers table (player can port to this location) and get updated record in portalPlayers table
+						local isRelated, updatedRecord, recordIndex = BMU_itemIsRelated(p_portalPlayers, bagId, slotIndex, itemZoneId)
+						if isRelated then
+							-- item is related and connected to an entry in portalPlayers table
+							-- update record in portalPlayers
+							p_portalPlayers[recordIndex] = updatedRecord
 						else
-							-- create item data
-							-- check if item is related to an entry in portalPlayers table (player can port to this location) and get updated record in portalPlayers table
-							local isRelated, updatedRecord, recordIndex = BMU_itemIsRelated(p_portalPlayers, bagId, slotIndex, itemZoneId)
-							if isRelated then
-								-- item is related and connected to an entry in portalPlayers table
-								-- update record in portalPlayers
-								p_portalPlayers[recordIndex] = updatedRecord
-							else
-								-- item cannot be assigned to an entry in portalPlayers table
-								-- but we know the item's zone from global list
-								-- check if a record for the zone already exists
-								local record = unrelatedItemsRecords[itemZoneId]
-								if not record then
-									-- create new record
-									record = BMU_createClickableZoneRecord(itemZoneId)
-								end
-								-- add item to the record
-								record = BMU_addItemInformation(record, bagId, slotIndex)
-								-- save updated record
-								unrelatedItemsRecords[itemZoneId] = record
+							-- item cannot be assigned to an entry in portalPlayers table
+							-- but we know the item's zone from global list
+							-- check if a record for the zone already exists
+							local record = unrelatedItemsRecords[itemZoneId]
+							if not record then
+								-- create new record
+								record = BMU_createClickableZoneRecord(itemZoneId)
 							end
+							-- add item to the record
+							record = BMU_addItemInformation(record, bagId, slotIndex)
+							-- save updated record
+							unrelatedItemsRecords[itemZoneId] = record
 						end
 					end
 				else
@@ -1526,9 +1406,7 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 		end
 	end
 
-	local BMU_SV_Char_displayAntiquityLeads = BMU_savedVarsChar.displayAntiquityLeads
-	if BMU_SV_Char_displayAntiquityLeads.scried or BMU_SV_Char_displayAntiquityLeads.srcyable then
-		local leadsFound = {} --table of leads, with each subtable per quality
+	if BMU_savedVarsChar.displayAntiquityLeads.scried or BMU_savedVarsChar.displayAntiquityLeads.srcyable then
 		-- seperately: go over all leads and add them to "portalPlayers" and "unrelatedItemsRecords"
 		local antiquityId = GetNextAntiquityId()
 		while antiquityId do
@@ -1536,23 +1414,33 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 				local zoneId = GetAntiquityZoneId(antiquityId)
 				local achievedGoals = GetNumGoalsAchievedForAntiquity(antiquityId)
 					-- leads that are already scried (at least one "achieved goal" in lead scry progress)
-				if ((BMU_SV_Char_displayAntiquityLeads.scried and achievedGoals > 0)
+				if ((BMU_savedVarsChar.displayAntiquityLeads.scried and achievedGoals > 0)
 					or
 					-- leads that are are scryable (no progress)
-					(BMU_SV_Char_displayAntiquityLeads.srcyable and achievedGoals == 0))
+					(BMU_savedVarsChar.displayAntiquityLeads.srcyable and achievedGoals == 0))
 					and
 					-- include or filter completed leads (codex)
-					(BMU_SV_Char_displayAntiquityLeads.completed or GetNumAntiquityLoreEntries(antiquityId) ~= GetNumAntiquityLoreEntriesAcquired(antiquityId))
+					(BMU_savedVarsChar.displayAntiquityLeads.completed or GetNumAntiquityLoreEntries(antiquityId) ~= GetNumAntiquityLoreEntriesAcquired(antiquityId))
 				then
-					local quality = GetAntiquityQuality(antiquityId)
-					local name = GetAntiquityName(antiquityId)
-					leadsFound[quality] = leadsFound[quality] or {}
-					leadsFound[quality][#leadsFound[quality]+1] = {
-						quality = quality,
-						antiquityId = antiquityId,
-						name = name,
-						zoneId = zoneId,
-					}
+					-- check if lead can be matched to an entry in portalPlayers table
+					local isRelated, updatedRecord, recordIndex = BMU.leadIsRelated(p_portalPlayers, antiquityId)
+					if isRelated then
+						-- lead is related and connected to an entry in portalPlayers table
+						-- update record in portalPlayers
+						p_portalPlayers[recordIndex] = updatedRecord
+					else
+						-- lead cannot be assigned to an entry in portalPlayers table
+						-- check if a record for the zone already exists
+						local record = unrelatedItemsRecords[zoneId]
+						if not record then
+							-- create new record
+							record = BMU_createClickableZoneRecord(zoneId)
+						end
+						-- add lead to the record
+						record = BMU_addLeadInformation(record, antiquityId)
+						-- save record
+						unrelatedItemsRecords[zoneId] = record
+					end
 				end
 			end
 			antiquityId = GetNextAntiquityId(antiquityId)
@@ -1593,14 +1481,25 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 		end
 	end
 
+
 	-- clean portalPlayers table from entries without assigned items
 	newTable = BMU_cleanUnrelatedRecords(p_portalPlayers)
 
 	-- sort table by number of items and by name
-	table_sort(newTable, tableSortRelatedItemsOrZoneName)
+	table_sort(newTable, function(a, b)
+			if a.countRelatedItems ~= b.countRelatedItems then
+				return a.countRelatedItems > b.countRelatedItems
+			end
+			return a.zoneName < b.zoneName
+		end)
 
 	-- sort records with unrelated items (maps without port possibility)
-	table_sort(unrelatedItemsRecords, tableSortRelatedItemsOrZoneName)
+	table_sort(unrelatedItemsRecords, function(a, b)
+			if a.countRelatedItems ~= b.countRelatedItems then
+				return a.countRelatedItems > b.countRelatedItems
+			end
+			return a.zoneName < b.zoneName
+		end)
 
 	-- add them to the final table
 	for zoneId, record in pairs(unrelatedItemsRecords) do
@@ -1620,10 +1519,8 @@ BMU_syncWithItems = BMU_syncWithItems or BMU.syncWithItems  		--INS251229 Baertr
 -- try to find a record that matches with item's zone and update record
 function BMU.itemIsRelated(p_portalPlayers, bagId, slotIndex, itemZoneId)							--CHG251229 Baertram Renamed param portalPlayers: Shadows the in line 6 defined table portalPlayers with same name!
 	BMU_addItemInformation = BMU_addItemInformation or BMU.addItemInformation						--INS251229 Baertram
-	--local itemName = GetItemName(bagId, slotIndex)
-	--local itemId = GetItemId(bagId, slotIndex)
-
-	if itemZoneId == nil then return false, nil, nil end											--INS260209 Baertram
+	local itemName = GetItemName(bagId, slotIndex)
+	local itemId = GetItemId(bagId, slotIndex)
 
 	-- go over all records in portalPlayers
 	for index, record in ipairs(p_portalPlayers) do
@@ -1669,18 +1566,16 @@ function BMU.addItemInformation(record, bagId, slotIndex)
 	local itemName = color:Colorize(BMU_formatName(GetItemName(bagId, slotIndex), false))
 	local itemTooltip = itemName
 	local itemId = GetItemId(bagId, slotIndex)
-	local itemType, _ = BMU_getDataMapInfo(itemId)
+	local itemType, _ = BMU.getDataMapInfo(itemId)
 
 	if itemCount > 1 then
 		-- change item name (add itemCount of this item)
-		itemTooltip = itemTooltip .. BMU_colorizeText(" (" .. itemCount .. ")", colorWhite)
+		itemTooltip = itemTooltip .. BMU_colorizeText(" (" .. itemCount .. ")", "white")
 	end
 
-	--Bank and subsriber bank
 	if bagId ~= BAG_BACKPACK then
-		-- coloring if item is not in inventory, but in the bank
-		--itemTooltip = BMU_colorizeText(currencyLocation1Str .. ": ", colorGray) .. itemTooltip
-		itemTooltip = bankIconStr20 .. itemTooltip
+		-- coloring if item is not in inventory
+		itemTooltip = BMU_colorizeText(GetString(SI_CURRENCYLOCATION1) .. ": ", "gray") .. itemTooltip
 		isInInventory = false
 		if #record.relatedItems == 0 then
 			record.textColorZoneName = colorGray
@@ -1725,15 +1620,10 @@ function BMU.addLeadInformation(record, antiquityId)
 	local numEntries = GetNumAntiquityLoreEntries(antiquityId)
 	local numEntriesAcquired = GetNumAntiquityLoreEntriesAcquired(antiquityId)
 
-	local aName = color:Colorize(ZO_CachedStrFormat(formatStringFirstUppercase,GetAntiquityName(antiquityId)))
-	--[[
-	local aTooltip = color:Colorize(ZO_CachedStrFormat(formatStringFirstUppercase,GetAntiquityName(antiquityId))) .. "\n" ..
-					BMU_colorizeText(string_format(BMU_SI_Get(SI_TELE_UI_DAYS_LEFT), math.floor(leadtimeleft/86400)) .. "\n" ..
-					zo_strformat(SI_ANTIQUITY_CODEX_ENTRIES_FOUND, numEntriesAcquired, numEntries), colorGray)
-					]]
-	local aTooltip = color:Colorize(ZO_CachedStrFormat(formatStringFirstUppercase,GetAntiquityName(antiquityId))) .. "\n" ..
-			timerTextureStr .. BMU_colorizeText(string_format(BMU_SI_Get(SI_TELE_UI_DAYS_LEFT), math.floor(leadtimeleft/86400)), colorGray) .. " " ..
-			leadTypeCompletedTextureStr .. numEntriesAcquired .. "/" .. numEntries --padding 25% from the left
+	local aName = color:Colorize(ZO_CachedStrFormat("<<C:1>>",GetAntiquityName(antiquityId)))
+	local aTooltip = color:Colorize(ZO_CachedStrFormat("<<C:1>>",GetAntiquityName(antiquityId))) .. "\n" ..
+					BMU_colorizeText(string.format(BMU_SI_get(SI.TELE_UI_DAYS_LEFT), math.floor(leadtimeleft/86400)) .. "\n" ..
+					zo_strformat(SI_ANTIQUITY_CODEX_ENTRIES_FOUND, numEntriesAcquired, numEntries), "gray")
 
 	--create and add new item to record
 	local leadData = {}
@@ -1784,15 +1674,14 @@ BMU_cleanUnrelatedRecords = BMU.cleanUnrelatedRecords --INS251229 Baertram
 function BMU.createClickableZoneRecord(zoneId, currentZoneId, playersZondeId, sourceIndex)
 	BMU_addInfo_1 = BMU_addInfo_1 or BMU.addInfo_1						        					--INS251229 Baertram
 	BMU_addInfo_2 = BMU_addInfo_2 or BMU.addInfo_2        											--INS251229 Baertram
-	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
 	-- create a new record
 	local record = BMU_createBlankRecord()
 	record.zoneId = zoneId
 	record.zoneName = BMU_formatName(GetZoneNameById(zoneId), BMU.savedVarsAcc.formatZoneName)
 	record = BMU_addInfo_1(record, currentZoneId, playersZondeId, sourceIndex)
 	record = BMU_addInfo_2(record)
-	record.textColorDisplayName = colorRed
-	record.textColorZoneName = colorRed
+	record.textColorDisplayName = "red"
+	record.textColorZoneName = "red"
 	return record
 end
 BMU_createClickableZoneRecord = BMU.createClickableZoneRecord --INS251229 Baertram
@@ -1800,11 +1689,10 @@ BMU_createClickableZoneRecord = BMU.createClickableZoneRecord --INS251229 Baertr
 
 -- create record for items which could not be assigned to any zone
 function BMU.createZoneLessItemsInfo()
-	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
-	local info = BMU_createBlankRecord()
-	info.zoneName = BMU_SI_Get(SI_TELE_UI_UNRELATED_ITEMS)
-	info.textColorDisplayName = colorGray
-	info.textColorZoneName = colorGray
+	local info = BMU.createBlankRecord()
+	info.zoneName = BMU_SI_get(SI.TELE_UI_UNRELATED_ITEMS)
+	info.textColorDisplayName = "gray"
+	info.textColorZoneName = "gray"
 	info.zoneNameClickable = false -- show Tamriel on click
 
 	return info
@@ -1973,10 +1861,10 @@ function BMU.createUnrelatedQuestsRecords(unRelatedQuests)
 		local questRepeatType = GetJournalQuestRepeatType(slotIndex)
 
 		if tracked then
-			questName =  BMU_colorizeText(questName, colorGold)
+			questName =  BMU_colorizeText(questName, "gold")
 		elseif questRepeatType == 1 or questRepeatType == 2 then
 		-- color repeatable quests (1,2: repeatable quest | 0: not repeatable)
-			questName = BMU_colorizeText(questName, colorTeal)
+			questName = BMU_colorizeText(questName, "teal")
 		end
 
 		if questZoneId == 0 then
@@ -2025,11 +1913,10 @@ end
 
 -- create message with all zoneless quests
 function BMU.createZoneLessQuestsInfo(zoneLessQuests)
-	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
-	local info = BMU_createBlankRecord()
-	info.zoneName = BMU_SI_Get(SI_TELE_UI_UNRELATED_QUESTS)
-	--info.textColorDisplayName = colorGray
-	info.textColorZoneName = colorGray
+	local info = BMU.createBlankRecord()
+	info.zoneName = BMU_SI_get(SI.TELE_UI_UNRELATED_QUESTS)
+	--info.textColorDisplayName = "gray"
+	info.textColorZoneName = "gray"
 	info.prio = 4
 	info.zoneNameClickable = false
 
@@ -2039,10 +1926,10 @@ function BMU.createZoneLessQuestsInfo(zoneLessQuests)
 		local questName, _, _, _, _, _, tracked = GetJournalQuestInfo(slotIndex)
 		local questRepeatType = GetJournalQuestRepeatType(slotIndex)
 		if tracked then
-			questName =  BMU_colorizeText(questName, colorGold)
+			questName =  BMU_colorizeText(questName, "gold")
 		elseif questRepeatType == 1 or questRepeatType == 2 then
 		-- color repeatable quests (1,2: repeatable quest | 0: not repeatable)
-			questName = BMU_colorizeText(questName, colorTeal)
+			questName = BMU_colorizeText(questName, "teal")
 		end
 		-- increment counter
 		info.countRelatedQuests = info.countRelatedQuests + 1
@@ -2074,10 +1961,10 @@ function BMU.questIsRelated(p_portalPlayers, slotIndex)												--CHG251229 B
 	local questRepeatType = GetJournalQuestRepeatType(slotIndex)
 
 	if tracked then
-		questName = BMU_colorizeText(questName, colorGold)
+		questName = BMU_colorizeText(questName, "gold")
 	elseif questRepeatType == 1 or questRepeatType == 2 then
 	-- color repeatable quests (1,2: repeatable quest | 0: not repeatable)
-		questName = BMU_colorizeText(questName, colorTeal)
+		questName = BMU_colorizeText(questName, "teal")
 	end
 
 	-- go over all records in portalPlayers
@@ -2105,11 +1992,10 @@ function BMU.questIsRelated(p_portalPlayers, slotIndex)												--CHG251229 B
 	return false, nil, nil
 end
 
-local grayText = colorGray  --INS251229 Baertram
+local grayText = "gray"  --INS251229 Baertram
 function BMU.createNoResultsInfo()
-	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
-	local info = BMU_createBlankRecord()
-	info.zoneName = noItemSetMatchesStr
+	local info = BMU.createBlankRecord()
+	info.zoneName = GetString(SI_ITEM_SETS_BOOK_SEARCH_NO_MATCHES)
 	info.textColorDisplayName = grayText	--CHG251229 Baertram
 	info.textColorZoneName = grayText		--CHG251229 Baertram
 	info.zoneNameClickable = false -- show Tamriel on click
@@ -2121,7 +2007,7 @@ BMU_createNoResultsInfo = BMU.createNoResultsInfo  --INS251229 Baertram
 -- removes an existing entry (already added zoneId) from table (TeleportAllPlayersTable) if it is not a player favorite or group member
 function BMU.removeExistingEntry(zoneId)
 	for index, record in pairs(TeleportAllPlayersTable) do
-		if record.zoneId == zoneId and not BMU_isFavoritePlayer(record.displayName) and record.sourceIndexLeading ~= BMU_SOURCE_INDEX_GROUP then
+		if record.zoneId == zoneId and not BMU.isFavoritePlayer(record.displayName) and record.sourceIndexLeading ~= BMU.SOURCE_INDEX_GROUP then
 			table_remove(TeleportAllPlayersTable, index)
 		end
 	end
@@ -2189,27 +2075,13 @@ BMU_addNumberPlayers = BMU.addNumberPlayers 			--INS251229 Baertram
 -- find itemId in global list and return subType and zoneId
 function BMU.getDataMapInfo(itemId)
 	BMU_has_value = BMU_has_value or BMU.has_value                                 					--INS251229 Baertram
-	--INS260209 Baertram -v-
-	--check survey or treasure map stackable containers with unknown reports/maps:
-	for surveyType, itemIdsTab in pairs(surveyTypeContainers) do
-		for _, itemIdOfSurveyContainer in ipairs(itemIdsTab) do
-			if itemId == itemIdOfSurveyContainer then return surveyType, nil, true end
-		end
-	end
-	for treasureType, itemIdsTab in pairs(treasureTypeContainers) do
-		for _, itemIdOfTreasureMapContainer in ipairs(itemIdsTab) do
-			if itemId == itemIdOfTreasureMapContainer then return subType_Treasure, nil, true end
-		end
-	end
-	--INS260209 Baertram -^-
-
 	-- go over all overland zones in global list
 	for zoneId, typeList in pairs(BMU.treasureAndSurveyMaps) do
 		--Check itemList per mapType
 		for mapType, itemList in pairs(typeList) do
 			-- check if itemList contains itemId
 			if BMU_has_value(itemList, itemId) then
-				return mapType, zoneId, false
+				return mapType, zoneId
 			end
 		end
 	end
@@ -2221,7 +2093,7 @@ BMU_getDataMapInfo = BMU.getDataMapInfo
 -- return (geographical) parent zone id (if parent zone id can not be found -> parentZoneId = zoneId)
 function BMU.getParentZoneId(zoneId)
 	-- use LibZone function that already handles exceptions and returns true geographical parent zone
-	local parentZoneId = BMU_LibZone:GetZoneGeographicalParentZoneId(zoneId)
+	local parentZoneId = BMU.LibZone:GetZoneGeographicalParentZoneId(zoneId)
 
 	-- fallback: use API to get parent zone
 	if not parentZoneId or parentZoneId == 0 then
@@ -2245,22 +2117,11 @@ function BMU.createTableHouses()
 
 	BMU_changeState(BMU_indexListOwnHouses)
 	local resultList = {}
-	local ownedHouses = {}
-	local houseId = nil
-	if BMU.IsNotKeyboard() then
-    ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
-  else
-    ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
-  end
-	for _, house in pairs(ownedHouses) do
+
+	for _, house in pairs(COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()) do
 		local entry = BMU.createBlankRecord()
-		if BMU.IsNotKeyboard() then
-		  houseId = house:GetReferenceId()
-    else
-      houseId = house.houseId
-		end
-		entry.houseId = houseId
-		if IsPrimaryHouse(houseId) then
+		entry.houseId = house.houseId
+		if IsPrimaryHouse(house.houseId) then
 			entry.prio = 1
 			entry.textColorZoneName = "gold"
 		else
@@ -2268,28 +2129,28 @@ function BMU.createTableHouses()
 			houseEntry.textColorZoneName = colorWhite
 		end
 		entry.isOwnHouse = true
-		entry.zoneId = GetHouseZoneId(houseId)
+		entry.zoneId = GetHouseZoneId(house.houseId)
 		entry.zoneNameUnformatted = GetZoneNameById(entry.zoneId)
 		entry.textColorDisplayName = "gray"
 		entry.zoneNameClickable = true
-		entry.mapIndex = BMU.getMapIndex(entry.zoneId)
-		entry.parentZoneId = BMU.getParentZoneId(entry.zoneId)
-		entry.parentZoneName = BMU.formatName(GetZoneNameById(entry.parentZoneId))
-		entry.category = BMU.categorizeZone(entry.zoneId)
+		entry.mapIndex = BMU_getMapIndex(entry.zoneId)
+		entry.parentZoneId = BMU_getParentZoneId(entry.zoneId)
+		entry.parentZoneName = BMU_formatName(GetZoneNameById(entry.parentZoneId))
+		entry.category = BMU_categorizeZone(entry.zoneId)
 		entry.collectibleId = GetCollectibleIdForHouse(entry.houseId)
 		entry.houseCategoryType = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(entry.houseId))
-		entry.nickName = BMU.formatName(GetCollectibleNickname(entry.collectibleId))
-		entry.zoneName = BMU.formatName(entry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
-		
+		entry.nickName = BMU_formatName(GetCollectibleNickname(entry.collectibleId))
+		entry.zoneName = BMU_formatName(entry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
+
 		_, _, entry.houseIcon = GetCollectibleInfo(entry.collectibleId)
 		entry.houseBackgroundImage = GetHousePreviewBackgroundImage(entry.houseId)
 		entry.houseTooltip = {entry.zoneName, "\"" .. entry.nickName .. "\"", entry.parentZoneName, "", "", "|t75:75:" .. entry.houseIcon .. "|t", "", "", entry.houseCategoryType}
-		
+
 		-- add house furniture count to tooltip
 		local currentFurnitureCount_LII = savedVarsServ.houseFurnitureCount_LII[houseEntry.houseId]
 		if currentFurnitureCount_LII ~= nil then
-			local tooltipFurnitureCount = housingFurnishingLimit0Str .. ": " .. currentFurnitureCount_LII .. "/" .. GetHouseFurnishingPlacementLimit(houseEntry.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
-			table_insert(houseEntry.houseTooltip, tooltipFurnitureCount)
+			local tooltipFurnitureCount = GetString(SI_HOUSINGFURNISHINGLIMITTYPE0) .. ": " .. currentFurnitureCount_LII .. "/" .. GetHouseFurnishingPlacementLimit(entry.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
+			table_insert(entry.houseTooltip, tooltipFurnitureCount)
 		end
 
 		if BMU.savedVarsChar.houseNickNames then
@@ -2299,11 +2160,10 @@ function BMU.createTableHouses()
 			--houseEntry.zoneName = string_format(houseWithNicknameStrPattern, houseEntry.nickName, houseEntry.zoneName)  --For future feature INS BAERTRAM20260124
 		end
 
-		table_insert(resultList, houseEntry)
+		table_insert(resultList, entry)
 	end
 
 	-- sort
-	local houseCustomSorting = savedVarsServ.houseCustomSorting 							--INS251229 Baertram
 	table_sort(resultList, function(a, b)
 		-- prio
 		if a.prio ~= b.prio then
@@ -2333,9 +2193,8 @@ function BMU.createTablePTF()
 	if not PortToFriend or not PortToFriend.GetFavorites then
 		return
 	end
-	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex											--INS251229 Baertram
-	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId								--INS251229 Baertram
-	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
+	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
+	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
 
 	-- change global state, to have the correct tab active
 	BMU_changeState(BMU_indexListPTFHouses)
@@ -2348,8 +2207,8 @@ function BMU.createTablePTF()
 		for i = 1, #favorites do
 			local favorite = favorites[i]
 
-			local PTFentry   = BMU_createBlankRecord()
-			PTFentry.houseId = favorite.houseId
+			local entry = BMU.createBlankRecord()
+			entry.houseId = favorite.houseId
 			local IdAsText = ""
 			if favorite.id then
 				PTFentry.prio  = 1
@@ -2358,29 +2217,29 @@ function BMU.createTablePTF()
 			else
 				PTFentry.prio = 2
 			end
-			PTFentry.isPTFHouse           = true
-			PTFentry.displayName          = IdAsText .. favorite.name
-			PTFentry.houseId              = favorite.houseId
-			PTFentry.zoneId               = GetHouseZoneId(favorite.houseId)
-			PTFentry.zoneNameUnformatted  = GetZoneNameById(PTFentry.zoneId)
-			PTFentry.zoneNameClickable    = true
-			PTFentry.mapIndex             = BMU_getMapIndex(PTFentry.zoneId)
-			PTFentry.parentZoneId         = BMU_getParentZoneId(PTFentry.zoneId)
-			PTFentry.parentZoneName       = BMU_formatName(GetZoneNameById(PTFentry.parentZoneId))
-			PTFentry.category             = BMU_categorizeZone(PTFentry.zoneId)
-			PTFentry.collectibleId        = GetCollectibleIdForHouse(PTFentry.houseId)
-			PTFentry.houseCategoryType    = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(PTFentry.houseId))
-			PTFentry.zoneName             = BMU_formatName(PTFentry.zoneNameUnformatted)
+			entry.isPTFHouse = true
+			entry.displayName = IdAsText .. favorite.name
+			entry.houseId = favorite.houseId
+			entry.zoneId = GetHouseZoneId(favorite.houseId)
+			entry.zoneNameUnformatted = GetZoneNameById(entry.zoneId)
+			entry.zoneNameClickable = true
+			entry.mapIndex = BMU_getMapIndex(entry.zoneId)
+			entry.parentZoneId = BMU_getParentZoneId(entry.zoneId)
+			entry.parentZoneName = BMU_formatName(GetZoneNameById(entry.parentZoneId))
+			entry.category = BMU_categorizeZone(entry.zoneId)
+			entry.collectibleId = GetCollectibleIdForHouse(entry.houseId)
+			entry.houseCategoryType = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(entry.houseId))
+			entry.zoneName = BMU_formatName(entry.zoneNameUnformatted)
 
-			_, _, PTFentry.houseIcon      = GetCollectibleInfo(PTFentry.collectibleId)
-			PTFentry.houseBackgroundImage = GetHousePreviewBackgroundImage(PTFentry.houseId)
-			PTFentry.houseTooltip         = { PTFentry.zoneName, PTFentry.parentZoneName, "", "", "|t75:75:" .. PTFentry.houseIcon .. "|t", "", "", PTFentry.houseCategoryType}
+			_, _, entry.houseIcon = GetCollectibleInfo(entry.collectibleId)
+			entry.houseBackgroundImage = GetHousePreviewBackgroundImage(entry.houseId)
+			entry.houseTooltip = {entry.zoneName, entry.parentZoneName, "", "", "|t75:75:" .. entry.houseIcon .. "|t", "", "", entry.houseCategoryType}
 
 			-- current / displayed zone depending on map status
 			local currentZoneId = BMU_getCurrentZoneId()
-			if currentZoneId == PTFentry.parentZoneId then
-				PTFentry.textColorDisplayName = colorBlue
-				PTFentry.textColorZoneName    = colorBlue
+			if currentZoneId == entry.parentZoneId then
+				entry.textColorDisplayName = "blue"
+				entry.textColorZoneName = "blue"
 			else
 				PTFentry.textColorDisplayName = colorWhite
 				PTFentry.textColorZoneName    = colorWhite
@@ -2391,7 +2250,7 @@ function BMU.createTablePTF()
 				PTFentry.zoneName = PTFentry.parentZoneName
 			end
 
-			table_insert(resultList, PTFentry)
+			table_insert(resultList, entry)
 		end
 
 		-- sort
@@ -2424,7 +2283,7 @@ end
 
 -- adds matching overland zones to the result list
 -- return sorted result list ready for display
-function BMU.addOverlandZoneMatches(p_portalPlayers, inputString, currentZoneId) 					--CHG251229 Baertram Renamed param portalPlayers: Shadows the in line 6 defined table portalPlayers with same name!
+function BMU.addOverlandZoneMatches(portalPlayers, inputString, currentZoneId)
 	BMU_createClickableZoneRecord = BMU_createClickableZoneRecord or BMU.createClickableZoneRecord  --INS251229 Baertram
 	-- go over complete overland list
 	for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
@@ -2435,7 +2294,7 @@ function BMU.addOverlandZoneMatches(p_portalPlayers, inputString, currentZoneId)
 			if entry.zoneId == currentZoneId then
 				entry.textColorZoneName = colorTeal
 			end
-			table_insert(p_portalPlayers, entry)
+			table_insert(portalPlayers, entry)
 		end
 	end
 
@@ -2446,8 +2305,8 @@ end
 -- sorting for search by displayName or zoneName
 -- sorts the entries according to the position of the string match
 -- keys are the used key field (e.g. "displayName" or "zoneName")
-function BMU.sortByStringFindPosition(p_portalPlayers, inputString, key1, key2)						--CHG251229 Baertram Renamed param portalPlayers: Shadows the in line 6 defined table portalPlayers with same name!
-	table_sort(p_portalPlayers, function(a, b)
+function BMU.sortByStringFindPosition(portalPlayers, inputString, key1, key2)
+	table_sort(portalPlayers, function(a, b)
 		--[[
 		-- first, real port options (where players or own houses are)
 		if (a.displayName ~= "" or a.isOwnHouse) and (b.displayName == "" and not b.isOwnHouse) then
@@ -2457,11 +2316,10 @@ function BMU.sortByStringFindPosition(p_portalPlayers, inputString, key1, key2)	
 		end
 		--]]
 
-		local inputStrLower = string_lower(inputString) 										--INS251229 Baertram
 		-- second, by search match position of key1
 		if key1 then
-			local pos1 = string_find(string_lower(tos(a[key1])), inputStrLower, nil, true)
-			local pos2 = string_find(string_lower(tos(b[key1])), inputStrLower, nil, true)
+			local pos1 = string.find(string_lower(tostring(a[key1])), string_lower(inputString))
+			local pos2 = string.find(string_lower(tostring(b[key1])), string_lower(inputString))
 			if pos1 and not pos2 then
 				return true
 			elseif pos2 and not pos1 then
@@ -2473,8 +2331,8 @@ function BMU.sortByStringFindPosition(p_portalPlayers, inputString, key1, key2)	
 
 		-- third, by search match position of key2
 		if key2 then
-			local pos1 = string_find(string_lower(tos(a[key2])), inputStrLower, nil, true)
-			local pos2 = string_find(string_lower(tos(b[key2])), inputStrLower, nil, true)
+			local pos1 = string.find(string_lower(tostring(a[key2])), string_lower(inputString))
+			local pos2 = string.find(string_lower(tostring(b[key2])), string_lower(inputString))
 			if pos1 and not pos2 then
 				return true
 			elseif pos2 and not pos1 then
@@ -2486,7 +2344,7 @@ function BMU.sortByStringFindPosition(p_portalPlayers, inputString, key1, key2)	
 		return false -- Default: no swap if all conditions are equal
 	end)
 
-	return p_portalPlayers
+	return portalPlayers
 end
 BMU_sortByStringFindPosition = BMU.sortByStringFindPosition --INS251229 Baertram
 
@@ -2504,10 +2362,10 @@ function BMU.createTableGuilds(repeatFlag)
 	local resultList = {}
 
 	-- headline for the official guilds
-	local officialGuildsEntry             = BMU_createBlankRecord()
-	officialGuildsEntry.zoneName          = "-- OFFICIAL GUILDS --"
-	officialGuildsEntry.textColorZoneName = colorGray
-	table_insert(resultList, officialGuildsEntry)
+	local entry = BMU.createBlankRecord()
+	entry.zoneName = "-- OFFICIAL GUILDS --"
+	entry.textColorZoneName = "gray"
+	table_insert(resultList, entry)
 
 	-- official guilds
 	local success = true
@@ -2534,13 +2392,12 @@ function BMU.createTableGuilds(repeatFlag)
 				officialGuildEntry.hideButton = false
 				-- hide button and change text color if guild almost full
 				if guildData.size >= 495 then
-					officialGuildEntry.hideButton = true
-					guildSizeText                 = BMU_colorizeText(guildSizeText, colorRed)
+					entry.hideButton = true
+					guildSizeText = BMU_colorizeText(guildSizeText, "red")
 				end
-				local guildDataLanguage = guildData.language 										--INS251229 Baertram
-				officialGuildEntry.guildTooltip = { guildData.headerMessage, textureTooltipSeparator, prefixMembers .. guildSizeText, prefixLanguage .. GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildDataLanguage), guildTraderText}
-				officialGuildEntry.zoneName     = GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildDataLanguage) .. " || " .. guildSizeText
-				table_insert(resultList, officialGuildEntry)
+				entry.guildTooltip = {guildData.headerMessage, BMU.textures.tooltipSeperator, prefixMembers .. guildSizeText, prefixLanguage .. GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildData.language), guildTraderText}
+				entry.zoneName = GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildData.language) .. " || " .. guildSizeText
+				table_insert(resultList, entry)
 			end
 		else
 			success = false
@@ -2549,10 +2406,10 @@ function BMU.createTableGuilds(repeatFlag)
 
 
 	-- headline for the partner guilds
-	local partnerGuildsEntry             = BMU_createBlankRecord()
-	partnerGuildsEntry.zoneName          = "-- PARTNER GUILDS --"
-	partnerGuildsEntry.textColorZoneName = colorGray
-	table_insert(resultList, partnerGuildsEntry)
+	local entry = BMU.createBlankRecord()
+	entry.zoneName = "-- PARTNER GUILDS --"
+	entry.textColorZoneName = "gray"
+	table_insert(resultList, entry)
 
 	-- partner guilds
 	local tempList = {}
@@ -2579,13 +2436,12 @@ function BMU.createTableGuilds(repeatFlag)
 				partnerGuildEntry.prio = 1
 				-- change text color if guild almost full and reduce prio
 				if guildData.size >= 495 then
-					partnerGuildEntry.prio = 2
-					guildSizeText          = BMU_colorizeText(guildSizeText, colorRed)
+					entry.prio = 2
+					guildSizeText = BMU_colorizeText(guildSizeText, "red")
 				end
-				local guildDataLanguage = guildData.language 										--INS251229 Baertram
-				partnerGuildEntry.guildTooltip = { guildData.headerMessage, textureTooltipSeparator, prefixMembers .. guildSizeText, prefixLanguage .. GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildDataLanguage), guildTraderText}
-				partnerGuildEntry.zoneName     = GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildDataLanguage) .. " || " .. guildSizeText
-				table_insert(tempList, partnerGuildEntry)
+				entry.guildTooltip = {guildData.headerMessage, BMU.textures.tooltipSeperator, prefixMembers .. guildSizeText, prefixLanguage .. GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildData.language), guildTraderText}
+				entry.zoneName = GetString("SI_GUILDLANGUAGEATTRIBUTEVALUE", guildData.language) .. " || " .. guildSizeText
+				table_insert(tempList, entry)
 			end
 		else
 			success = false
@@ -2657,7 +2513,7 @@ function BMU.createTableDungeons(args)
 			end
 		end
 
-		if BMU_savedVarsCharDungeonFinder.sortByAcronym then
+		if BMU.savedVarsChar.dungeonFinder.sortByAcronym then
 			-- sort by acronym
 			table_sort(resultListEndlessDungeons, function(a, b)
 				return a.acronym < b.acronym
@@ -2674,15 +2530,15 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListEndlessDungeons > 0 then
-			local entry = BMU_createBlankRecord()
-			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_ENDLESS_DUNGEONS)) .. " --"
-			entry.textColorZoneName = colorGray
+			local entry = BMU.createBlankRecord()
+			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_ENDLESS_DUNGEONS)) .. " --"
+			entry.textColorZoneName = "gray"
 			table_insert(resultListEndlessDungeons, 1, entry)
 		end
 	end
 
 
-	if BMU_savedVarsCharDungeonFinder.showArenas then
+	if BMU.savedVarsChar.dungeonFinder.showArenas then
 		for _, zoneId in ipairs(BMU.blacklistSoloArenas) do
 			local entry = BMU_createDungeonRecord(zoneId)
 			if entry then
@@ -2694,7 +2550,7 @@ function BMU.createTableDungeons(args)
 			end
 		end
 
-		if BMU_savedVarsCharDungeonFinder.sortByAcronym then
+		if BMU.savedVarsChar.dungeonFinder.sortByAcronym then
 			-- sort by acronym
 			table_sort(resultListArenas, function(a, b)
 				return a.acronym < b.acronym
@@ -2711,15 +2567,15 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListArenas > 0 then
-			local entry = BMU_createBlankRecord()
-			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_ARENAS)) .. " --"
-			entry.textColorZoneName = colorGray
+			local entry = BMU.createBlankRecord()
+			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_ARENAS)) .. " --"
+			entry.textColorZoneName = "gray"
 			table_insert(resultListArenas, 1, entry)
 		end
 	end
 
 
-	if BMU_savedVarsCharDungeonFinder.showGroupArenas then
+	if BMU.savedVarsChar.dungeonFinder.showGroupArenas then
 		for _, zoneId in ipairs(BMU.blacklistGroupArenas) do
 			local entry = BMU_createDungeonRecord(zoneId)
 			if entry then
@@ -2731,7 +2587,7 @@ function BMU.createTableDungeons(args)
 			end
 		end
 
-		if BMU_savedVarsCharDungeonFinder.sortByAcronym then
+		if BMU.savedVarsChar.dungeonFinder.sortByAcronym then
 			-- sort by acronym
 			table_sort(resultListGroupArenas, function(a, b)
 				return a.acronym < b.acronym
@@ -2748,15 +2604,15 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListGroupArenas > 0 then
-			local entry = BMU_createBlankRecord()
-			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_ARENAS)) .. " --"
-			entry.textColorZoneName = colorGray
+			local entry = BMU.createBlankRecord()
+			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_GROUP_ARENAS)) .. " --"
+			entry.textColorZoneName = "gray"
 			table_insert(resultListGroupArenas, 1, entry)
 		end
 	end
 
 
-	if BMU_savedVarsCharDungeonFinder.showTrials then
+	if BMU.savedVarsChar.dungeonFinder.showTrials then
 		for _, zoneId in ipairs(BMU.blacklistRaids) do
 			local entry = BMU_createDungeonRecord(zoneId)
 			if entry then
@@ -2768,7 +2624,7 @@ function BMU.createTableDungeons(args)
 			end
 		end
 
-		if BMU_savedVarsCharDungeonFinder.sortByAcronym then
+		if BMU.savedVarsChar.dungeonFinder.sortByAcronym then
 			-- sort by acronym
 			table_sort(resultListTrials, function(a, b)
 				return a.acronym < b.acronym
@@ -2785,9 +2641,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListTrials > 0 then
-			local entry = BMU_createBlankRecord()
-			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_TRIALS)) .. " --"
-			entry.textColorZoneName = colorGray
+			local entry = BMU.createBlankRecord()
+			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_TRIALS)) .. " --"
+			entry.textColorZoneName = "gray"
 			table_insert(resultListTrials, 1, entry)
 		end
 	end
@@ -2805,7 +2661,7 @@ function BMU.createTableDungeons(args)
 			end
 		end
 
-		if BMU_savedVarsCharDungeonFinder.sortByAcronym then
+		if BMU.savedVarsChar.dungeonFinder.sortByAcronym then
 			-- sort by acronym
 			table_sort(resultListGroupDungeons, function(a, b)
 				return a.acronym < b.acronym
@@ -2822,31 +2678,30 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListGroupDungeons > 0 then
-			local entry = BMU_createBlankRecord()
-			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_DUNGEONS)) .. " --"
-			entry.textColorZoneName = colorGray
+			local entry = BMU.createBlankRecord()
+			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_GROUP_DUNGEONS)) .. " --"
+			entry.textColorZoneName = "gray"
 			table_insert(resultListGroupDungeons, 1, entry)
 		end
 	end
 
-	-- merge all lists together into 1 resultsList
+	-- merge all lists together
 	local resultList = {}
 	if inputString and inputString ~= "" then
-		local inputStringLower = inputString:lower() 												--INS251229 Baertram
-		resultList = mergeToResultList(resultListEndlessDungeons, 	resultList, inputStringLower)
-		resultList = mergeToResultList(resultListArenas, 			resultList, inputStringLower)
-		resultList = mergeToResultList(resultListGroupArenas, 		resultList, inputStringLower)
-		resultList = mergeToResultList(resultListTrials, 			resultList, inputStringLower)
-		resultList = mergeToResultList(resultListGroupDungeons, 	resultList, inputStringLower)
+		for _, v in pairs(resultListEndlessDungeons) do if string.find(v.zoneName:lower(), inputString:lower()) then table_insert(resultList, v) end end
+		for _, v in pairs(resultListArenas) do if string.find(v.zoneName:lower(), inputString:lower()) then table_insert(resultList, v) end end
+		for _, v in pairs(resultListGroupArenas) do if string.find(v.zoneName:lower(), inputString:lower()) then table_insert(resultList, v) end end
+		for _, v in pairs(resultListTrials) do if string.find(v.zoneName:lower(), inputString:lower()) then table_insert(resultList, v) end end
+		for _, v in pairs(resultListGroupDungeons) do if string.find(v.zoneName:lower(), inputString:lower()) then table_insert(resultList, v) end end
 	else
-		resultList = mergeToResultList(resultListEndlessDungeons, 	resultList)
-		resultList = mergeToResultList(resultListArenas, 			resultList)
-		resultList = mergeToResultList(resultListGroupArenas, 		resultList)
-		resultList = mergeToResultList(resultListTrials, 			resultList)
-		resultList = mergeToResultList(resultListGroupDungeons, 	resultList)
+		for _, v in pairs(resultListEndlessDungeons) do table_insert(resultList, v) end
+		for _, v in pairs(resultListArenas) do table_insert(resultList, v) end
+		for _, v in pairs(resultListGroupArenas) do table_insert(resultList, v) end
+		for _, v in pairs(resultListTrials) do table_insert(resultList, v) end
+		for _, v in pairs(resultListGroupDungeons) do table_insert(resultList, v) end
 	end
 	-- add no results info if player disabled all categories
-	if ZO_IsTableEmpty(resultList) then
+	if #resultList == 0 then
 		table_insert(resultList, BMU_createNoResultsInfo())
 	end
 
@@ -2998,6 +2853,59 @@ function BMU.setMapToQuest(questIndex)
 
 	return result
 end
+
+
+-- get completion info for specific zone and completionType
+function BMU.getZoneGuideDiscoveryInfo(zoneId, completionType)
+	local numCompletedActivities = 0
+	local totalActivities = 0
+	local _
+
+	-- check for any zone mapping exceptions
+	local mainZoneId = BMU.getMainZoneId(zoneId)
+	if mainZoneId then
+		zoneId = mainZoneId
+	end
+
+	-- additional wayshrine exception for Eyevea (Augvea) since this map has no zone completion info
+	if zoneId == 267 and completionType == ZONE_COMPLETION_TYPE_WAYSHRINES then
+		totalActivities = 1
+		-- check the only one wayshrine on this map
+		local known, _, _, _, _, _, _, _, _ = GetFastTravelNodeInfo(215)
+		if known then
+			numCompletedActivities = 1
+		else
+			numCompletedActivities = 0
+		end
+	else
+		numCompletedActivities, totalActivities, _, _ = ZO_ZoneStories_Manager.GetActivityCompletionProgressValues(zoneId, completionType)
+	end
+
+	if totalActivities == 0 then
+		return nil
+	end
+
+	local infoString = numCompletedActivities .. "/" .. totalActivities
+	if numCompletedActivities == totalActivities then
+		infoString = BMU_colorizeText(infoString, "green")
+	end
+
+	if completionType == ZONE_COMPLETION_TYPE_WAYSHRINES then
+		infoString = GetString(SI_ZONECOMPLETIONTYPE4) .. ": " .. infoString
+
+	elseif completionType == ZONE_COMPLETION_TYPE_SKYSHARDS then
+		infoString = GetString(SI_ZONECOMPLETIONTYPE7) .. ": " .. infoString
+
+	elseif completionType == ZONE_COMPLETION_TYPE_PUBLIC_DUNGEONS then
+		infoString = GetString(SI_ZONECOMPLETIONTYPE13) .. ": " .. infoString
+
+	elseif completionType == ZONE_COMPLETION_TYPE_DELVES then
+		infoString = GetString(SI_ZONECOMPLETIONTYPE5) .. ": " .. infoString
+	end
+
+	return infoString, numCompletedActivities, totalActivities
+end
+
 
 -- exception handling
 -- check if the zone belongs to another (main) zone which holds the map completion information

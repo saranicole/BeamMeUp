@@ -1,16 +1,5 @@
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
-local SI = BMU.SI
-local teleporterVars = BMU.var
-local appName = teleporterVars.appName
-local SVTabName = teleporterVars.savedVariablesName
-
--- -v- INS251229 Baertram BEGIN 0
---Performance reference
-----variables (defined now, as they were loaded before this file -> see manifest .txt)
---ZOs variables
-local CM = CALLBACK_MANAGER
-local EM = EVENT_MANAGER
 local wm = WINDOW_MANAGER
 local SM = SCENE_MANAGER
 local worldMapManager = WORLD_MAP_MANAGER

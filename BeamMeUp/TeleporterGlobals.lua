@@ -1,55 +1,7 @@
+BMU = {}
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
--- -v- INS251229 Baertram BEGIN 0
---Performance reference
-----variables (defined now, as they were loaded before this file -> see manifest .txt)
---ZOs variables
-local ton = tonumber
-local tos = tostring
-local string = string
-local string_format = string.format
 local string_lower = string.lower
-
---String variables
-local textureStrPattern = "|t32:32:%s|t"
-local itemTypeIconPattern = "|t<%f>:<%f>:%s|t"
-local BMU_MediaPath = "/BeamMeUp/media/"
-
---BMU reference variables
-local BMU_GUILD_DATA = BMU_GUILD_DATA
-local numVars = BMU.numVars
-local SI = BMU.SI
-local BMU_SI_Get = SI.get
--- -^- INS251229 Baertram BEGIN 0
-
-
--- constant values for the source
-local BMU_SOURCE_INDEX_ALL = 0
-BMU.SOURCE_INDEX_ALL = BMU_SOURCE_INDEX_ALL
-BMU.SOURCE_INDEX_GROUP = 1
-BMU.SOURCE_INDEX_FRIEND = 2
-BMU.SOURCE_INDEX_GUILD = {
-	[1] = 3,
-	[2] = 4,
-	[3] = 5,
-	[4] = 6,
-	[5] = 7,
-}
-BMU.SOURCE_INDEX_OWNHOUSES = 8 --INS Baertram 260206
-
--- constant values for zone categorization
-BMU.ZONE_CATEGORY_UNKNOWN = 0
-BMU.ZONE_CATEGORY_DELVE = 1
-BMU.ZONE_CATEGORY_PUBDUNGEON = 2
-BMU.ZONE_CATEGORY_HOUSE = 3
-BMU.ZONE_CATEGORY_GRPDUNGEON = 4
-BMU.ZONE_CATEGORY_TRAIL = 5
-BMU.ZONE_CATEGORY_ENDLESSD = 6
-BMU.ZONE_CATEGORY_GRPZONES = 7
-BMU.ZONE_CATEGORY_GRPARENA = 8
-BMU.ZONE_CATEGORY_SOLOARENA = 9
-BMU.ZONE_CATEGORY_OVERLAND = 100
-
 
 BMU.win =   {
       Main_Control = {},
@@ -59,7 +11,7 @@ BMU.var = {
   appName               = "BeamMeUp",
   appNameAbbr			= "BMU",
   version				= "", -- Will be set by help of function GetAddonVersionFromManifest(), see file BeamMeUp.lua event_add_on_loaded
-  author				= "DeadSoon, Gamer1986PAN, Baertram",
+  author				= "DeadSoon, Gamer1986PAN",
   feedbackContact		= "@Deadsoon", --INS251229 Baertram Used account for email feedback
   website				= "https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html",
   feedback				= "https://www.esoui.com/portal.php?id=283&a=faq", -- FAQ link
@@ -118,8 +70,7 @@ BMU.var = {
   numFavoritePlayers = 5,
   numFavoriteWayshrines = 3,
 
--- -v- INS251229 Baertram BEGIN 1
-  --Special zone names to check for, see file TeleporterChecker.lua function BMU.tryMatchZoneToMatchStr(matchStr, zoneId)
+  --INS251229 Baertram Special zone names to check for, see file TeleporterChecker.lua function BMU.tryMatchZoneToMatchStr(matchStr, zoneId)
   -->(lowercased already so they aren't reformatetd on each search -> Performance gain)
 	specialZoneNameMatches = {
 		[string_lower("Alik'r")] = "", 			--leave "" if key = value
@@ -129,7 +80,6 @@ BMU.var = {
 		[string_lower("Graumoorkaverne")] = "",	--leave "" if key = value
 		[string_lower("Griselande")] = "",		--leave "" if key = value
 	},
-  	choosenListPlayerFilter = BMU_SOURCE_INDEX_ALL, --current list player filter, 0 = Show all
 }
 
 -- necessary libraries
