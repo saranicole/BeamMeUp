@@ -196,6 +196,7 @@ local BMU_SI_get                            = SI.get
 local BMU_colorizeText                      = BMU.colorizeText
 local BMU_round                             = BMU.round
 local BMU_tooltipTextEnter                  = BMU.tooltipTextEnter
+local BMU_mergeTables						= BMU.mergeTables
 
 local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
 
@@ -3386,7 +3387,7 @@ local BMU_requestGuildDataRecursive
 function BMU.requestGuildDataRecursive(guildIds)
 	BMU_requestGuildDataRecursive = BMU_requestGuildDataRecursive or BMU.requestGuildDataRecursive
 	if #guildIds > 0 then
-		guildBrowserManager:RequestGuildData(table_remove(guildIds))
+		GUILD_BROWSER_MANAGER:RequestGuildData(table_remove(guildIds))
 		zo_callLater(function() BMU_requestGuildDataRecursive(guildIds) end, 800)
 	else
 		BMU.isCurrentlyRequestingGuildData = false
@@ -3403,8 +3404,8 @@ function BMU.requestGuildData()
 		guildsQueue = BMU.var.BMUGuilds[worldName]
 	end
 	-- partner guilds
-	if BMU.var.partnerGuilds[worldName] ~= nil then
-		guildsQueue = BMU.mergeTables(guildsQueue, BMU.var.partnerGuilds[worldName])
+	if teleporterVars.partnerGuilds[worldName] ~= nil then
+		guildsQueue = BMU_mergeTables(guildsQueue, teleporterVars.partnerGuilds[worldName])
 	end
 
 	BMU_requestGuildDataRecursive(guildsQueue)

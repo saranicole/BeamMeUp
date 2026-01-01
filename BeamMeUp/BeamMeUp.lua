@@ -25,7 +25,6 @@ end
 --Other addon variables
 local BMU_LibZone = BMU.LibZone
 --BMU variables
-local BMU_ZONE_CATEGORY_UNKNOWN = BMU.ZONE_CATEGORY_UNKNOWN
 local BMU_ZONE_CATEGORY_DELVE = BMU.ZONE_CATEGORY_DELVE
 local BMU_ZONE_CATEGORY_PUBDUNGEON = BMU.ZONE_CATEGORY_PUBDUNGEON
 local BMU_ZONE_CATEGORY_HOUSE = BMU.ZONE_CATEGORY_HOUSE
@@ -53,13 +52,17 @@ local BMU_portToGroupLeader 				= BMU.portToGroupLeader
 local BMU_portToOwnHouse 					= BMU.portToOwnHouse
 local BMU_showDialogAutoUnlock				= BMU.showDialogAutoUnlock
 local BMU_PortalToPlayer 					= BMU.PortalToPlayer
+local BMU_refreshListAuto 					= BMU.refreshListAuto
+
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
 --BMU UI variables
-
+local BMU_win, BMU_win_Main_Control
 -------functions (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_HideTeleporter, BMU_toggleZoneGuide, BMU_getZoneSpecificHouse, BMU_getAllPublicDungeons, BMU_getAllDelves,
-      BMU_joinBlacklist, BMU_formatName
+      BMU_joinBlacklist, BMU_formatName, BMU_startCountdownAutoRefresh, BMU_showNotification, BMU_initializeBlacklist,
+      BMU_OpenTeleporter, BMU_clearInputFields, BMU_createTable, BMU_createTableHouses, BMU_createTableDungeons,
+	  BMU_requestGuildData, BMU_createTableGuilds
 -- -^- INS251229 Baertram END 0
 
 --Old code from TeleUnicorn -> Moved directly to Teleporter to strip the library
@@ -94,8 +97,14 @@ end
 
 ----------------------------------- KeyBinds
 function BMU.PortalHandlerKeyPress(keyPressIndex, favorite)
+	BMU_win = BMU_win or BMU.win
+	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
+	BMU_OpenTeleporter = BMU_OpenTeleporter or BMU.OpenTeleporter 									--INS251229 Baertram
 	BMU_HideTeleporter = BMU_HideTeleporter or BMU.HideTeleporter									--INS251229 Baertram
 	BMU_formatName = BMU_formatName or BMU.formatName												--INS251229 Baertram
+	BMU_createTable = BMU_createTable or BMU.createTable											--INS251229 Baertram
+	BMU_createTableHouses = BMU_createTableHouses or BMU.createTableHouses							--INS251229 Baertram
+	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
 
 	-- Port to Group Leader
 	if keyPressIndex == 12 then
@@ -251,7 +260,7 @@ function BMU.onMapShow()
 	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
 
 	-- no support for gamepad mode + stay hidden when using the "HarvestFarmTour Editor"
-	if BMU.win.Main_Control:IsHidden() and not IsInGamepadPreferredMode() and not SCENE_MANAGER:IsShowing("HarvestFarmScene") then
+	if BMU_win_Main_Control:IsHidden() and not IsInGamepadPreferredMode() and not SCENE_MANAGER:IsShowing("HarvestFarmScene") then
 		if BMU.savedVarsAcc.ShowOnMapOpen then
 			-- just open Teleporter
 			BMU_OpenTeleporter(true)
@@ -271,8 +280,11 @@ local BMU_onMapShow = BMU.onMapShow
 function BMU.onMapHide()
 	BMU_HideTeleporter = BMU_HideTeleporter or BMU.HideTeleporter									--INS251229 Baertram
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
+	BMU_win = BMU_win or BMU.win
+	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
+
 	-- hide button
-	local mapOpenButton = BMU.win.MapOpen
+	local mapOpenButton = BMU_win.MapOpen
 	if mapOpenButton then
 		mapOpenButton:SetHidden(true)
 	end
@@ -310,8 +322,17 @@ local BMU_onWorldMapChanged = BMU.onWorldMapChanged
 
 function BMU.OpenTeleporter(refresh)
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
+	BMU_showNotification = BMU_showNotification or BMU.showNotification								--INS251229 Baertram
+	BMU_initializeBlacklist = BMU_initializeBlacklist or BMU.initializeBlacklist					--INS251229 Baertram
+	BMU_win = BMU_win or BMU.win																	--INS251229 Baertram
+	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control								--INS251229 Baertram
+	BMU_clearInputFields = BMU_clearInputFields or BMU.clearInputFields								--INS251229 Baertram
+	BMU_createTable = BMU_createTable or BMU.createTable											--INS251229 Baertram
+	BMU_createTableHouses = BMU_createTableHouses or BMU.createTableHouses							--INS251229 Baertram
+	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
+
 	-- show notification (in case)
-	BMU.showNotification()
+	BMU_showNotification()
 	
 	if not worldMapZoneStoryTLC_Keyboard:IsHidden() then
 		--hide ZoneGuide
@@ -326,8 +347,6 @@ function BMU.OpenTeleporter(refresh)
 	-- positioning window
 	BMU_updatePosition()
 
-	BMU_resetMainListFilterToAll()
-
 	if BMU_win.MapOpen then
 		 -- hide open button
 		BMU_win.MapOpen:SetHidden(true)
@@ -337,14 +356,13 @@ function BMU.OpenTeleporter(refresh)
 	if BMU.savedVarsAcc.autoRefresh and refresh then
 		-- reset input and load default tab
 		BMU_clearInputFields()
-
-		local defaultSVCharTab = BMU.savedVarsChar.defaultTab
-		if defaultSVCharTab == BMU.indexListOwnHouses then
+		
+		if BMU.savedVarsChar.defaultTab == BMU.indexListOwnHouses then
 			BMU_createTableHouses()
-		elseif defaultSVCharTab == BMU.indexListDungeons then
+		elseif BMU.savedVarsChar.defaultTab == BMU.indexListDungeons then
 			BMU_createTableDungeons()
 		else
-			BMU_createTable({index=defaultSVCharTab})
+			BMU_createTable({index=BMU.savedVarsChar.defaultTab})
 		end
 	end
 	
@@ -363,7 +381,10 @@ BMU_OpenTeleporter = BMU.OpenTeleporter
 
 function BMU.HideTeleporter()
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
-    BMU.win.Main_Control:SetHidden(true) -- hide main window
+	BMU_win = BMU_win or BMU.win
+	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
+
+    BMU_win_Main_Control:SetHidden(true) -- hide main window
 	ClearMenu() -- close all submenus
 	ZO_Tooltips_HideTextTooltip() -- close all tooltips
 	
@@ -396,6 +417,9 @@ local BMU_cameraModeChanged = BMU.cameraModeChanged
 -- triggered when ZoneGuide will be displayed (e.g. when worldMap is open and zone changed)
 function BMU.onZoneGuideShow()
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
+	BMU_win = BMU_win or BMU.win
+	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
+
 	--check if Teleporter is displayed
 	if not BMU_win_Main_Control:IsHidden() then
 		-- Teleporter is displayed -> hide ZoneGuide
@@ -556,19 +580,6 @@ function BMU.startCountdownAutoRefresh()
 end
 BMU_startCountdownAutoRefresh = BMU.startCountdownAutoRefresh
 
-function BMU.isPlayerInBMUGuild()
-	if teleporterVars.BMUGuilds[GetWorldName()] ~= nil then
-		for _, guildId in pairs(teleporterVars.BMUGuilds[GetWorldName()]) do
-			if IsPlayerInGuild(guildId) then
-				return true
-			end
-		end
-	end
-	return false
-end
-local BMU_isPlayerInBMUGuild = BMU.isPlayerInBMUGuild
-
-
 -- displays notifications
 -- itemTabClicked = true -> Tab for treasure and survey maps was clicked
 function BMU.showNotification(itemTabClicked)
@@ -617,6 +628,7 @@ function BMU.showNotification(itemTabClicked)
 		end		
 	end
 end
+BMU_showNotification = BMU.showNotification  --INS251229 Baertram
 
 
 function BMU.isPlayerInBMUGuild()
@@ -882,14 +894,14 @@ local function OnAddOnLoaded(eventCode, addOnName)
 	
     EM:RegisterForEvent(appName, EVENT_PLAYER_ACTIVATED, PlayerInitAndReady)
 	
-	worldMapScene_Keyboard:RegisterCallback("StateChange", BMU.onWorldMapStateChanged)
-    worldMapScene_Gamepad:RegisterCallback("StateChange", BMU.onWorldMapStateChanged)
+	worldMapScene_Keyboard:RegisterCallback("StateChange", 	BMU_onWorldMapStateChanged)
+    worldMapScene_Gamepad:RegisterCallback("StateChange", 	BMU_onWorldMapStateChanged)
 
-	CM:RegisterCallback("OnWorldMapChanged", BMU.onWorldMapChanged)
+	CM:RegisterCallback("OnWorldMapChanged", BMU_onWorldMapChanged)
 
-	ZO_PreHookHandler(worldMapZoneStoryTLC_Keyboard, "OnShow", BMU.onZoneGuideShow)
+	ZO_PreHookHandler(worldMapZoneStoryTLC_Keyboard, "OnShow", BMU_onZoneGuideShow)
 		
-	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU.cameraModeChanged)
+	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU_cameraModeChanged)
 	
 	EM:RegisterForEvent(appName, EVENT_SOCIAL_ERROR, BMU.socialErrorWhilePorting)
 
