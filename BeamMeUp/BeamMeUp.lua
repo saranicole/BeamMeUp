@@ -3,13 +3,54 @@ local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU
 local SI = BMU.SI
 local teleporterVars = BMU.var
 local appName = teleporterVars.appName
-local worldMap = "worldMap"
-local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
+
+-- -v- INS251229 Baertram BEGIN 0
+--Performance reference
+----variables (defined now, as they were loaded before this file -> see manifest .txt)
+--ZOs variables
+local EM = EVENT_MANAGER
+local CM = CALLBACK_MANAGER
+local LH = LINK_HANDLER
+local SharedInv = SHARED_INVENTORY
+local worldMapScene_Keyboard				= WORLD_MAP_SCENE
+local worldMap = worldMapScene_Keyboard
+local worldMapScene_Gamepad					= GAMEPAD_WORLD_MAP_SCENE
+local worldMapZoneStoryTLC_Keyboard			= ZO_WorldMapZoneStoryTopLevel_Keyboard
 
 if BMU.IsNotKeyboard() then
-  worldMap = "gamepad_worldMap"
+  worldMap = worldMapScene_Gamepad
   WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Gamepad
 end
+--Other addon variables
+--BMU variables
+local BMU_ZONE_CATEGORY_UNKNOWN = BMU.ZONE_CATEGORY_UNKNOWN
+local BMU_ZONE_CATEGORY_DELVE = BMU.ZONE_CATEGORY_DELVE
+local BMU_ZONE_CATEGORY_PUBDUNGEON = BMU.ZONE_CATEGORY_PUBDUNGEON
+local BMU_ZONE_CATEGORY_HOUSE = BMU.ZONE_CATEGORY_HOUSE
+local BMU_ZONE_CATEGORY_GRPDUNGEON = BMU.ZONE_CATEGORY_GRPDUNGEON
+local BMU_ZONE_CATEGORY_TRAIL = BMU.ZONE_CATEGORY_TRAIL
+local BMU_ZONE_CATEGORY_ENDLESSD = BMU.ZONE_CATEGORY_ENDLESSD
+local BMU_ZONE_CATEGORY_GRPZONES = BMU.ZONE_CATEGORY_GRPZONES
+local BMU_ZONE_CATEGORY_GRPARENA = BMU.ZONE_CATEGORY_GRPARENA
+local BMU_ZONE_CATEGORY_SOLOARENA = BMU.ZONE_CATEGORY_SOLOARENA
+local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
+
+----functions
+--ZOs functions
+--BMU functions
+local BMU_SI_get                            = SI.get
+local BMU_colorizeText                      = BMU.colorizeText
+local BMU_round                             = BMU.round
+local BMU_tooltipTextEnter                  = BMU.tooltipTextEnter
+local BMU_updatePosition					= BMU.updatePosition
+local BMU_activateWayshrineTravelAutoConfirm = BMU.activateWayshrineTravelAutoConfirm
+----variables (defined inline in code below, upon first usage, as they are still nil at this line)
+--BMU UI variables
+
+-------functions (defined inline in code below, upon first usage, as they are still nil at this line)
+local BMU_HideTeleporter, BMU_toggleZoneGuide, BMU_getZoneSpecificHouse, BMU_getAllPublicDungeons, BMU_getAllDelves,
+      BMU_joinBlacklist
+-- -^- INS251229 Baertram END 0
 
 --Old code from TeleUnicorn -> Moved directly to Teleporter to strip the library
 BMU.throttled = {}
@@ -43,15 +84,7 @@ end
 
 ----------------------------------- KeyBinds
 function BMU.PortalHandlerKeyPress(keyPressIndex, favorite)
-	BMU_win = BMU_win or BMU.win
-	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
-	BMU_OpenTeleporter = BMU_OpenTeleporter or BMU.OpenTeleporter 									--INS251229 Baertram
 	BMU_HideTeleporter = BMU_HideTeleporter or BMU.HideTeleporter									--INS251229 Baertram
-	BMU_formatName = BMU_formatName or BMU.formatName												--INS251229 Baertram
-	BMU_createTable = BMU_createTable or BMU.createTable											--INS251229 Baertram
-	BMU_createTableHouses = BMU_createTableHouses or BMU.createTableHouses							--INS251229 Baertram
-	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
-
 	-- Port to Group Leader
 	if keyPressIndex == 12 then
 		BMU_portToGroupLeader()
@@ -206,7 +239,7 @@ function BMU.onMapShow()
 	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
 
 	-- no support for gamepad mode + stay hidden when using the "HarvestFarmTour Editor"
-	if BMU.win.Main_Control:IsHidden() and not BMU.IsNotKeyboard() and not SCENE_MANAGER:IsShowing("HarvestFarmScene") then
+	if BMU.win.Main_Control:IsHidden() and not IsInGamepadPreferredMode() and not SCENE_MANAGER:IsShowing("HarvestFarmScene") then
 		if BMU.savedVarsAcc.ShowOnMapOpen then
 			-- just open Teleporter
 			BMU_OpenTeleporter(true)
@@ -226,11 +259,8 @@ local BMU_onMapShow = BMU.onMapShow
 function BMU.onMapHide()
 	BMU_HideTeleporter = BMU_HideTeleporter or BMU.HideTeleporter									--INS251229 Baertram
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
-	BMU_win = BMU_win or BMU.win
-	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
-
 	-- hide button
-	local mapOpenButton = BMU_win.MapOpen
+	local mapOpenButton = BMU.win.MapOpen
 	if mapOpenButton then
 		mapOpenButton:SetHidden(true)
 	end
@@ -267,11 +297,11 @@ local BMU_onWorldMapChanged = BMU.onWorldMapChanged
 
 
 function BMU.OpenTeleporter(refresh)
-  if BMU.IsNotKeyboard() then return end
+	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
 	-- show notification (in case)
 	BMU.showNotification()
 	
-	if not WorldMapZoneStoryTopLevel:IsHidden() then
+	if not worldMapZoneStoryTLC_Keyboard:IsHidden() then
 		--hide ZoneGuide
 		BMU_toggleZoneGuide(false)
 		-- show swap button
@@ -320,7 +350,7 @@ BMU_OpenTeleporter = BMU.OpenTeleporter
 
 
 function BMU.HideTeleporter()
-  if BMU.IsNotKeyboard() then return end
+	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
     BMU.win.Main_Control:SetHidden(true) -- hide main window
 	ClearMenu() -- close all submenus
 	ZO_Tooltips_HideTextTooltip() -- close all tooltips
@@ -354,9 +384,6 @@ local BMU_cameraModeChanged = BMU.cameraModeChanged
 -- triggered when ZoneGuide will be displayed (e.g. when worldMap is open and zone changed)
 function BMU.onZoneGuideShow()
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
-	BMU_win = BMU_win or BMU.win
-	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
-
 	--check if Teleporter is displayed
 	if not BMU_win_Main_Control:IsHidden() then
 		-- Teleporter is displayed -> hide ZoneGuide
@@ -370,14 +397,14 @@ local BMU_onZoneGuideShow = BMU.onZoneGuideShow
 function BMU.toggleZoneGuide(show)
 	if show then
 		-- show ZoneGuide
-		--WorldMapZoneStoryTopLevel:SetHidden(false)
+		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(false)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(false)
-		WORLD_MAP_SCENE:AddFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
+		worldMapScene_Keyboard:AddFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
 	else
 		-- hide ZoneGuide
-		--WorldMapZoneStoryTopLevel:SetHidden(true)
+		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(true)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(true)
-		WORLD_MAP_SCENE:RemoveFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
+		worldMapScene_Keyboard:RemoveFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
 	end
 end
 BMU_toggleZoneGuide = BMU.toggleZoneGuide
@@ -691,9 +718,6 @@ local function OnAddOnLoaded(eventCode, addOnName)
 	teleporterVars.version = tostring(GetAddonVersionFromManifest())
 
     teleporterVars.isAddonLoaded = true
-    local anchorOnMap = not BMU.IsNotKeyboard()
-    local chatButton = not BMU.IsNotKeyboard()
-    local showOpenButtonOnMap = not BMU.IsNotKeyboard()
 
 
     BMU.DefaultsAccount = {
@@ -703,7 +727,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["pos_y"] = 63,
 		["anchorMapOffset_x"] = 0,
 		["anchorMapOffset_y"] = 0,
-		["anchorOnMap"] = anchorOnMap,
+		["anchorOnMap"] = true,
         ["ShowOnMapOpen"] = true,
 		["HideOnMapClose"] = true,
         ["AutoPortFreq"]  = 300,
@@ -727,7 +751,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["closeOnPorting"] = true,
 		["showNumberPlayers"] = true,
 		["totalPortCounter"] = 0,
-		["chatButton"] = chatButton,
+		["chatButton"] = true,
 		["chatButtonHorizontalOffset"] = 0,
 		["portCounterPerZone"] = {},
 		["searchCharacterNames"] = false,
@@ -738,7 +762,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["surveyMapsNotification"] = false,
 		["infoFavoritePlayerStatusNotification"] = false, -- false = not yet read
 		["infoSurveyMapsNotification"] = false, -- false = not yet read
-		["showOpenButtonOnMap"] = showOpenButtonOnMap,
+		["showOpenButtonOnMap"] = true,
 		["surveyMapsNotificationSound"] = true,
 		["wayshrineTravelAutoConfirm"] = false,
 		["currentZoneAlwaysTop"] = false,
@@ -834,14 +858,14 @@ local function OnAddOnLoaded(eventCode, addOnName)
 	
     EM:RegisterForEvent(appName, EVENT_PLAYER_ACTIVATED, PlayerInitAndReady)
 	
-	worldMapScene_Keyboard:RegisterCallback("StateChange", 	BMU_onWorldMapStateChanged)
-    worldMapScene_Gamepad:RegisterCallback("StateChange", 	BMU_onWorldMapStateChanged)
+	worldMapScene_Keyboard:RegisterCallback("StateChange", BMU.onWorldMapStateChanged)
+    worldMapScene_Gamepad:RegisterCallback("StateChange", BMU.onWorldMapStateChanged)
 
-	CM:RegisterCallback("OnWorldMapChanged", BMU_onWorldMapChanged)
+	CM:RegisterCallback("OnWorldMapChanged", BMU.onWorldMapChanged)
 
-	ZO_PreHookHandler(WorldMapZoneStoryTopLevel, "OnShow", BMU.onZoneGuideShow)
+	ZO_PreHookHandler(worldMapZoneStoryTLC_Keyboard, "OnShow", BMU.onZoneGuideShow)
 		
-	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU_cameraModeChanged)
+	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU.cameraModeChanged)
 	
 	EM:RegisterForEvent(appName, EVENT_SOCIAL_ERROR, BMU.socialErrorWhilePorting)
 
@@ -852,41 +876,49 @@ local function OnAddOnLoaded(eventCode, addOnName)
 	BMU_initializeCategoryMap()
 	
 	-- refresh quest location data cache
-	EM:RegisterForEvent(appName, EVENT_QUEST_ADDED, 					BMU_journalUpdated)
-	EM:RegisterForEvent(appName, EVENT_QUEST_REMOVED, 					BMU_journalUpdated)
-	EM:RegisterForEvent(appName, EVENT_QUEST_CONDITION_COUNTER_CHANGED, BMU_journalUpdated)
+	EM:RegisterForEvent(appName, EVENT_QUEST_ADDED, BMU.journalUpdated)
+	EM:RegisterForEvent(appName, EVENT_QUEST_REMOVED, BMU.journalUpdated)
+	EM:RegisterForEvent(appName, EVENT_QUEST_CONDITION_COUNTER_CHANGED, BMU.journalUpdated)
 	
 	-- if necessary show center screen message that the player is still offline -> cannot receive any whisper messages
-	if BMU_savedVarsAcc.showOfflineReminder then
-		EM:RegisterForEvent(appName, EVENT_PLAYER_STATUS_CHANGED, function(_, _, newStatus) if (newStatus == PLAYER_STATUS_OFFLINE) then BMU.playerStatusChangedToOffline = true end end)
+	if BMU.savedVarsAcc.showOfflineReminder then
+		EM:RegisterForEvent(appName, EVENT_PLAYER_STATUS_CHANGED, function(_, _, newStatus) if (newStatus == 4) then BMU.playerStatusChangedToOffline = true end end)
 		EM:RegisterForEvent(appName, EVENT_CHAT_MESSAGE_CHANNEL, BMU.showOfflineNote)
 	end
 
 	-- Show Note, when a favorite player goes online
-	if BMU_savedVarsAcc.FavoritePlayerStatusNotification then
+	if BMU.savedVarsAcc.FavoritePlayerStatusNotification then
 		EM:RegisterForEvent(appName, EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, BMU.FavoritePlayerStatusNotification)
 		EM:RegisterForEvent(appName, EVENT_FRIEND_PLAYER_STATUS_CHANGED, BMU.FavoritePlayerStatusNotification)
 	end
 	
 	-- Show Note, when survey map is mined and there are still some identical maps left
-	if BMU_savedVarsAcc.surveyMapsNotification then
+	if BMU.savedVarsAcc.surveyMapsNotification then
 		SharedInv:RegisterCallback("SingleSlotInventoryUpdate", BMU.surveyMapUsed)
 	end
 	
 	-- Auto confirm dailog when using wayshrines
-	if BMU_savedVarsAcc.wayshrineTravelAutoConfirm then
+	if BMU.savedVarsAcc.wayshrineTravelAutoConfirm then
 		BMU_activateWayshrineTravelAutoConfirm()
 	end
 	
 	-- activate Link Handler for handling clicks on chat links
-	LINK_HANDLER:RegisterCallback(LINK_HANDLER.LINK_MOUSE_UP_EVENT, BMU.handleChatLinkClick)
+	LH:RegisterCallback(LH.LINK_MOUSE_UP_EVENT, BMU.handleChatLinkClick)
 	
 	--Request BMU guilds and partner guilds information
 	--zo_callLater(function() BMU.requestGuildData() end, 5000)
 
 	-- activate guild admin tools
 	local displayName = GetDisplayName()
-	if displayName == "@DeadSoon" or displayName == "@Gamer1986PAN" or displayName == "@Pandora959" or displayName == "@Sokarx" or displayName == "@Knifekill1984" or displayName == "@BeamMeUp-Addon" then
+	local adminAccountsAllowed = {
+		["@DeadSoon"] = true,
+		["@Gamer1986PAN"] = true,
+		["@Pandora959"] = true,
+		["@Sokarx"] = true,
+		["@Knifekill1984"] = true,
+		["@BeamMeUp-Addon"] = true,
+	}
+	if adminAccountsAllowed[displayName] == true then
 		-- add context menu in guild roster and application roster
 		zo_callLater(function()
 			BMU.AdminAddContextMenuToGuildRoster()
@@ -895,7 +927,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 			BMU.AdminAddAutoFillToDeclineApplicationDialog()
 		end, 5000)
 		-- write welcome message to chat when you accept application (automatically welcome)
-		EVENT_MANAGER:RegisterForEvent(appName, EVENT_GUILD_FINDER_PROCESS_APPLICATION_RESPONSE, BMU.AdminAutoWelcome)
+		EM:RegisterForEvent(appName, EVENT_GUILD_FINDER_PROCESS_APPLICATION_RESPONSE, BMU.AdminAutoWelcome)
 	end
 end
 

@@ -15,21 +15,8 @@ BMU.var = {
   feedbackContact		= "@Deadsoon", --INS251229 Baertram Used account for email feedback
   website				= "https://www.esoui.com/downloads/info2143-BeamMeUp-TeleporterFastTravel.html",
   feedback				= "https://www.esoui.com/portal.php?id=283&a=faq", -- FAQ link
-  savedVariablesName	 = "BeamMeUp_SV",
   -------------------------------------
-  --[[
-  	["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_1"] = "DISABLED",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_2"] = "English",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_3"] = "German",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_4"] = "French",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_5"] = "Russian",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_6"] = "Japanese",
-    ["SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_7"] = "Polish",
-    Attention: Do not change the allowedLanguagesIndex order! This must match the SI_TELE_DROPDOWN_SECOND_LANG_CHOICE_1 to n entries
-    in order to make the LibZone's secondLanguage work in function  BMU.getZoneNameSecondLanguage
-  ]]
-  allowedLanguages		= {en=true,de=true,fr=true,ru=true,jp=true,pl=true,es=true,it=true,br=true,kr=true,zh=true}, --INS251229 Baertram
-  allowedLanguagesIndex = {[1]="None",[2]="en",[3]="de",[4]="fr",[5]="ru",[6]="jp",[7]="pl",[8]="es",[9]="it",[10]="br",[11]="kr",[12]="zh"}, --INS251229 Baertram
+  allowedLanguages		= {de=true,en=true,fr=true,ru=true,es=true,pl=true,it=true,jp=true,br=true,kr=true,zh=true,}, --INS251229 Baertram
   fallbackLang			= "en",																		--INS251229 Baertram
   -------------------------------------
   controls              = {},
