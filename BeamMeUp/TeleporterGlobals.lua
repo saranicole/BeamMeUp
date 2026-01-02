@@ -1,7 +1,25 @@
 BMU = {}
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
+-- -v- INS251229 Baertram BEGIN 0
+--Performance reference
+----variables (defined now, as they were loaded before this file -> see manifest .txt)
+--ZOs variables
+local ton = tonumber
+local tos = tostring
+local string = string
+local string_format = string.format
 local string_lower = string.lower
+
+--String variables
+local textureStrPattern = "|t32:32:%s|t"
+local itemTypeIconPattern = "|t<%f>:<%f>:%s|t"
+local BMU_MediaPath = "/BeamMeUp/media/"
+
+--BMU reference variables
+local BMU_GUILD_DATA = BMU_GUILD_DATA
+-- -^- INS251229 Baertram BEGIN 0
+
 
 BMU.win =   {
       Main_Control = {},
@@ -70,6 +88,27 @@ BMU.var = {
 	},
 }
 
+-- -v- INS251229 Baertram BEGIN 1
+--Local reference variables of BMU - Performance improvement
+local teleporterVars = BMU.var
+local appNameAbbr = teleporterVars.appNameAbbr
+local BMU_colors = teleporterVars.color
+local colorStrToColorCodes = {
+	["gray"] = BMU_colors.colTrash,
+	["yellow"] = BMU_colors.colYellow,
+	["blue"] = BMU_colors.colArcane,
+	["white"] = BMU_colors.colWhite,
+	["red"] = BMU_colors.colRed,
+	["gold"] = BMU_colors.colLegendary,
+	["green"] = BMU_colors.colGreen,
+	["orange"] = BMU_colors.colOrange,
+	["teal"] = BMU_colors.colBlue,
+	["dred"] = BMU_colors.colDarkRed,
+	["lgray"] = BMU_colors.colGray,
+}
+-- -^- INS251229 Baertram BEGIN 1
+
+
 -- necessary libraries
 BMU.LibZone = LibZone
 BMU.LAM = LibAddonMenu2
@@ -130,11 +169,8 @@ BMU.MSG_UL = 3
 BMU.MSG_DB = 4
 
 -- Textures
-local textureStrPattern32 = "|t32:32:%s|t"
-local textureStrPattern24 = "|t24:24:%s|t"
-local textureStrPattern20 = "|t20:20:%s|t"
-local BMU_textures = {
-	tooltipSeperatorStr = "|t120:5:esoui/art/guild/sectiondivider_left.dds|t",
+BMU.textures = {
+	tooltipSeperator = "|t120:5:esoui/art/guild/sectiondivider_left.dds|t",
 	anchorMapBtn = BMU_MediaPath .. "dock.dds",
 	anchorMapBtnOver = BMU_MediaPath .. "dock_over.dds",
 	lockClosedBtn = BMU_MediaPath .. "lock_closed.dds",
@@ -178,97 +214,38 @@ local BMU_textures = {
 	endlessDungeonBtnOver = BMU_MediaPath .. "poi_endlessdungeon_complete_over.dds",
 	groupZonesBtn = BMU_MediaPath .. "poi_groupdelve_complete.dds",
 	groupZonesBtnOver = BMU_MediaPath .. "poi_groupdelve_complete_over.dds",
-	groupLeaderBtn             = BMU_MediaPath .. "lfg_leader_icon.dds",
-	groupLeaderBtnOver          = BMU_MediaPath .. "lfg_leader_icon_over.dds",
-	guildBtn                    = BMU_MediaPath .. "menubar_guilds.dds",
-	guildBtnOver                = BMU_MediaPath .. "menubar_guilds_over.dds",
-	guildHouseBtn               = BMU_MediaPath .. "guild_hall_temple.dds",
-	guildHouseBtnOver           = BMU_MediaPath .. "guild_hall_temple_mouseover.dds",
-	ptfHouseBtn                 = BMU_MediaPath .. "ptf_house.dds",
-	ptfHouseBtnOver             = BMU_MediaPath .. "ptf_house_mouseover.dds",
-	soloArenaBtn                = BMU_MediaPath .. "poi_solotrial.dds",
-	soloArenaBtnOver            = BMU_MediaPath .. "poi_solotrial_over.dds",
-	dungeonDifficultyNormal  	= "esoui/art/lfg/lfg_normaldungeon_up.dds",
-	dungeonDifficultyVeteran    = "esoui/art/lfg/lfg_veterandungeon_up.dds",
-	noPlayerBtn                 = BMU_MediaPath .. "guildstore_sell_tabicon.dds",
-	noPlayerBtnOver             = BMU_MediaPath .. "guildstore_sell_tabicon_over.dds",
-	arrowDown                   = "esoui/art/worldmap/mapnav_downarrow_up.dds",
-	arrowUp                     = "esoui/art/worldmap/mapnav_uparrow_up.dds",
-	arrowDownStr                = "|t32:32:esoui/art/worldmap/mapnav_downarrow_up.dds|t",
-	arrowUpStr                  = "|t32:32:esoui/art/worldmap/mapnav_uparrow_up.dds|t",
-	acceptGreenStr              = "|t16:16:esoui/art/interaction/accept.dds|t",
-	declineRedStr               = "|t16:16:esoui/art/interaction/goodbye.dds|t",
-
-	--Context menu icons
-	---Antiquity leads
-	antiquity					= "/esoui/art/mappins/antiquity_digsite.dds",
-	leadTypeScryable			= "/esoui/art/treeicons/antiquities_indexicon_scryable_up.dds",
-	leadTypeScried				= "/esoui/art/journal/journal_quest_scrying_selected.dds",
-	leadTypeCompleted			= "/esoui/art/icons/skilllinexp_scrying.dds",
-	---Surveys
-	survey						= "/esoui/art/icons/treasuremap_witchesfestival.dds",
-	surveyTypeAlchemy			= "/esoui/art/inventory/inventory_tabicon_craftbag_alchemy_up.dds",
-	surveyTypeEnchanting		= "/esoui/art/inventory/inventory_tabicon_craftbag_enchanting_up.dds",
-	surveyTypeWoodworker		= "/esoui/art/inventory/inventory_tabicon_craftbag_woodworking_up.dds",
-	surveyTypeBlacksmith		= "/esoui/art/inventory/inventory_tabicon_craftbag_blacksmithing_up.dds",
-	surveyTypeClothier			= "/esoui/art/inventory/inventory_tabicon_craftbag_clothing_up.dds",
-	surveyTypeJewelry			= "/esoui/art/inventory/inventory_tabicon_craftbag_jewelrycrafting_up.dds",
-	---Tales Of Tribute
-	tribute						= "/esoui/art/tribute/tribute_tabicon_tribute_up.dds",
-	---Dungeons
-	endlessDungeon 				= "/esoui/art/treeicons/tutorial_endlessdungeon_up.dds",
-	arena 						= "/esoui/art/treeicons/reconstruction_tabicon_arenasolo_up.dds",
-	groupArena 					= "/esoui/art/treeicons/reconstruction_tabicon_arenagroup_up.dds",
-	trial 						= BMU_MediaPath .. "poi_raiddungeon_complete.dds",
-	groupDungeon 				= BMU_MediaPath .. "poi_groupinstance_complete.dds",
-	---Social
-	friends						= "/esoui/art/campaign/campaignbrowser_friends.dds",
-	group						= "/esoui/art/lfg/lfg_indexicon_group_up.dds",
-	otherHouses					= "/esoui/art/journal/journal_quest_group_housing.dds",
-	abbreviate					= "/esoui/art/buttons/gamepad/heron/nav_heron_view.dds",
-	---Other
-	filter						= "/esoui/art/worldmap/map_indexicon_filters_up.dds",
-	bank						= "/esoui/art/tooltips/icon_bank.dds",
-	treasureMap					= "/esoui/art/tradinghouse/tradinghouse_trophy_treasure_map_up.dds",
-	sortHeader					= "/esoui/art/miscellaneous/list_sortheader_icon_neutral.dds",
-	display						= "/esoui/art/login/login_icon_info.dds", --Alternative: /esoui/art/icons/heraldrycrests_misc_eye_01.dds
-	favorite					= "/esoui/art/Collections/Favorite_StarOnly.dds",
-	timer						= "/esoui/art/miscellaneous/timer_32.dds",
-	add							= "/esoui/art/progression/addpoints_up.dds",
-	remove						= "/esoui/art/progression/removepoints_up.dds",
-	cancel						= "/esoui/art/buttons/cancel_up.dds",
-	voteLeader					= "/esoui/art/champion/actionbar/champion_bar_world_selection.dds", --todo
-	voteKick					= "/esoui/art/champion/actionbar/champion_bar_conditioning_selection.dds", --todo
-	whisper						 = "/esoui/art/hud/radialicon_whisper_up.dds", --todo
-	visitPrimary				 = BMU_MediaPath .. "poi_group_house_owned.dds", --todo
-	mail						 = "/esoui/art/menubar/menubar_mail_up.dds", --todo
-	addFriend					 = "/esoui/art/hud/radialicon_addfriend_up.dds", --todo
-	removeFriend				 = "/esoui/art/hud/radialicon_removefriend_up.dds", --todo
-
-	rowSecondDivider 			 = "/esoui/art/guild/sectiondivider_left.dds",
-	slider						 = "/esoui/art/miscellaneous/scrollbox_elevator.dds"
+	groupLeaderBtn = BMU_MediaPath .. "lfg_leader_icon.dds",
+	groupLeaderBtnOver = BMU_MediaPath .. "lfg_leader_icon_over.dds",
+	guildBtn = BMU_MediaPath .. "menubar_guilds.dds",
+	guildBtnOver = BMU_MediaPath .. "menubar_guilds_over.dds",
+	guildHouseBtn = BMU_MediaPath .. "guild_hall_temple.dds",
+	guildHouseBtnOver = BMU_MediaPath .. "guild_hall_temple_mouseover.dds",
+	ptfHouseBtn = BMU_MediaPath .. "ptf_house.dds",
+	ptfHouseBtnOver = BMU_MediaPath .. "ptf_house_mouseover.dds",
+	soloArenaBtn = BMU_MediaPath .. "poi_solotrial.dds",
+	soloArenaBtnOver = BMU_MediaPath .. "poi_solotrial_over.dds",
+	dungeonDifficultyNormal = "|t32:32:esoui/art/lfg/lfg_normaldungeon_up.dds|t",
+	dungeonDifficultyVeteran = "|t32:32:esoui/art/lfg/lfg_veterandungeon_up.dds|t",
+	noPlayerBtn = BMU_MediaPath .. "guildstore_sell_tabicon.dds",
+	noPlayerBtnOver = BMU_MediaPath .. "guildstore_sell_tabicon_over.dds",
+	arrowDown = "|t32:32:esoui/art/worldmap/mapnav_downarrow_up.dds|t",
+	arrowUp = "|t32:32:esoui/art/worldmap/mapnav_uparrow_up.dds|t",
+	acceptGreen = "|t16:16:esoui/art/interaction/accept.dds|t",
+	declineRed = "|t16:16:esoui/art/interaction/goodbye.dds|t",
 }
-BMU_textures.leadTypeCompletedStr20			= string_format(textureStrPattern20, BMU_textures.leadTypeCompleted)
-BMU_textures.dungeonDifficultyNormalStr  	= string_format(textureStrPattern32, BMU_textures.dungeonDifficultyNormal)
-BMU_textures.dungeonDifficultyVeteranStr 	= string_format(textureStrPattern32, BMU_textures.dungeonDifficultyVeteran)
-BMU_textures.bankStr20 						= string_format(textureStrPattern20, BMU_textures.bank)
-BMU_textures.timerStr20 					= string_format(textureStrPattern20, BMU_textures.timer)
-
-
-BMU.textures = BMU_textures																			--INS251229 Baertram
+local BMU_textures = BMU.textures  																	--INS251229 Baertram
 
 local serviceMapPinsDDSPath = "esoui/art/icons/servicemappins/servicepin_"
 local itemTypeIcons = {
-	[subType_Alchemist] = 	serviceMapPinsDDSPath ..	"alchemy.dds",
-	[subType_Blacksmith] = 	serviceMapPinsDDSPath ..	"smithy.dds",
-	[subType_Clothier] = 	serviceMapPinsDDSPath ..	"clothier.dds",
-	[subType_Enchanter] = 	serviceMapPinsDDSPath ..	"enchanting.dds",
-	[subType_Jewelry] = 	serviceMapPinsDDSPath ..	"jewelrycrafting.dds",
-	[subType_Woodworker] = 	serviceMapPinsDDSPath ..	"woodworking.dds",
-	[treasureTypesHeader] = serviceMapPinsDDSPath ..	"bank.dds",
-	[leadTypesHeader] = 	serviceMapPinsDDSPath .. 	"antiquities.dds"
+	["alchemist"] = serviceMapPinsDDSPath ..	"alchemy.dds",
+	["enchanter"] = serviceMapPinsDDSPath ..	"enchanting.dds",
+	["woodworker"] = serviceMapPinsDDSPath ..	"woodworking.dds",
+	["blacksmith"] = serviceMapPinsDDSPath ..	"smithy.dds",
+	["clothier"] = serviceMapPinsDDSPath ..		"clothier.dds",
+	["jewelry"] = serviceMapPinsDDSPath ..		"jewelrycrafting.dds",
+	["treasure"] = serviceMapPinsDDSPath ..		"bank.dds",
+	["leads"] = serviceMapPinsDDSPath ..		"antiquities.dds"
 }
---Get the survey, antiquity etc. itemtype's icon for the list row entries
 function BMU.getItemTypeIcon(itemType, dimension)
 	local iconPath = itemTypeIcons[itemType]
 	if iconPath ~= nil and ton(dimension) ~= nil then
