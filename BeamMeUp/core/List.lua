@@ -172,9 +172,7 @@ local BMU_isZoneOverlandZone, BMU_categorizeZone, BMU_showDialogSimple, BMU_prep
 	  BMU_removeFavoriteZone, BMU_isFavoriteZone, BMU_createMail, BMU_portToOwnHouse, BMU_HideTeleporter, BMU_showTeleportAnimation,
       BMU_PortalToZone, BMU_portToParentZone, BMU_isFavoritePlayer, BMU_removeFavoritePlayer, BMU_addFavoritePlayer,
 	  BMU_findExactQuestLocation, BMU_sc_porting, BMU_getParentZoneId, BMU_clickOnTeleportToOwnHouseButton, BMU_clickOnTeleportToOwnHouseButton_2,
-      BMU_tooltipTextEnter, BMU_clickOnTeleportToPTFHouseButton, BMU_clickOnOpenGuild, BMU_clickOnTeleportToDungeonButton, BMU_clickOnTeleportToPlayerButton,
-	  BMU_checkIfContextMenuIconShouldShow, BMU_clickOnPlayerName, BMU_clickOnHouseName, BMU_clickOnEmptyZoneName, BMU_throttle, BMU_calculateListHeight,
-      BMU_getHouseNameByHouseId
+      BMU_tooltipTextEnter
 -- -^- INS251229 Baertram END 0
 
 
@@ -1182,7 +1180,10 @@ end
 
 
 local function _initialize_listview(self_listview, width, height, left, top)
-	BMU_formatGold = BMU_formatGold or BMU.formatGold
+	BMU.control_global = self_listview.control
+	BMU_tooltipTextEnter = BMU_tooltipTextEnter or BMU.tooltipTextEnter
+    --local control = self_listview.control
+    local name = BMU.control_global:GetName()
 
 	BMU.control_global = self_listview.control
 	local BMU_control_global = BMU.control_global
@@ -1277,9 +1278,8 @@ local function _initialize_listview(self_listview, width, height, left, top)
 		-- get control where the mouse is currently over
 		local control = moc()
 		-- show new tooltip
-		local tooltipText = control.tooltipText
-		if tooltipText then
-			BMU_tooltipTextEnter(BMU, control, tooltipText)
+		if control.tooltipText then
+			BMU_tooltipTextEnter(BMU, control, control.tooltipText)
 		end
     end)
 
@@ -1367,17 +1367,6 @@ function ListView:update()
 	BMU_createTable = BMU_createTable or BMU.createTable
 	BMU_clickOnTeleportToOwnHouseButton = BMU_clickOnTeleportToOwnHouseButton or BMU_clickOnTeleportToOwnHouseButton
 	BMU_tooltipTextEnter = BMU_tooltipTextEnter or BMU.tooltipTextEnter
-	BMU_clickOnOpenGuild = BMU_clickOnOpenGuild or BMU.clickOnOpenGuild
-	BMU_clickOnTeleportToPTFHouseButton = BMU_clickOnTeleportToPTFHouseButton or BMU.clickOnTeleportToPTFHouseButton
-	BMU_clickOnTeleportToPlayerButton = BMU_clickOnTeleportToPlayerButton or BMU.clickOnTeleportToPlayerButton
-	BMU_clickOnTeleportToDungeonButton = BMU_clickOnTeleportToDungeonButton or BMU.clickOnTeleportToDungeonButton
-	BMU_clickOnPlayerName = BMU_clickOnPlayerName or BMU.clickOnPlayerName
-	BMU_clickOnHouseName = BMU_clickOnHouseName or BMU.clickOnHouseName
-	BMU_clickOnEmptyZoneName = BMU_clickOnEmptyZoneName or BMU.clickOnEmptyZoneName
-	BMU_throttle = BMU_throttle or BMU.throttle
-	BMU_isFavoritePlayer = BMU_isFavoritePlayer or BMU.isFavoritePlayer
-	BMU_getHouseNameByHouseId = BMU_getHouseNameByHouseId or BMU.getHouseNameByHouseId
-	BMU_formatName = BMU_formatName or BMU.formatName
 
 	local tooltipDividerStr = BMU_textures.tooltipSeperatorStr
 
@@ -1480,11 +1469,11 @@ function ListView:update()
 						if message.playerNameClickable then
 							rowControlOfList.ColumnPlayerNameTex:SetAlpha(0.3)
 						end
-						BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnPlayerNameTex, tooltipTextPlayer)
+						BMU_tooltipTextEnter(BMU, list.ColumnPlayerNameTex, tooltipTextPlayer)
 						BMU.pauseAutoRefresh = true
 					end)
 					-- hide tooltip handler
-					rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseExit", function(self) rowControlOfList.ColumnPlayerNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnPlayerNameTex) BMU.pauseAutoRefresh = false end)
+					list.ColumnPlayerNameTex:SetHandler("OnMouseExit", function(self) list.ColumnPlayerNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, list.ColumnPlayerNameTex) BMU.pauseAutoRefresh = false end)
 					-- link tooltip text to control (for update on scroll / mouse wheel)
 					rowControlOfList.ColumnPlayerNameTex.tooltipText = tooltipTextPlayer
 				end
@@ -1692,10 +1681,10 @@ function ListView:update()
 			-- Zone Name Column Tooltip & Button Controls
 			if messageZoneNameClickable or #tooltipTextZone > 0 then
 				-- set handler for map opening
-				rowControlOfList.ColumnZoneNameTex:SetHidden(false)
-				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseEnter", function(self) rowControlOfList.ColumnZoneNameTex:SetAlpha(0.3) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnZoneNameTex, tooltipTextZone) BMU.pauseAutoRefresh = true end)
-				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnZoneName(button, message) end)
-				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseExit", function(self) rowControlOfList.ColumnZoneNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnZoneNameTex) BMU.pauseAutoRefresh = false end)
+				list.ColumnZoneNameTex:SetHidden(false)
+				list.ColumnZoneNameTex:SetHandler("OnMouseEnter", function(self) list.ColumnZoneNameTex:SetAlpha(0.3) BMU_tooltipTextEnter(BMU, list.ColumnZoneNameTex, tooltipTextZone) BMU.pauseAutoRefresh = true end)
+				list.ColumnZoneNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnZoneName(button, message) end)
+				list.ColumnZoneNameTex:SetHandler("OnMouseExit", function(self) list.ColumnZoneNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, list.ColumnZoneNameTex) BMU.pauseAutoRefresh = false end)
 				-- link tooltip text to control (for update on scroll / mouse wheel)
 				rowControlOfList.ColumnZoneNameTex.tooltipText = tooltipTextZone
 			else
@@ -1806,12 +1795,12 @@ function ListView:update()
 
 			if message.isOwnHouse and CanJumpToHouseFromCurrentLocation() and CanLeaveCurrentLocationViaTeleport() then
 				-- own house
-				rowControlOfList.portalToPlayerTex:SetHidden(false)
-				rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtn)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtnOver) BMU.pauseAutoRefresh = true end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtn) BMU.pauseAutoRefresh = false end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToOwnHouseButton(rowControlOfList.portalToPlayerTex, button, message) end)
-
+				list.portalToPlayerTex:SetHidden(false)
+				list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn)
+				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtnOver) BMU.pauseAutoRefresh = true end)
+				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn) BMU.pauseAutoRefresh = false end)
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnTeleportToOwnHouseButton(list.portalToPlayerTex, button, message) end)
+				
 			elseif message.isPTFHouse and CanJumpToHouseFromCurrentLocation() and CanLeaveCurrentLocationViaTeleport() then
 				-- "Port to Freind's House" integration
 				rowControlOfList.portalToPlayerTex:SetHidden(false)
@@ -1834,19 +1823,27 @@ function ListView:update()
 
 			elseif message.isDungeon and CanLeaveCurrentLocationViaTeleport() and (CanJumpToPlayerInZone(message.zoneId) or select(2, CanJumpToPlayerInZone(message.zoneId)) == JUMP_TO_PLAYER_RESULT_SOLO_ZONE) then -- CanJumpToPlayerInZone is false for solo arenas -> check reason value
 				-- Dungeon Finder -> use nodeIndecies instead of travel to zoneId
-				rowControlOfList.portalToPlayerTex:SetHidden(false)
-				rowControlOfList.portalToPlayerTex:SetTexture(texture_normal)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
-				rowControlOfList.portalToPlayerTex:SetTexture(texture_over)
-				if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
-					-- show tooltip with costs only if player is not at a wayshrine
-					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, message.difficultyText .. "\n" .. BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), colorRed))
-				else
-					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, message.difficultyText)
-				end
-				BMU.pauseAutoRefresh = true end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToDungeonButton(rowControlOfList.portalToPlayerTex, button, message) end)
+				list.portalToPlayerTex:SetHidden(false)
+				list.portalToPlayerTex:SetTexture(texture_normal)
+				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
+					list.portalToPlayerTex:SetTexture(texture_over)
+					if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
+						-- show tooltip with costs only if player is not at a wayshrine
+						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, message.difficultyText .. "\n" .. BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), "red"))
+					else
+						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, message.difficultyText)
+					end
+					BMU.pauseAutoRefresh = true end)
+				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, list.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToDungeonButton(list.portalToPlayerTex, button, message) end)
+				
+			elseif message.displayName ~= "" and CanJumpToPlayerInZone(message.zoneId) and CanLeaveCurrentLocationViaTeleport() then
+				-- player
+				list.portalToPlayerTex:SetHidden(false)
+				list.portalToPlayerTex:SetTexture(texture_normal)
+				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) list.portalToPlayerTex:SetTexture(texture_over) BMU.pauseAutoRefresh = true end)
+				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU.pauseAutoRefresh = false end)
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToPlayerButton(list.portalToPlayerTex, button, message) end)
 
 			elseif displayNameOfMessage ~= "" and CanJumpToPlayerInZone(message.zoneId) and CanLeaveCurrentLocationViaTeleport() then
 				-- player
@@ -1858,17 +1855,17 @@ function ListView:update()
 
 			elseif BMU.savedVarsAcc.showZonesWithoutPlayers2 and displayNameOfMessage == "" and message.zoneWithoutPlayer and CanLeaveCurrentLocationViaTeleport() and message.zoneWayshrineDiscovered and message.zoneWayshrineDiscovered > 0 then
 				-- zones without players (fast travel for gold)
-				rowControlOfList.portalToPlayerTex:SetHidden(false)
-				rowControlOfList.portalToPlayerTex:SetTexture(texture_normal)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
-				rowControlOfList.portalToPlayerTex:SetTexture(texture_over)
-				if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
-					-- show tooltip with costs only if player is not at a wayshrine
-					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), colorRed))
-				end
-				BMU.pauseAutoRefresh = true end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
-				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToPlayerButton(rowControlOfList.portalToPlayerTex, button, message) end)
+				list.portalToPlayerTex:SetHidden(false)
+				list.portalToPlayerTex:SetTexture(texture_normal)
+				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
+					list.portalToPlayerTex:SetTexture(texture_over)
+					if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
+						-- show tooltip with costs only if player is not at a wayshrine
+						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), "red"))
+					end
+					BMU.pauseAutoRefresh = true end)
+				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, list.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToPlayerButton(list.portalToPlayerTex, button, message) end)
 			else
 				-- no DisplayName -> no teleport possibility
 				rowControlOfList.portalToPlayerTex:SetHidden(true)
@@ -1973,15 +1970,15 @@ function BMU.clickOnTeleportToOwnHouseButton(textureControl, button, message)
 	-- click effect
 	textureControl:SetAlpha(0.65)
 	zo_callLater(function() textureControl:SetAlpha(1) end, 200)
-
+	
 	if message.forceOutside then
 		BMU_clickOnTeleportToOwnHouseButton_2(button, message, true)
 	else
 		-- show submenu
-		ClearCustomScrollableMenu()
-		AddCustomScrollableMenuEntry(GetString(SI_HOUSING_BOOK_ACTION_TRAVEL_TO_HOUSE_INSIDE), function() BMU_clickOnTeleportToOwnHouseButton_2(button, message, false) end)
-		AddCustomScrollableMenuEntry(GetString(SI_HOUSING_BOOK_ACTION_TRAVEL_TO_HOUSE_OUTSIDE), function() BMU_clickOnTeleportToOwnHouseButton_2(button, message, true) end)
-		ShowCustomScrollableMenu()
+		ClearMenu()
+		AddCustomMenuItem(GetString(SI_HOUSING_BOOK_ACTION_TRAVEL_TO_HOUSE_INSIDE), function() BMU_clickOnTeleportToOwnHouseButton_2(button, message, false) end)
+		AddCustomMenuItem(GetString(SI_HOUSING_BOOK_ACTION_TRAVEL_TO_HOUSE_OUTSIDE), function() BMU_clickOnTeleportToOwnHouseButton_2(button, message, true) end)
+		ShowMenu()
 	end
 end
 BMU_clickOnTeleportToOwnHouseButton = BMU.clickOnTeleportToOwnHouseButton

@@ -175,6 +175,8 @@ local worldName = GetWorldName()
 local zo_Menu                               = ZO_Menu     --ZO_Menu speed-up variable (so _G is not searched each time context menus are used)
 local zo_WorldMapZoneStoryTopLevel_Keyboard = ZO_WorldMapZoneStoryTopLevel_Keyboard
 local zo_ChatWindow                         = ZO_ChatWindow
+local ClearMenu 							= ClearMenu
+local ShowMenu 								= ShowMenu
 --Other addon variables
 ---LibCustomMenu
 local libCustomMenuSubmenu = LibCustomMenuSubmenu --The control holding the currently shown submenu control entries (as a submenu is opened)
@@ -195,8 +197,8 @@ local zo_CheckButton_SetChecked = ZO_CheckButton_SetChecked
 local BMU_SI_get                            = SI.get
 local BMU_colorizeText                      = BMU.colorizeText
 local BMU_round                             = BMU.round
-local BMU_tooltipTextEnter                  = BMU.tooltipTextEnter
 local BMU_mergeTables						= BMU.mergeTables
+local BMU_tooltipTextEnter					= BMU.tooltipTextEnter
 
 local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
 
@@ -213,7 +215,6 @@ local BMU_chatButtonTex, teleporterWin_appTitle, teleporterWin_Main_Control, tel
 	teleporterWin_Main_Control_portalToAllTexture, teleporterWin_Main_Control_SettingsTexture, teleporterWin_Main_Control_PTFTexture,
 	teleporterWin_Main_Control_OwnHouseTexture, teleporterWin_Main_Control_QuestTexture, teleporterWin_Main_Control_ItemTexture, BMU_counterPanel,
 	teleporterWin_Main_Control_OnlyYourzoneTexture, teleporterWin_Main_Control_DelvesTexture, teleporterWin_Main_Control_DungeonTexture,
-
 
 -------functions (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateContextMenuEntrySurveyAll,
@@ -1570,9 +1571,13 @@ end
 -- -v- SetupUI
 --------------------------------------------------------------------------------------------------------------------
 local function SetupUI()
-    local svAcc = BMU.savedVarsAcc                                      --INS251229 Baertram
-    local scale = svAcc.Scale                                           --INS251229 Baertram
-    BMU_clearInputFields = BMU_clearInputFields or BMU.clearInputFields --INS251229 Baertram
+    local BMU_svAcc = BMU.savedVarsAcc                                  							--INS251229 Baertram
+    local scale = BMU_svAcc.Scale                                       							--INS251229 Baertram
+    BMU_clearInputFields = BMU_clearInputFields or BMU.clearInputFields 							--INS251229 Baertram
+	BMU_createTable = BMU_createTable or BMU.createTable											--INS251229 Baertram
+	BMU_createTableGuilds = BMU_createTableGuilds or BMU.createTableGuilds							--INS251229 Baertram
+	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
+	BMU_numOfSurveyTypesChecked = BMU_numOfSurveyTypesChecked or BMU.numOfSurveyTypesChecked   	    --INS251229 Baertram
 
 	-----------------------------------------------
 	-- Fonts
