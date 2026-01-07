@@ -218,7 +218,9 @@ local BMU_chatButtonTex, teleporterWin_appTitle, teleporterWin_Main_Control, tel
 
 -------functions (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateContextMenuEntrySurveyAll,
-      BMU_getContextMenuEntrySurveyAllAppendix, BMU_clearInputFields
+      BMU_getContextMenuEntrySurveyAllAppendix, BMU_clearInputFields, BMU_createTable,
+      BMU_createTableDungeons, BMU_createTableGuilds, BMU_numOfSurveyTypesChecked, 	BMU_updateCheckboxSurveyMap,
+ 	  BMU_createTableHouses
 -- -^- INS251229 Baertram END 0
 
 -- list of tuples (guildId & displayname) for invite queue (only for admin)
@@ -1578,6 +1580,8 @@ local function SetupUI()
 	BMU_createTableGuilds = BMU_createTableGuilds or BMU.createTableGuilds							--INS251229 Baertram
 	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
 	BMU_numOfSurveyTypesChecked = BMU_numOfSurveyTypesChecked or BMU.numOfSurveyTypesChecked   	    --INS251229 Baertram
+	BMU_createTableHouses = BMU_createTableHouses or BMU.createTableHouses 	   	    				--INS251229 Baertram
+
 
 	-----------------------------------------------
 	-- Fonts
@@ -2204,12 +2208,12 @@ local function SetupUI()
   teleporterWin_Main_Control_PTFTexture:SetDrawLayer(2)
     local PortToFriend = PortToFriend --INS251229 Baertram performance improvement for 2 same used global variables
 	if PortToFriend and PortToFriend.GetFavorites then
-		-- enable tab	
-		teleporterWin_Main_Control.PTFTexture:SetHandler("OnMouseUp", function(self, button, upInside) --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
+		-- enable tab
+		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseUp", function(self, button, upInside) --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
+			ClearMenu()
 			if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
 				-- toggle between zone names and house names
                 local BMU_savedVarsChar = BMU.savedVarsChar --INS251229 Baertram Performance gain for multiple used samed variable
-				ClearMenu()
                 local menuIndex = AddCustomMenuItem(BMU_SI_get(SI.TELE_UI_TOOGLE_ZONE_NAME), function() BMU_savedVarsChar.ptfHouseZoneNames = not BMU_savedVarsChar.ptfHouseZoneNames BMU_clearInputFields() BMU.createTablePTF() end, MENU_ADD_OPTION_CHECKBOX)
 				if BMU_savedVarsChar.ptfHouseZoneNames then
 					zo_CheckButton_SetChecked(zo_Menu.items[menuIndex].checkbox)
@@ -2260,11 +2264,13 @@ local function SetupUI()
   teleporterWin_Main_Control_OwnHouseTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_OwnHouseTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control.OwnHouseTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_OwnHouseTexture:SetHandler("OnMouseUp", function(self, button)
+	ClearMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
+		local BMU_savedVarsChar = BMU.savedVarsChar  --INS251229 Baertram
 		-- toggle between nicknames and standard names
-		local menuIndex = AddCustomMenuItem(BMU_SI_get(SI.TELE_UI_TOGGLE_HOUSE_NICKNAME), function() BMU.savedVarsChar.houseNickNames = not BMU.savedVarsChar.houseNickNames BMU_clearInputFields() BMU.createTableHouses() end, MENU_ADD_OPTION_CHECKBOX)
-		if BMU.savedVarsChar.houseNickNames then
+		local menuIndex = AddCustomMenuItem(BMU_SI_get(SI.TELE_UI_TOGGLE_HOUSE_NICKNAME), function() BMU_savedVarsChar.houseNickNames = not BMU_savedVarsChar.houseNickNames BMU_clearInputFields() BMU_createTableHouses() end, MENU_ADD_OPTION_CHECKBOX)
+		if BMU_savedVarsChar.houseNickNames then
 			zo_CheckButton_SetChecked(zo_Menu.items[menuIndex].checkbox)
 		end
 
@@ -2280,7 +2286,7 @@ local function SetupUI()
 		ShowCustomScrollableMenu(ctrl, nil)
 	else
         BMU_clearInputFields( )
-		BMU.createTableHouses()
+		BMU_createTableHouses()
 	end
   end)
   
@@ -2308,7 +2314,8 @@ local function SetupUI()
   teleporterWin_Main_Control_QuestTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_QuestTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control.QuestTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_QuestTexture:SetHandler("OnMouseUp", function(self, button)
+	ClearMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- show context menu
 		local BMU_savedVarsChar = BMU.savedVarsChar  --INS251229 Baertram
@@ -2360,9 +2367,9 @@ local function SetupUI()
       BMU_ItemTexture = BMU_ItemTexture or teleporterWin_Main_Control.ItemTexture               --INS251229 Baertram
       BMU_updateCheckboxSurveyMap = BMU_updateCheckboxSurveyMap or BMU.updateCheckboxSurveyMap  --INS251229 Baertram
 	  submenuIndicesToAddCallbackTo = {}                                                        --INS251229 Baertram
+	  ClearMenu()
       if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- show filter menu
-		ClearMenu()
 
 		-- Add submenu for antiquity leads
 		submenuIndicesToAddCallbackTo[#submenuIndicesToAddCallbackTo+1] = AddCustomSubMenuItem(GetString(SI_GAMEPAD_VENDOR_ANTIQUITY_LEAD_GROUP_HEADER), --INS251229 Baertram
@@ -2651,14 +2658,8 @@ local function SetupUI()
   teleporterWin_Main_Control_OnlyYourzoneTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_OnlyYourzoneTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control.OnlyYourzoneTexture = wm:CreateControl(nil, teleporterWin_Main_Control, CT_TEXTURE)
-  teleporterWin_Main_Control.OnlyYourzoneTexture:SetDimensions(50*scale, 50*scale)
-  teleporterWin_Main_Control.OnlyYourzoneTexture:SetAnchor(TOPRIGHT, teleporterWin_Main_Control, TOPRIGHT, -80*scale, 40*scale)
-  teleporterWin_Main_Control.OnlyYourzoneTexture:SetTexture(BMU_textures.currentZoneBtn)
-  teleporterWin_Main_Control.OnlyYourzoneTexture:SetMouseEnabled(true)
-  teleporterWin_Main_Control.OnlyYourzoneTexture:SetDrawLayer(2)
-  
-	teleporterWin_Main_Control.OnlyYourzoneTexture:SetHandler("OnMouseUp", function(self, button)
+	teleporterWin_Main_Control_OnlyYourzoneTexture:SetHandler("OnMouseUp", function(self, button)
+		ClearMenu()
 		if button == MOUSE_BUTTON_INDEX_RIGHT then
 			-- show context menu
 			local BMU_savedVarsChar = BMU.savedVarsChar   --INS251229 Baertram
@@ -2697,7 +2698,8 @@ local function SetupUI()
   teleporterWin_Main_Control_DelvesTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_DelvesTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control.DelvesTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_DelvesTexture:SetHandler("OnMouseUp", function(self, button)
+	ClearMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- show context menu
 		local BMU_savedVarsChar = BMU.savedVarsChar  --INS251229 Baertram
@@ -2750,10 +2752,10 @@ local function SetupUI()
   teleporterWin_Main_Control_DungeonTexture:SetDrawLayer(2)
 
   teleporterWin_Main_Control_DungeonTexture:SetHandler("OnMouseUp", function(self, button)
+	ClearMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 
 		-- show filter menu
-		ClearMenu()
 		-- add filters
 		AddCustomSubMenuItem(GetString(SI_GAMEPAD_BANK_FILTER_HEADER),
 			{
@@ -3420,7 +3422,229 @@ end
 --------------------------------------------------
 -- GUILD ADMINISTRATION TOOL
 --------------------------------------------------
-local BMU_AdminContextMenuStr = "BMU Admin"
+
+function BMU.AdminAddContextMenuToGuildRoster()
+	-- add context menu to guild roster
+	local GuildRosterRow_OnMouseUp = GUILD_ROSTER_KEYBOARD.GuildRosterRow_OnMouseUp --ZO_GuildRecruitment_ApplicationsList_Keyboard.Row_OnMouseUp
+	GUILD_ROSTER_KEYBOARD.GuildRosterRow_OnMouseUp = function(self, control, button, upInside)
+		ClearMenu()     	    																	--INS251229 Baertram
+		local data = ZO_ScrollList_GetData(control)
+		GuildRosterRow_OnMouseUp(self, control, button, upInside)
+		
+		local currentGuildId = GUILD_ROSTER_MANAGER:GetGuildId()
+		if (button ~= MOUSE_BUTTON_INDEX_RIGHT --[[and not upInside]]) or data == nil or not BMU.AdminIsBMUGuild(currentGuildId) then
+			return
+		end
+		
+		local isAlreadyMember, memberStatusText = BMU.AdminIsAlreadyInGuild(data.displayName)
+		
+		local entries = {}
+		
+		-- welcome message
+		table_insert(entries, {label = "Willkommensnachricht",
+								callback = function(state)
+									local guildId = currentGuildId
+									local guildIndex = BMU.AdminGetGuildIndexFromGuildId(guildId)
+									StartChatInput("Welcome on the bridge " .. data.displayName, _G["CHAT_CHANNEL_GUILD_" .. guildIndex])
+								end,
+								})
+								
+		-- new message
+		table_insert(entries, {label = "Neue Nachricht",
+								callback = function(state) BMU.createMail(data.displayName, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.displayName) end,
+								})
+								
+		-- copy account name
+		table_insert(entries, {label = "Account-ID kopieren",
+								callback = function(state) BMU.AdminCopyTextToChat(data.displayName) end,
+								})
+		
+		-- invite to BMU guilds
+		if teleporterVars.BMUGuilds[worldName] ~= nil then
+			for _, guildId in pairs(teleporterVars.BMUGuilds[worldName]) do
+				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.displayName) then
+					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
+											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.displayName) end,
+											})
+				end
+			end
+		end
+		
+		-- invite to partner guilds
+		if teleporterVars.partnerGuilds[worldName] ~= nil then
+			for _, guildId in pairs(teleporterVars.partnerGuilds[worldName]) do
+				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.displayName) then
+					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
+											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.displayName) end,
+											})
+				end
+			end
+		end
+		
+		-- check if the player is also in other BMU guilds and add info
+		table_insert(entries, {label = memberStatusText,
+								callback = function(state) end,
+								})
+		
+		AddCustomSubMenuItem("BMU Admin", entries)
+		self:ShowMenu(control)
+	end
+end
+
+
+function BMU.AdminAddContextMenuToGuildApplicationRoster()
+	-- add context menu to guild recruitment application roster (if player is already in a one of the BMU guilds + redirection to the other guilds)
+	local Row_OnMouseUp = ZO_GuildRecruitment_ApplicationsList_Keyboard.Row_OnMouseUp
+	ZO_GuildRecruitment_ApplicationsList_Keyboard.Row_OnMouseUp = function(self, control, button, upInside)
+		ClearMenu()     	    																	--INS251229 Baertram
+		local data = ZO_ScrollList_GetData(control)
+		Row_OnMouseUp(self, control, button, upInside)
+	
+		local currentGuildId = GUILD_ROSTER_MANAGER:GetGuildId()
+		if (button ~= MOUSE_BUTTON_INDEX_RIGHT --[[and not upInside]]) or data == nil or not BMU.AdminIsBMUGuild(currentGuildId) then
+			return
+		end
+		
+		local isAlreadyMember, memberStatusText = BMU.AdminIsAlreadyInGuild(data.name)
+
+		local entries = {}
+		
+		-- new message
+		table_insert(entries, {label = "Neue Nachricht",
+								callback = function(state) BMU.createMail(data.name, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.name) end,
+								})
+								
+		-- copy account name
+		table_insert(entries, {label = "Account-ID kopieren",
+								callback = function(state) BMU.AdminCopyTextToChat(data.name) end,
+								})
+		
+		-- invite to BMU guilds
+		if teleporterVars.BMUGuilds[worldName] ~= nil then
+			for _, guildId in pairs(teleporterVars.BMUGuilds[worldName]) do
+				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.name) then
+					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
+											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.name) end,
+											})
+				end
+			end
+		end
+		
+		-- invite to partner guilds
+		if teleporterVars.partnerGuilds[worldName] ~= nil then
+			for _, guildId in pairs(teleporterVars.partnerGuilds[worldName]) do
+				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.name) then
+					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
+											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.name) end,
+											})
+				end
+			end
+		end
+		
+		-- check if the player is also in other BMU guilds and add info
+		table_insert(entries, {label = memberStatusText,
+								callback = function(state) end,
+								})
+		
+		AddCustomSubMenuItem("BMU Admin", entries)
+		self:ShowMenu(control)
+	end
+end
+
+function BMU.AdminAddTooltipInfoToGuildApplicationRoster()
+	-- add info to the tooltip in guild recruitment application roster
+	local Row_OnMouseEnter = ZO_GuildRecruitment_ApplicationsList_Keyboard.Row_OnMouseEnter
+	ZO_GuildRecruitment_ApplicationsList_Keyboard.Row_OnMouseEnter = function(self, control)
+		
+		local data = ZO_ScrollList_GetData(control)
+		local currentGuildId = GUILD_ROSTER_MANAGER:GetGuildId()
+		
+		if data ~= nil and not data.BMUInfo and BMU.AdminIsBMUGuild(currentGuildId) then
+			local isAlreadyMember, memberStatusText = BMU.AdminIsAlreadyInGuild(data.name)
+			data.message = data.message .. "\n\n" .. memberStatusText
+			data.BMUInfo = true
+		end
+	
+		Row_OnMouseEnter(self, control)		
+	end
+end
+
+function BMU.AdminGetGuildIndexFromGuildId(guildId)
+	for i = 1, GetNumGuilds() do
+		if GetGuildId(i) == guildId then
+			return i
+		end
+	end
+	return 0
+end
+local BMU_AdminGetGuildIndexFromGuildId = BMU.AdminGetGuildIndexFromGuildId
+
+function BMU.AdminCopyTextToChat(message)
+	-- Max of input box is 351 chars
+	if string_len(message) < 351 then
+		local chatTextEntrey = CHAT_SYSTEM.textEntry
+		if chatTextEntrey:GetText() == "" then
+			chatTextEntrey:Open(message)
+			ZO_ChatWindowTextEntryEditBox:SelectAll()
+		end
+	end
+end
+
+function BMU.AdminAutoWelcome(eventCode, guildId, displayName, result)
+	-- only for BMU guilds
+	if not BMU.AdminIsBMUGuild(guildId) then
+		return
+	end
+	
+	zo_callLater(function()
+		if result == 0 then
+			local guildIndex = BMU_AdminGetGuildIndexFromGuildId(guildId)
+			local totalGuildMembers = GetNumGuildMembers(guildId)
+			
+			-- find new guild member
+			for j = 0, totalGuildMembers do
+				local displayName_info, note, guildMemberRankIndex, status, secsSinceLogoff = GetGuildMemberInfo(guildId, j)
+				if displayName_info == displayName and status ~= PLAYER_STATUS_OFFLINE then
+					-- new guild member is online -> write welcome message to chat
+					StartChatInput("Welcome on the bridge " .. displayName, _G["CHAT_CHANNEL_GUILD_" .. guildIndex])
+				end
+			end
+		end
+	end, 1300)
+end
+
+function BMU.AdminIsAlreadyInGuild(displayName)
+	local text = ""
+	local BMU_guildsOfServer = teleporterVars.BMUGuilds[worldName]  								--INS251229 Baertram
+	if GetGuildMemberIndexFromDisplayName(BMU_guildsOfServer[1], displayName) then
+		text = text .. " 1 "
+	end
+	if GetGuildMemberIndexFromDisplayName(BMU_guildsOfServer[2], displayName) then
+		text = text .. " 2 "
+	end
+	if GetGuildMemberIndexFromDisplayName(BMU_guildsOfServer[3], displayName) then
+		text = text .. " 3 "
+	end
+	if GetGuildMemberIndexFromDisplayName(BMU_guildsOfServer[4], displayName) then
+		text = text .. " 4 "
+	end
+	
+	if text ~= "" then
+		-- already member
+		return true, BMU_colorizeText("Bereits Mitglied in " .. text, colorRed)
+	else
+		-- not a member or admin is not member of the BMU guilds
+		return false, BMU_colorizeText("Neues Mitglied", colorGreen)
+	end
+end
+
+function BMU.AdminIsBMUGuild(guildId)
+	if BMU.has_value(teleporterVars.BMUGuilds[worldName], guildId) then
+		return true
+	else
+		return false
+	end
+end
 
 local BMU_AdminInviteToGuildsQueue
 function BMU.AdminInviteToGuildsQueue()
