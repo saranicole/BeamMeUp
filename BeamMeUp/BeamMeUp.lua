@@ -1,6 +1,7 @@
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
 local SI = BMU.SI
+local BG = BMU.BG
 local teleporterVars = BMU.var
 local appName = teleporterVars.appName
 local SVTabName = teleporterVars.savedVariablesName
@@ -359,7 +360,7 @@ function BMU.OpenTeleporter(refresh)
 	-- show notification (in case)
 	BMU.showNotification()
 	
-	if not BMU.ZO_WorldMapZoneStoryTopLevel:IsHidden() then
+	if not BG.ZO_WorldMapZoneStoryTopLevel:IsHidden() then
 		--hide ZoneGuide
 		BMU_toggleZoneGuide(false)
 		-- show swap button
@@ -463,12 +464,12 @@ function BMU.toggleZoneGuide(show)
 		-- show ZoneGuide
 		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(false)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(false)
-		WORLD_MAP_SCENE:AddFragment(BMU.ZoneStoryFragment)
+		WORLD_MAP_SCENE:AddFragment(BG.ZoneStoryFragment)
 	else
 		-- hide ZoneGuide
 		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(true)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(true)
-		WORLD_MAP_SCENE:RemoveFragment(BMU.ZoneStoryFragment)
+		WORLD_MAP_SCENE:RemoveFragment(BG.ZoneStoryFragment)
 	end
 end
 BMU_toggleZoneGuide = BMU.toggleZoneGuide
@@ -932,7 +933,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 
 	CM:RegisterCallback("OnWorldMapChanged", BMU_onWorldMapChanged)
 
-	ZO_PreHookHandler(BMU.ZO_WorldMapZoneStoryTopLevel, "OnShow", BMU.onZoneGuideShow)
+	ZO_PreHookHandler(BG.ZO_WorldMapZoneStoryTopLevel, "OnShow", BMU.onZoneGuideShow)
 		
 	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU_cameraModeChanged)
 	
