@@ -2424,7 +2424,9 @@ function BMU.clickOnZoneName(button, record)
 				if item.bagId == BAG_BACKPACK and IsProtectedFunction("UseItem") then -- item is in inventory and can be used
 					table_insert(mapItems, item)
 				elseif item.antiquityId then -- lead -> show lead in codex
-					table_insert(codexItems, item)
+					AddCustomMenuItem(GetString(SI_ANTIQUITY_VIEW_IN_CODEX) .. ": \"" .. item.itemName .. "\"", function()
+						BMU.AntiquityLore:ShowAntiquity(item.antiquityId)
+					end)
 				end
 			end
 			--Add map items headline

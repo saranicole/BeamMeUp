@@ -1,0 +1,46 @@
+## Title: |cd5b526BeamMeUp|r - Teleporter
+## Description: Free fast travel to available players from your friend list, guilds and group.
+## Author: DeadSoon, Gamer1986PAN, Treuce
+## APIVersion: 101048 101049
+## SavedVariables: BeamMeUp_SV
+## Version: 3.7.5
+## AddOnVersion: 375
+## IsLibrary: false
+## PCDependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730 LibZone>=0895
+## ConsoleDependsOn: LibHarvensAddonSettings>=2.0.7
+## OptionalDependsOn: LibSlashCommander LibSets LibMapPing LibChatMenuButton PortToFriendsHouse BanditsUserInterface MorrowindStyleUI
+
+## Core translation files
+core/SI.lua
+localization/EN.lua
+localization/$(language).lua
+
+## Globals / data sets
+TeleporterGlobals.lua
+platform/PC/GuildData.lua
+platform/PC/BaseGlobals.lua
+platform/$(platform)/GuildData.lua
+platform/$(platform)/BaseGlobals.lua
+platform/$(platform)/TeleAppUI.lua
+
+## REMOVE BEFORE MERGING! FOR TESTING ONLY
+platform/$(platform)/libstemp/LibZone
+platform/$(platform)/libstemp/LibZone/LibZone_Constants.lua
+platform/$(platform)/libstemp/LibZone/LibZone.lua
+platform/$(platform)/libstemp/LibZone/LibZone_Data.lua
+platform/$(platform)/libstemp/LibZone/LibZone_GeoData.lua
+## END REMOVE
+
+core/List.lua
+core/SettingsMenu.lua
+core/TeleAppUI.lua
+core/TeleSlashCommands.lua
+core/TeleporterChecker.lua
+
+
+## Bindings
+bindings/bindings.lua
+bindings/bindings.xml
+
+
+BeamMeUp.lua
