@@ -221,43 +221,61 @@ local stringsEN = {
     ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
 
 
-    -----------------------------------------------------------------------------
-    -- DIALOGS | NOTIFICATIONS
-    -----------------------------------------------------------------------------
-    ["SI_TELE_DIALOG_NO_BMU_GUILD_BODY"] = "We are so sorry, but it seems that there is no BeamMeUp guild on this server yet.\n\nFeel free to contact us via the ESOUI website and start an official BeamMeUp guild on this server.",
-    ["SI_TELE_DIALOG_INFO_BMU_GUILD_BODY"] = "Hello and thank you for using BeamMeUp. In 2019, we started several BeamMeUp guilds for the purpose of sharing free fast travel options. Everyone is welcome, no requirements or obligations!\n\nBy confirming this dialog, you will see the official and partner guilds of BeamMeUp in the list. You are welcome to join! You can also display the guilds by clicking on the guild button in the upper left corner.\nYour BeamMeUp Team",
-    ["SI_TELE_DIALOG_INFO_NEW_FEATURE_FAVORITE_PLAYER_NOTIFICATION"] = "You receive a notification (center screen message) when a player favorite comes online.\n\nEnable this feature?",
-    ["SI_TELE_DIALOG_INFO_NEW_FEATURE_SURVEY_MAP_NOTIFICATION"] = "If you mine a survey map and there are still some identical maps (same location) in your inventory, a notification (center screen message) will inform you.\n\nEnable this feature?",
-    ["SI_TELE_DIALOG_PTF_INTEGRATION_MISSING_TITLE"] = "Integration of \"Port to Friend's House\"",
-    ["SI_TELE_DIALOG_PTF_INTEGRATION_MISSING_BODY"] = "To use the integration feature, please install the addon \"Port to Friend's House\". You will then see your configured houses and guild halls here in the list.\n\nDo you want to open \"Port to Friend's House\" addon website now?",
-    -- AUTO UNLOCK: Start Dialog
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Start automatic wayshrine discovery?",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "By confirming, BeamMeUp will start traveling to all available players in the current zone. This way you will automatically jump from wayshrine to wayshrine to discover as much as possible.",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Looping over zones ...",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "shuffle randomly",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "by ratio of undiscovered wayshrines",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "by number of players",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION4"] = "by zone name",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_CHAT_LOG_OPTION"] = "Output results in chat",
-    -- AUTO UNLOCK: Refuse Dialogs
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_TITLE"] = "Discovery is not possible",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY"] = "All wayshrines in the zone have already been discovered.",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY2"] = "Wayshrine discovery is not possible in this zone. The feature is only available in overland zones/regions.",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY3"] = "Unfortunately, there are no players in the zone to travel to.",
-    -- AUTO UNLOCK: Process Dialog
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART"] = "Automatic wayshrine discovery is running...",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY"] = "Newly discovered wayshrines:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP"] = "Gained XP:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_PROGRESS"] = "Progress:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_TIMER"] = "Next jump in:",
-    -- AUTO UNLOCK: Finish Dialog
-    ["SI_TELE_DIALOG_FINISH_AUTO_UNLOCK_BODY_PART"] = "Automatic discovery of wayshrines completed.",
-    -- AUTO UNLOCK: Timeout Dialog
-    ["SI_TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_TITLE"] = "Timeout",
-    ["SI_TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_BODY"] = "Sorry, an unknown error has occurred. The automatic discovery was canceled.",
-    -- AUTO UNLOCK: Loop Finish Dialog
-    ["SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_TITLE"] = "Automatic discovery finished",
-    ["SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY"] = "No more zones found to be discovered. Either there are no players in the zones or you have already discovered all wayshrines.",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Open BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Close BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Treasure & survey maps & leads")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Refresh result list")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Unlock current zone wayshrines")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Port into Primary Residence")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "Visit BeamMeUp Guild House")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Port to current zone")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Port outside Primary Residence")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Arenas / Trials / Dungeons")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Port to focused quest")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Port to any zone")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
+
+
+-----------------------------------------------------------------------------
+-- DIALOGS | NOTIFICATIONS
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_DIALOG_NO_BMU_GUILD_BODY, "We are so sorry, but it seems that there is no BeamMeUp guild on this server yet.\n\nFeel free to contact us via the ESOUI website and start an official BeamMeUp guild on this server.")
+mkstr(SI.TELE_DIALOG_INFO_BMU_GUILD_BODY, "Hello and thank you for using BeamMeUp. In 2019, we started several BeamMeUp guilds for the purpose of sharing free fast travel options. Everyone is welcome, no requirements or obligations!\n\nBy confirming this dialog, you will see the official and partner guilds of BeamMeUp in the list. You are welcome to join! You can also display the guilds by clicking on the guild button in the upper left corner.\nYour BeamMeUp Team")
+mkstr(SI.TELE_DIALOG_INFO_NEW_FEATURE_FAVORITE_PLAYER_NOTIFICATION, "You receive a notification (center screen message) when a player favorite comes online.\n\nEnable this feature?")
+mkstr(SI.TELE_DIALOG_INFO_NEW_FEATURE_SURVEY_MAP_NOTIFICATION, "If you mine a survey map and there are still some identical maps (same location) in your inventory, a notification (center screen message) will inform you.\n\nEnable this feature?")
+mkstr(SI.TELE_DIALOG_PTF_INTEGRATION_MISSING_TITLE, "Integration of \"Port to Friend's House\"")
+mkstr(SI.TELE_DIALOG_PTF_INTEGRATION_MISSING_BODY, "To use the integration feature, please install the addon \"Port to Friend's House\". You will then see your configured houses and guild halls here in the list.\n\nDo you want to open \"Port to Friend's House\" addon website now?")
+-- AUTO UNLOCK: Start Dialog
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_TITLE, "Start automatic wayshrine discovery?")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_BODY, "By confirming, BeamMeUp will start traveling to all available players in the current zone. This way you will automatically jump from wayshrine to wayshrine to discover as much as possible.")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION, "Looping over zones ...")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1, "shuffle randomly")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2, "by ratio of undiscovered wayshrines")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3, "by number of players")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION4, "by zone name")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_CHAT_LOG_OPTION, "Output results in chat")
+-- AUTO UNLOCK: Refuse Dialogs
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_TITLE, "Discovery is not possible")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY, "All wayshrines in the zone have already been discovered.")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY2, "Wayshrine discovery is not possible in this zone. The feature is only available in overland zones/regions.")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY3, "Unfortunately, there are no players in the zone to travel to.")
+-- AUTO UNLOCK: Process Dialog
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART, "Automatic wayshrine discovery is running...")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY, "Newly discovered wayshrines:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP, "Gained XP:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_PROGRESS, "Progress:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_TIMER, "Next jump in:")
+-- AUTO UNLOCK: Finish Dialog
+mkstr(SI.TELE_DIALOG_FINISH_AUTO_UNLOCK_BODY_PART, "Automatic discovery of wayshrines completed.")
+-- AUTO UNLOCK: Timeout Dialog
+mkstr(SI.TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_TITLE, "Timeout")
+mkstr(SI.TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_BODY, "Sorry, an unknown error has occurred. The automatic discovery was canceled.")
+-- AUTO UNLOCK: Loop Finish Dialog
+mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_TITLE, "Automatic discovery finished")
+mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY, "No more zones found to be discovered. Either there are no players in the zones or you have already discovered all wayshrines.")
 
 
 

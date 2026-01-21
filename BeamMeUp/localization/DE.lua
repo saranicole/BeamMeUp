@@ -221,43 +221,61 @@ local strings = {
     ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wegschrein-Favorit",
 
 
-    -----------------------------------------------------------------------------
-    -- DIALOGS | NOTIFICATIONS
-    -----------------------------------------------------------------------------
-    ["SI_TELE_DIALOG_NO_BMU_GUILD_BODY"] = "Es tut uns leid, aber es scheint, dass noch keine BeamMeUp Gilde auf diesem Server existiert.\n\nZögere nicht, uns über die ESOUI-Website zu kontaktieren und eine offizielle BeamMeUp Gilde auf diesem Server zu starten.",
-    ["SI_TELE_DIALOG_INFO_BMU_GUILD_BODY"] = "Hallo und vielen Dank, dass du BeamMeUp nutzt. Im Jahr 2019 haben wir mehrere BeamMeUp Gilden gegründet, um kostenlose Schnellreise-Möglichkeiten zu teilen. Jeder ist willkommen, keine Voraussetzungen oder Verpflichtungen!\n\nWenn du diesen Dialog bestätigst, siehst du die offizielen und Partner-Gilden in der Liste des Addons. Du bist herzlich eingeladen, beizutreten! Du kannst die Gilden auch finden, indem du auf den Gilden-Button in der oberen linken Ecke klickst.\nDein BeamMeUp-Team",
-    ["SI_TELE_DIALOG_INFO_NEW_FEATURE_FAVORITE_PLAYER_NOTIFICATION"] = "Du erhältst eine Benachrichtigung (Bildschirmmeldung), wenn ein Spieler-Favorit online kommt.\n\nDiese Funktion aktivieren?",
-    ["SI_TELE_DIALOG_INFO_NEW_FEATURE_SURVEY_MAP_NOTIFICATION"] = "Wenn du einen Fundbericht abbaust und sich noch weitere identische Fundberichte (selbe Stelle) in deinem Inventar befinden, wird dich eine Benachrichtigung darüber informieren.\n\nDiese Funktion aktivieren?",
-    ["SI_TELE_DIALOG_PTF_INTEGRATION_MISSING_TITLE"] = "Integration von \"Port to Friend's House\"",
-    ["SI_TELE_DIALOG_PTF_INTEGRATION_MISSING_BODY"] = "Um die Integration zu nutzen, installiere bitte das Addon \"Port to Friend's House\". Du wirst dann deine konfigurierten Häuser und Gildenhallen hier in der Liste sehen.\n\nJetzt die \"Port to Friend's House\" Addon-Website öffnen?",
-    -- AUTO UNLOCK: Start Dialog
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Automatische Wegschrein-Freischaltung starten?",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Durch Bestätigen startet BeamMeUp die Schnellreise zu allen verfügbaren Spielern in der aktuellen Zone. Auf diese Weise springst du automatisch von Wegschrein zu Wegschrein, um so viele wie möglich zu entdecken.",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Dauerschleife über die Zonen ...",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "zufällig",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "nach Verhältnis der unentdeckten Wegschreine",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "nach Anzahl der Spieler",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION4"] = "nach Zonennamen",
-    ["SI_TELE_DIALOG_AUTO_UNLOCK_CHAT_LOG_OPTION"] = "Ergebnisse im Chat ausgeben",
-    -- AUTO UNLOCK: Refuse Dialogs
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_TITLE"] = "Wegschrein-Freischaltung ist nicht möglich",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY"] = "Alle Wegschreine in der Zone wurden bereits entdeckt.",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY2"] = "Die Wegschrein-Freischaltung ist in dieser Zone nicht möglich. Die Funktion ist nur in Regionen/Überlandgebieten verfügbar.",
-    ["SI_TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY3"] = "Leider gibt es in der Zone keine Spieler, zu denen du reisen kannst.",
-    -- AUTO UNLOCK: Process Dialog
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART"] = "Wegschrein-Freischaltung läuft ...",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY"] = "Neu entdeckte Wegschreine:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP"] = "Gewonnene EP:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_PROGRESS"] = "Fortschritt:",
-    ["SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_TIMER"] = "Nächster Sprung in:",
-    -- AUTO UNLOCK: Finish Dialog
-    ["SI_TELE_DIALOG_FINISH_AUTO_UNLOCK_BODY_PART"] = "Automatische Wegschrein-Freischaltung abgeschlossen.",
-    -- AUTO UNLOCK: Timeout Dialog
-    ["SI_TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_TITLE"] = "Zeitüberschreitung",
-    ["SI_TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_BODY"] = "Entschuldigung, ein unbekannter Fehler ist aufgetreten. Die Wegschrein-Freischaltung wurde abgebrochen.",
-    -- AUTO UNLOCK: Loop Finish Dialog
-    ["SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_TITLE"] = "Wegschrein-Freischaltung abgeschlossen",
-    ["SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY"] = "Es wurden keine weiteren Zonen gefunden. Entweder gibt es keine Spieler in den Zonen oder du hast bereits alle Wegschreine entdeckt.",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Öffne BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Schließen BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Schatzkarten & Fundberichte & Spuren")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Trefferliste aktualisieren")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Wegschrein-Freischaltung")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Schnellreise in den Hauptwohnsitz")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "BeamMeUp Gildenhaus besuchen")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Schnellreise ins aktuelle Gebiet")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Schnellreise vor den Hauptwohnsitz")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Arenen / Prüfungen / Verliese")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Schnellreise zur verfolgten Quest")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Schnellreise in beliebiges Gebiet")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wegschrein-Favorit")
+
+
+-----------------------------------------------------------------------------
+-- DIALOGS | NOTIFICATIONS
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_DIALOG_NO_BMU_GUILD_BODY, "Es tut uns leid, aber es scheint, dass noch keine BeamMeUp Gilde auf diesem Server existiert.\n\nZögere nicht, uns über die ESOUI-Website zu kontaktieren und eine offizielle BeamMeUp Gilde auf diesem Server zu starten.")
+mkstr(SI.TELE_DIALOG_INFO_BMU_GUILD_BODY, "Hallo und vielen Dank, dass du BeamMeUp nutzt. Im Jahr 2019 haben wir mehrere BeamMeUp Gilden gegründet, um kostenlose Schnellreise-Möglichkeiten zu teilen. Jeder ist willkommen, keine Voraussetzungen oder Verpflichtungen!\n\nWenn du diesen Dialog bestätigst, siehst du die offizielen und Partner-Gilden in der Liste des Addons. Du bist herzlich eingeladen, beizutreten! Du kannst die Gilden auch finden, indem du auf den Gilden-Button in der oberen linken Ecke klickst.\nDein BeamMeUp-Team")
+mkstr(SI.TELE_DIALOG_INFO_NEW_FEATURE_FAVORITE_PLAYER_NOTIFICATION, "Du erhältst eine Benachrichtigung (Bildschirmmeldung), wenn ein Spieler-Favorit online kommt.\n\nDiese Funktion aktivieren?")
+mkstr(SI.TELE_DIALOG_INFO_NEW_FEATURE_SURVEY_MAP_NOTIFICATION, "Wenn du einen Fundbericht abbaust und sich noch weitere identische Fundberichte (selbe Stelle) in deinem Inventar befinden, wird dich eine Benachrichtigung darüber informieren.\n\nDiese Funktion aktivieren?")
+mkstr(SI.TELE_DIALOG_PTF_INTEGRATION_MISSING_TITLE, "Integration von \"Port to Friend's House\"")
+mkstr(SI.TELE_DIALOG_PTF_INTEGRATION_MISSING_BODY, "Um die Integration zu nutzen, installiere bitte das Addon \"Port to Friend's House\". Du wirst dann deine konfigurierten Häuser und Gildenhallen hier in der Liste sehen.\n\nJetzt die \"Port to Friend's House\" Addon-Website öffnen?")
+-- AUTO UNLOCK: Start Dialog
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_TITLE, "Automatische Wegschrein-Freischaltung starten?")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_BODY, "Durch Bestätigen startet BeamMeUp die Schnellreise zu allen verfügbaren Spielern in der aktuellen Zone. Auf diese Weise springst du automatisch von Wegschrein zu Wegschrein, um so viele wie möglich zu entdecken.")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION, "Dauerschleife über die Zonen ...")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1, "zufällig")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2, "nach Verhältnis der unentdeckten Wegschreine")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3, "nach Anzahl der Spieler")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION4, "nach Zonennamen")
+mkstr(SI.TELE_DIALOG_AUTO_UNLOCK_CHAT_LOG_OPTION, "Ergebnisse im Chat ausgeben")
+-- AUTO UNLOCK: Refuse Dialogs
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_TITLE, "Wegschrein-Freischaltung ist nicht möglich")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY, "Alle Wegschreine in der Zone wurden bereits entdeckt.")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY2, "Die Wegschrein-Freischaltung ist in dieser Zone nicht möglich. Die Funktion ist nur in Regionen/Überlandgebieten verfügbar.")
+mkstr(SI.TELE_DIALOG_REFUSE_AUTO_UNLOCK_BODY3, "Leider gibt es in der Zone keine Spieler, zu denen du reisen kannst.")
+-- AUTO UNLOCK: Process Dialog
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART, "Wegschrein-Freischaltung läuft ...")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY, "Neu entdeckte Wegschreine:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP, "Gewonnene EP:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_PROGRESS, "Fortschritt:")
+mkstr(SI.TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_TIMER, "Nächster Sprung in:")
+-- AUTO UNLOCK: Finish Dialog
+mkstr(SI.TELE_DIALOG_FINISH_AUTO_UNLOCK_BODY_PART, "Automatische Wegschrein-Freischaltung abgeschlossen.")
+-- AUTO UNLOCK: Timeout Dialog
+mkstr(SI.TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_TITLE, "Zeitüberschreitung")
+mkstr(SI.TELE_DIALOG_TIMEOUT_AUTO_UNLOCK_BODY, "Entschuldigung, ein unbekannter Fehler ist aufgetreten. Die Wegschrein-Freischaltung wurde abgebrochen.")
+-- AUTO UNLOCK: Loop Finish Dialog
+mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_TITLE, "Wegschrein-Freischaltung abgeschlossen")
+mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY, "Es wurden keine weiteren Zonen gefunden. Entweder gibt es keine Spieler in den Zonen oder du hast bereits alle Wegschreine entdeckt.")
 
 
 

@@ -82,6 +82,8 @@ BMU.var = {
   -------------------------------------
   controls              = {},
   isAddonLoaded         = false,
+  isPanelShown          = false,
+  closeConsoleBtn        = nil,
   color                 = {
     colTrash     = "777777", -- Trash Gray
     colYellow    = "FFFF00" ,-- yellow

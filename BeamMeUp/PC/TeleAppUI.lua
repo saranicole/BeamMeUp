@@ -1895,7 +1895,7 @@ BMU_checkCheckboxesCurrentStatus = BMU.checkCheckboxesCurrentStatus
 
 function BMU.updatePosition()
     local teleporterWin     = BMU.win
-	if sm:IsShowing("worldMap") then
+	if SCENE_MANAGER:IsShowing(BG.worldMap) then
 	
 		-- show anchor button
 		teleporterWin_anchorTexture:SetHidden(false)
@@ -2206,7 +2206,7 @@ function BMU.handleChatLinkClick(rawLink, mouseButton, linkText, linkStyle, link
 			worldMapManager:SetMapByIndex(1)
 			worldMapManager:SetMapByIndex(mapIndex)
 			-- start ping
-			if not sm:IsShowing("worldMap") then sm:Show("worldMap") end
+			if not SCENE_MANAGER:IsShowing(BG.worldMap) then SCENE_MANAGER:Show(BG.worldMap) end
 			PingMap(MAP_PIN_TYPE_RALLY_POINT, MAP_TYPE_LOCATION_CENTERED, coorX, coorY)
 		end
 		

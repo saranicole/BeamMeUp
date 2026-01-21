@@ -186,21 +186,22 @@ local strings = {
     ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
 
 
-    -----------------------------------------------------------------------------
-    -- KEY BINDING
-    -----------------------------------------------------------------------------
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN"] = "Apri BeamMeUp",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS"] = "Mappe del Tesoro & Mappe di Ricerca & Indizi",
-    ["SI_TELE_KEYBINDING_REFRESH"] = "Aggiorna Lista Risultati",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_UNLOCK"] = "Sblocca i santuari nella zona attuale",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE"] = "Viaggia nella Residenza Primaria",
-    ["SI_TELE_KEYBINDING_GUILD_HOUSE_BMU"] = "Visita la casa di gilda di BeamMeUp",
-    ["SI_TELE_KEYBINDING_CURRENT_ZONE"] = "Viaggia nella zona corrente",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE"] = "Viaggia fuori la Residenza Primaria",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER"] = "Arenas / Trials / Dungeons",
-    ["SI_TELE_KEYBINDING_TRACKED_QUEST"] = "Port to focused quest",
-    ["SI_TELE_KEYBINDING_ANY_ZONE"] = "Port to any zone",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Apri BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Chiudere BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Mappe del Tesoro & Mappe di Ricerca & Indizi")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Aggiorna Lista Risultati")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Sblocca i santuari nella zona attuale")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Viaggia nella Residenza Primaria")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "Visita la casa di gilda di BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Viaggia nella zona corrente")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Viaggia fuori la Residenza Primaria")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Arenas / Trials / Dungeons")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Port to focused quest")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Port to any zone")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 
 
     -----------------------------------------------------------------------------

@@ -186,21 +186,22 @@ local strings = {
     ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
 
 
-    -----------------------------------------------------------------------------
-    -- KEY BINDING
-    -----------------------------------------------------------------------------
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN"] = "Abrir BeamMeUp",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS"] = "Mapas de Tesoros & Prospecciones & Pistas",
-    ["SI_TELE_KEYBINDING_REFRESH"] = "Actualizar resultado de lista",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_UNLOCK"] = "Desbloquear ermitas de la zona actual",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE"] = "Transportar en residencia primaria",
-    ["SI_TELE_KEYBINDING_GUILD_HOUSE_BMU"] = "Visitar casa del Gremio BeamMeUp",
-    ["SI_TELE_KEYBINDING_CURRENT_ZONE"] = "Transportar a zona actual",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE"] = "Transporta afuera de residencia primaria",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER"] = "Arenas / Pruebass / Mazmorras",
-    ["SI_TELE_KEYBINDING_TRACKED_QUEST"] = "Transportar a mision enfocada",
-    ["SI_TELE_KEYBINDING_ANY_ZONE"] = "Teleportarse a cualquier zona",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Abrir BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Cerrar BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Mapas de Tesoros & Prospecciones & Pistas")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Actualizar resultado de lista")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Desbloquear ermitas de la zona actual")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Transportar en residencia primaria")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "Visitar casa del Gremio BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Transportar a zona actual")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Transporta afuera de residencia primaria")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Arenas / Pruebass / Mazmorras")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Transportar a mision enfocada")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Teleportarse a cualquier zona")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 
 
     -----------------------------------------------------------------------------

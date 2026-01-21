@@ -342,6 +342,27 @@ function BMU.onWorldMapChanged(wasNavigateIn)
 end
 local BMU_onWorldMapChanged = BMU.onWorldMapChanged
 
+function BMU.useBackToClose(show)
+  if show then
+    if BMU.var.closeConsoleBtn == nil then
+      BMU.var.closeConsoleBtn = {
+        alignment = KEYBIND_STRIP_ALIGN_LEFT,
+        {
+            name = SI.get(SI.TELE_KEYBINDING_CLOSE_MAIN),
+            keybind = "UI_SHORTCUT_SECONDARY",
+            callback = BMU.HideTeleporter,
+            visible = function()
+              return true
+            end
+          }
+        }
+    end
+    KEYBIND_STRIP:AddKeybindButtonGroup(BMU.var.closeConsoleBtn)
+  elseif BMU.var.closeConsoleBtn ~= nil then
+    KEYBIND_STRIP:RemoveKeybindButtonGroup(BMU.var.closeConsoleBtn)
+  end
+end
+
 
 function BMU.OpenTeleporter(refresh)
 	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
@@ -425,6 +446,9 @@ function BMU.HideTeleporter()
 		
 		-- show ZoneGuide
 		BMU_toggleZoneGuide(true)
+	end
+	if IsInGamepadPreferredMode() or IsConsoleUI() then
+	  BMU.useBackToClose(false)
 	end
 end
 BMU_HideTeleporter = BMU.HideTeleporter

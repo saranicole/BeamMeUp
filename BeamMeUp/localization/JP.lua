@@ -186,21 +186,22 @@ local strings = {
     ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
 
 
-    -----------------------------------------------------------------------------
-    -- KEY BINDING
-    -----------------------------------------------------------------------------
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN"] = "BeamMeUpを開く",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS"] = "宝の地図・調査報告・手掛かり",
-    ["SI_TELE_KEYBINDING_REFRESH"] = "更新",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_UNLOCK"] = "旅の祠を解除する",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE"] = "本邸の内へ移動",
-    ["SI_TELE_KEYBINDING_GUILD_HOUSE_BMU"] = "BeamMeUpギルドハウスを訪ねる",
-    ["SI_TELE_KEYBINDING_CURRENT_ZONE"] = "現在のゾーンにテレポート",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE"] = "本邸の外へ移動",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER"] = "アリーナ / 試練 / ダンジョン",
-    ["SI_TELE_KEYBINDING_TRACKED_QUEST"] = "フォーカスしているクエストへの移動",
-    ["SI_TELE_KEYBINDING_ANY_ZONE"] = "任意のゾーンへポート",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "BeamMeUpを開く")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "BeamMeUp閉鎖する")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "宝の地図・調査報告・手掛かり")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "更新")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "旅の祠を解除する")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "本邸の内へ移動")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "BeamMeUpギルドハウスを訪ねる")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "現在のゾーンにテレポート")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "本邸の外へ移動")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "アリーナ / 試練 / ダンジョン")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "フォーカスしているクエストへの移動")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "任意のゾーンへポート")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 
 
     -----------------------------------------------------------------------------

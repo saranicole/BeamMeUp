@@ -193,18 +193,19 @@ local strings = {
 -----------------------------------------------------------------------------
 -- KEY BINDING
 -----------------------------------------------------------------------------
-["SI_TELE_KEYBINDING_TOGGLE_MAIN"] = "Abrir BeamMeUp",
-["SI_TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS"] = "Tesouros & Mapas de Pesquisas & Leads",
-["SI_TELE_KEYBINDING_REFRESH"] = "Atualizar a lista de resultados.",
-["SI_TELE_KEYBINDING_WAYSHRINE_UNLOCK"] = "Desbloquear Santuários da zona atual",
-["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE"] = "Viajar em residência primária",
-["SI_TELE_KEYBINDING_GUILD_HOUSE_BMU"] = "Visite a Casa da Guilda BeamMeUp",
-["SI_TELE_KEYBINDING_CURRENT_ZONE"] = "Viajar para a zona atual",
-["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE"] = "Viajar para fora da residência primária",
-["SI_TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER"] = "Arenas / Provações / Masmorras",
-["SI_TELE_KEYBINDING_TRACKED_QUEST"] = "Trocar para missão escolhida",
-["SI_TELE_KEYBINDING_ANY_ZONE"] = "Viajar para zona aleatória",
-["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Abrir BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Fechar BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Tesouros & Mapas de Pesquisas & Leads")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Atualizar a lista de resultados.")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Desbloquear Santuários da zona atual")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Viajar em residência primária")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "Visite a Casa da Guilda BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Viajar para a zona atual")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Viajar para fora da residência primária")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Arenas / Provações / Masmorras")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Trocar para missão escolhida")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Viajar para zona aleatória")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 
 
 -----------------------------------------------------------------------------

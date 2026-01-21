@@ -186,21 +186,22 @@ local strings = {
     ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
 
 
-    -----------------------------------------------------------------------------
-    -- KEY BINDING
-    -----------------------------------------------------------------------------
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN"] = "Otwórz BeamMeUp",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS"] = "Mapy skarbów, surowców i wskazówki wizji",
-    ["SI_TELE_KEYBINDING_REFRESH"] = "Odśwież listę wyników",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_UNLOCK"] = "Odblokuj kapliczki w obecnej strefie",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE"] = "Podróż do Głównej Rezydencji",
-    ["SI_TELE_KEYBINDING_GUILD_HOUSE_BMU"] = "Odwiedź siedzibę BeamMeUp",
-    ["SI_TELE_KEYBINDING_CURRENT_ZONE"] = "Podróżuj do obecnej strefy",
-    ["SI_TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE"] = "Podróż na zewnątrz Głównej Rezydencji",
-    ["SI_TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER"] = "Areny / Triale / Lochy",
-    ["SI_TELE_KEYBINDING_TRACKED_QUEST"] = "Podróż do śledzonego zadania",
-    ["SI_TELE_KEYBINDING_ANY_ZONE"] = "Losowy teleport",
-    ["SI_TELE_KEYBINDING_WAYSHRINE_FAVORITE"] = "Wayshrine Favorite",
+-----------------------------------------------------------------------------
+-- KEY BINDING
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN, "Otwórz BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CLOSE_MAIN, "Zamknąć BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_RELATED_ITEMS, "Mapy skarbów, surowców i wskazówki wizji")
+mkstr(SI.TELE_KEYBINDING_REFRESH, "Odśwież listę wyników")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_UNLOCK, "Odblokuj kapliczki w obecnej strefie")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE, "Podróż do Głównej Rezydencji")
+mkstr(SI.TELE_KEYBINDING_GUILD_HOUSE_BMU, "Odwiedź siedzibę BeamMeUp")
+mkstr(SI.TELE_KEYBINDING_CURRENT_ZONE, "Podróżuj do obecnej strefy")
+mkstr(SI.TELE_KEYBINDING_PRIMARY_RESIDENCE_OUTSIDE, "Podróż na zewnątrz Głównej Rezydencji")
+mkstr(SI.TELE_KEYBINDING_TOGGLE_MAIN_DUNGEON_FINDER, "Areny / Triale / Lochy")
+mkstr(SI.TELE_KEYBINDING_TRACKED_QUEST, "Podróż do śledzonego zadania")
+mkstr(SI.TELE_KEYBINDING_ANY_ZONE, "Losowy teleport")
+mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 
 
     -----------------------------------------------------------------------------
