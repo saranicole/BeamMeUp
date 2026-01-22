@@ -867,7 +867,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["chatOutputFastTravel"] = true,
 		["chatOutputAdditional"] = true,
 		["chatOutputUnlock"] = true,
-		["showContextMenuIcons"] = true, --INS 260203 Baertram
+		["IJAVars"] = {},
     }
     
 	BMU.DefaultsServer = {
@@ -939,15 +939,14 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		July 2022
 		Removed addon capability to detect and transfer old saved vars (before Feb. 2022 and version 2.6.0)
 	--]]
-	BMU.savedVarsAcc =  ZO_SavedVars:NewAccountWide(SVTabName, 			2, nil, BMU.DefaultsAccount, 	nil)
-	BMU.savedVarsServ = ZO_SavedVars:NewAccountWide(SVTabName, 			3, nil, BMU.DefaultsServer, 	GetWorldName())
-	BMU.savedVarsChar = ZO_SavedVars:NewCharacterIdSettings(SVTabName, 	3, nil, BMU.DefaultsCharacter, 	nil)
-	local BMU_savedVarsAcc = BMU.savedVarsAcc
+	BMU.savedVarsAcc = ZO_SavedVars:NewAccountWide("BeamMeUp_SV", 2, nil, BMU.DefaultsAccount, nil)
+	BMU.savedVarsServ = ZO_SavedVars:NewAccountWide("BeamMeUp_SV", 3, nil, BMU.DefaultsServer, GetWorldName())
+	BMU.savedVarsChar = ZO_SavedVars:NewCharacterIdSettings("BeamMeUp_SV", 3, nil, BMU.DefaultsCharacter, nil)
 
-	--Fix some SavedVariables entries
-	--fixSVs()
+	if BMU.IJA then
+      BMU.IJA.savedVars = BMU.savedVarsAcc.IJAVars
+	end
 
-	
 	BMU.TeleporterSetupUI(addOnName)
 	
     EM:RegisterForEvent(appName, EVENT_PLAYER_ACTIVATED, PlayerInitAndReady)
