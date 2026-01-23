@@ -82,10 +82,6 @@ BMU.var = {
   -------------------------------------
   controls              = {},
   isAddonLoaded         = false,
-  isPanelShown          = false,
-  closeConsoleBtn       = nil,
-  actionLayerActive     = false,
-  editModeFocusId       = nil,
   color                 = {
     colTrash     = "777777", -- Trash Gray
     colYellow    = "FFFF00" ,-- yellow
@@ -136,7 +132,16 @@ BMU.var = {
   	choosenListPlayerFilter = BMU_SOURCE_INDEX_ALL, --current list player filter, 0 = Show all
 }
 
+-- necessary libraries
 BMU.LibZone = LibZone
+BMU.LAM = LibAddonMenu2
+
+-- optional libraries
+BMU.LSC = LibSlashCommander
+BMU.LibSets = LibSets
+BMU.LibMapPing = LibMapPing2
+BMU.LCMB = LibChatMenuButton
+
 
 -------------VERY FIRST FUNCTIONS---------
 function BMU.mergeTables(t, ...)
@@ -1989,23 +1994,6 @@ function BMU.GetCurrentMapDisplayFilter()
 		BMU_SVChar_displayMaps.treasure
 end
 
-
---Run a function throttled (check if it should run already and overwrite the old call then with a new one to
---prevent running it multiple times in a short time)
-function BMU.ThrottledUpdate(callbackName, timer, callback, ...)
-    if not callbackName or callbackName == "" or not callback then return end
-    local args
-    if ... ~= nil then
-        args = {...}
-    end
-    local function Update()
-        EVENT_MANAGER:UnregisterForUpdate(callbackName)
-        if args then
-            callback(unpack(args))
-        else
-            callback()
-        end
-    end
-    EVENT_MANAGER:UnregisterForUpdate(callbackName)
-    EVENT_MANAGER:RegisterForUpdate(callbackName, timer, Update)
+function BMU.IsNotKeyboard()
+  return not (IsInGamepadPreferredMode() or IsConsoleUI())
 end

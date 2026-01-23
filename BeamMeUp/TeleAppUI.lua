@@ -3,6 +3,10 @@ local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU
 local LAM2 = BMU.LAM
 local SI = BMU.SI ---- used for localization
 
+if BMU.IsNotKeyboard() then
+  local CS = BMU.CS
+end
+
 local teleporterVars    = BMU.var
 local appName           = teleporterVars.appName
 local wm                = WINDOW_MANAGER
@@ -2112,7 +2116,11 @@ end
 function BMU.TeleporterSetupUI(addOnName)
 	if appName ~= addOnName then return end
 		addOnName = appName .. " - Teleporter"
-		BMU.SetupOptionsMenu(addOnName)
+		if BMU.IsNotKeyboard() then
+      CS.SetupOptionsMenu(addOnName)
+		else
+		  SetupOptionsMenu(addOnName)
+		end
 		SetupUI()
 end
 
