@@ -3,89 +3,17 @@ local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU
 local SI = BMU.SI
 local teleporterVars = BMU.var
 local appName = teleporterVars.appName
-local SVTabName = teleporterVars.savedVariablesName
+local worldMap = "worldMap"
 
--- -v- INS251229 Baertram BEGIN 0
---Performance reference
-----variables (defined now, as they were loaded before this file -> see manifest .txt)
---ZOs variables
-local EM = EVENT_MANAGER
-local CM = CALLBACK_MANAGER
-local LH = LINK_HANDLER
-local SharedInv = SHARED_INVENTORY
-local worldMapScene_Keyboard				= WORLD_MAP_SCENE
-local worldMapScene_Gamepad					= GAMEPAD_WORLD_MAP_SCENE
-local worldMapZoneStoryTLC_Keyboard			= ZO_WorldMapZoneStoryTopLevel_Keyboard
-local ClearCustomScrollableMenu 			= ClearCustomScrollableMenu --LSM
---Other addon variables
-local BMU_LibZone = BMU.LibZone
---BMU variables
-local BMU_ZONE_CATEGORY_DELVE = BMU.ZONE_CATEGORY_DELVE
-local BMU_ZONE_CATEGORY_PUBDUNGEON = BMU.ZONE_CATEGORY_PUBDUNGEON
-local BMU_ZONE_CATEGORY_HOUSE = BMU.ZONE_CATEGORY_HOUSE
-local BMU_ZONE_CATEGORY_GRPDUNGEON = BMU.ZONE_CATEGORY_GRPDUNGEON
-local BMU_ZONE_CATEGORY_TRAIL = BMU.ZONE_CATEGORY_TRAIL
-local BMU_ZONE_CATEGORY_ENDLESSD = BMU.ZONE_CATEGORY_ENDLESSD
-local BMU_ZONE_CATEGORY_GRPZONES = BMU.ZONE_CATEGORY_GRPZONES
-local BMU_ZONE_CATEGORY_GRPARENA = BMU.ZONE_CATEGORY_GRPARENA
-local BMU_ZONE_CATEGORY_SOLOARENA = BMU.ZONE_CATEGORY_SOLOARENA
-local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
+if BMU.IsNotKeyboard() then
+  worldMap = "gamepad_worldMap"
+end
 
---Subtypes
-local clueData = teleporterVars.clueData
-local subTypeClue                 = clueData.clueTypes[1] --"clue"
---Treasure
-local treasureData = teleporterVars.treasureData
-local treasureTypes = treasureData.treasureTypes
-local treaureType_Treasure = treasureTypes[1]
---Survey type
-local surveyData = teleporterVars.surveyData
-local surveyTypes = surveyData.surveyTypes
-local subType_Alchemist 					= surveyTypes[1]
-local subType_Blacksmith 					= surveyTypes[2]
-local subType_Clothier 						= surveyTypes[3]
-local subType_Enchanter 					= surveyTypes[4]
-local subType_Jewelry 						= surveyTypes[5]
-local subType_Woodworker 					= surveyTypes[6]
---Lead types
-local leadsData = teleporterVars.leadsData
-local leadTypes = leadsData.leadTypes
-local leadType_scryable 					= leadTypes[1]
-local leadType_scried 						= leadTypes[2]
-local leadType_completed 					= leadTypes[3]
+local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
 
-----functions
---ZOs functions
-local GetZoneNameById = GetZoneNameById
-local GetCurrentMapZoneIndex = GetCurrentMapZoneIndex
-local GetZoneId = GetZoneId
---BMU functions
-local BMU_SI_Get 							= SI.get
-local BMU_updatePosition					= BMU.updatePosition
-local BMU_activateWayshrineTravelAutoConfirm= BMU.activateWayshrineTravelAutoConfirm
-local BMU_printToChat 						= BMU.printToChat
-local BMU_showDialogSimple 					= BMU.showDialogSimple
-local BMU_portToAnyZone 					= BMU.portToAnyZone
-local BMU_portToTrackedQuestZone 			= BMU.portToTrackedQuestZone
-local BMU_portToCurrentZone 				= BMU.portToCurrentZone
-local BMU_portToBMUGuildHouse 				= BMU.portToBMUGuildHouse
-local BMU_portToGroupLeader 				= BMU.portToGroupLeader
-local BMU_portToOwnHouse 					= BMU.portToOwnHouse
-local BMU_showDialogAutoUnlock				= BMU.showDialogAutoUnlock
-local BMU_PortalToPlayer 					= BMU.PortalToPlayer
-local BMU_refreshListAuto 					= BMU.refreshListAuto
-local BMU_journalUpdated					= BMU.journalUpdated
-
-
-----variables (defined inline in code below, upon first usage, as they are still nil at this line)
---BMU UI variables
-local BMU_win, BMU_win_Main_Control
--------functions (defined inline in code below, upon first usage, as they are still nil at this line)
-local BMU_HideTeleporter, BMU_toggleZoneGuide, BMU_getZoneSpecificHouse, BMU_getAllPublicDungeons, BMU_getAllDelves,
-      BMU_joinBlacklist, BMU_formatName, BMU_startCountdownAutoRefresh, BMU_showNotification, BMU_initializeBlacklist,
-      BMU_OpenTeleporter, BMU_clearInputFields, BMU_createTable, BMU_createTableHouses, BMU_createTableDungeons,
-	  BMU_requestGuildData, BMU_createTableGuilds, BMU_closeBtnSwitchTexture, BMU_getParentZoneId, BMU_resetMainListFilterToAll
--- -^- INS251229 Baertram END 0
+if BMU.IsNotKeyboard() then
+  WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Gamepad
+end
 
 --Old code from TeleUnicorn -> Moved directly to Teleporter to strip the library
 BMU.throttled = {}
@@ -343,23 +271,11 @@ local BMU_onWorldMapChanged = BMU.onWorldMapChanged
 
 
 function BMU.OpenTeleporter(refresh)
-	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
-	BMU_showNotification = BMU_showNotification or BMU.showNotification								--INS251229 Baertram
-	BMU_initializeBlacklist = BMU_initializeBlacklist or BMU.initializeBlacklist					--INS251229 Baertram
-	BMU_win = BMU_win or BMU.win																	--INS251229 Baertram
-	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control								--INS251229 Baertram
-	BMU_clearInputFields = BMU_clearInputFields or BMU.clearInputFields								--INS251229 Baertram
-	BMU_createTable = BMU_createTable or BMU.createTable											--INS251229 Baertram
-	BMU_createTableHouses = BMU_createTableHouses or BMU.createTableHouses							--INS251229 Baertram
-	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
-	BMU_closeBtnSwitchTexture = BMU_closeBtnSwitchTexture or BMU.closeBtnSwitchTexture 				--INS251229 Baertram
-	BMU_startCountdownAutoRefresh = BMU_startCountdownAutoRefresh or BMU.startCountdownAutoRefresh	--INS251229 Baertram
-	BMU_resetMainListFilterToAll = BMU_resetMainListFilterToAll or BMU.ResetMainListFilterToAll
-
+  if BMU.IsNotKeyboard() then return end
 	-- show notification (in case)
 	BMU.showNotification()
 	
-	if not ZO_WorldMapZoneStoryTopLevel_Keyboard:IsHidden() then
+	if not WorldMapZoneStoryTopLevel:IsHidden() then
 		--hide ZoneGuide
 		BMU_toggleZoneGuide(false)
 		-- show swap button
@@ -408,15 +324,12 @@ BMU_OpenTeleporter = BMU.OpenTeleporter
 
 
 function BMU.HideTeleporter()
-	BMU_toggleZoneGuide = BMU_toggleZoneGuide or BMU.toggleZoneGuide								--INS251229 Baertram
-	BMU_win = BMU_win or BMU.win
-	BMU_win_Main_Control = BMU_win_Main_Control or BMU_win.Main_Control
-
-    BMU_win_Main_Control:SetHidden(true) -- hide main window
-	ClearCustomScrollableMenu() -- close all submenus
+  if BMU.IsNotKeyboard() then return end
+    BMU.win.Main_Control:SetHidden(true) -- hide main window
+	ClearMenu() -- close all submenus
 	ZO_Tooltips_HideTextTooltip() -- close all tooltips
 	
-	if SCENE_MANAGER:IsShowing("worldMap") then
+	if SCENE_MANAGER:IsShowing(worldMap) then
 		-- show button only when main window is hidden and world map is open
 		if BMU_win.MapOpen then
 			BMU_win.MapOpen:SetHidden(false)
@@ -461,12 +374,12 @@ local BMU_onZoneGuideShow = BMU.onZoneGuideShow
 function BMU.toggleZoneGuide(show)
 	if show then
 		-- show ZoneGuide
-		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(false)
+		--WorldMapZoneStoryTopLevel:SetHidden(false)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(false)
 		WORLD_MAP_SCENE:AddFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
 	else
 		-- hide ZoneGuide
-		--ZO_WorldMapZoneStoryTopLevel_Keyboard:SetHidden(true)
+		--WorldMapZoneStoryTopLevel:SetHidden(true)
 		--ZO_SharedMediumLeftPanelBackground:SetHidden(true)
 		WORLD_MAP_SCENE:RemoveFragment(WORLD_MAP_ZONE_STORY_KEYBOARD_FRAGMENT)
 	end
@@ -782,6 +695,8 @@ local function OnAddOnLoaded(eventCode, addOnName)
 	teleporterVars.version = tostring(GetAddonVersionFromManifest())
 
     teleporterVars.isAddonLoaded = true
+    local anchorOnMap = not BMU.IsNotKeyboard()
+    local chatButton = not BMU.IsNotKeyboard()
 
 
     BMU.DefaultsAccount = {
@@ -791,7 +706,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["pos_y"] = 63,
 		["anchorMapOffset_x"] = 0,
 		["anchorMapOffset_y"] = 0,
-		["anchorOnMap"] = true,
+		["anchorOnMap"] = anchorOnMap,
         ["ShowOnMapOpen"] = true,
 		["HideOnMapClose"] = true,
         ["AutoPortFreq"]  = 300,
@@ -815,7 +730,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["closeOnPorting"] = true,
 		["showNumberPlayers"] = true,
 		["totalPortCounter"] = 0,
-		["chatButton"] = true,
+		["chatButton"] = chatButton,
 		["chatButtonHorizontalOffset"] = 0,
 		["portCounterPerZone"] = {},
 		["searchCharacterNames"] = false,
@@ -927,7 +842,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 
 	CM:RegisterCallback("OnWorldMapChanged", BMU_onWorldMapChanged)
 
-	ZO_PreHookHandler(ZO_WorldMapZoneStoryTopLevel_Keyboard, "OnShow", BMU.onZoneGuideShow)
+	ZO_PreHookHandler(WorldMapZoneStoryTopLevel, "OnShow", BMU.onZoneGuideShow)
 		
 	EM:RegisterForEvent(appName, EVENT_GAME_CAMERA_UI_MODE_CHANGED, BMU_cameraModeChanged)
 	

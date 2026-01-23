@@ -2,10 +2,7 @@ local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU
 
 local LAM2 = BMU.LAM
 local SI = BMU.SI ---- used for localization
-
-if BMU.IsNotKeyboard() then
-  local CS = BMU.CS
-end
+local CS = BMU.CS
 
 local teleporterVars    = BMU.var
 local appName           = teleporterVars.appName
@@ -170,6 +167,12 @@ local refreshDungeonsMainMenuEventStr = string_format(BMU_RefreshMainMenuPattern
 local BMU_ThrottledUpdate = BMU.ThrottledUpdate
 
 -- -^- INS251229 Baertram END 0
+
+local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
+
+if BMU.IsNotKeyboard() then
+  WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Gamepad
+end
 
 -- list of tuples (guildId & displayname) for invite queue (only for admin)
 local inviteQueue = {}
@@ -450,16 +453,22 @@ local function SetupUI()
 
 	-----------------------------------------------
 	-- Fonts
+	local FontGame = ZoFontGame
+	local FontBookTablet = ZoFontBookTablet
+	if BMU.IsNotKeyboard() then
+	  FontGame = ZoFontGamepad36
+	  FontBookTablet = ZoFontGamepadBookTablet
+	end
 	
 	-- default font
-	local fontSize = BMU_round(17*scale, 0)   --CHG251229 Baertram
-	local fontStyle = ZoFontGame:GetFontInfo()
+	local fontSize = BMU.round(17*BMU.savedVarsAcc.Scale, 0)
+	local fontStyle = FontGame:GetFontInfo()
 	local fontWeight = "soft-shadow-thin"
 	BMU.font1 = string_format(fontPattern, fontStyle, fontSize, fontWeight)
 	
 	-- font of statistics
-	fontSize = BMU_round(13*scale, 0)       --CHG251229 Baertram
-	fontStyle = ZoFontBookTablet:GetFontInfo()
+	fontSize = BMU.round(13*BMU.savedVarsAcc.Scale, 0)
+	fontStyle = FontBookTablet:GetFontInfo()
 	--fontStyle = "EsoUI/Common/Fonts/consola.ttf"
 	fontWeight = "soft-shadow-thin"
 	BMU.font2 = string_format(fontPattern, fontStyle, fontSize, fontWeight)
@@ -567,10 +576,14 @@ local function SetupUI()
   teleporterWin_zoneGuideSwapTexture:SetTexture(BMU_textures.swapBtn) --CHG251229 Baertram Performance improvement
   teleporterWin_zoneGuideSwapTexture:SetMouseEnabled(true) --CHG251229 Baertram Performance improvement
 
-  teleporterWin_zoneGuideSwapTexture:SetHandler("OnMouseUp", function(self, button)
-	  if button ~= MOUSE_BUTTON_INDEX_LEFT then return end  --INS BAERTRAM20260124
-      BMU_OpenTeleporter = BMU_OpenTeleporter or BMU.OpenTeleporter --INS251229 Baertram performance improvement for multiple used variable reference
-	  BMU_OpenTeleporter(true) ----CHG251229 Baertram Performance improvement by using local
+  teleporterWin.zoneGuideSwapTexture = wm:CreateControl(nil, WorldMapZoneStoryTopLevel, CT_TEXTURE)
+  teleporterWin.zoneGuideSwapTexture:SetDimensions(50*BMU.savedVarsAcc.Scale, 50*BMU.savedVarsAcc.Scale)
+  teleporterWin.zoneGuideSwapTexture:SetAnchor(TOPRIGHT, WorldMapZoneStoryTopLevel, TOPRIGHT, TOPRIGHT -10*BMU.savedVarsAcc.Scale, -35*BMU.savedVarsAcc.Scale)
+  teleporterWin.zoneGuideSwapTexture:SetTexture(BMU.textures.swapBtn)
+  teleporterWin.zoneGuideSwapTexture:SetMouseEnabled(true)
+  
+  teleporterWin.zoneGuideSwapTexture:SetHandler("OnMouseUp", function()
+	  BMU.OpenTeleporter(true)
 	end)
 
   teleporterWin_zoneGuideSwapTexture:SetHandler("OnMouseEnter", function(teleporterWinZoneGuideSwapTextureCtrl) --CHG251229 Baertram Performance improvement
@@ -1899,7 +1912,7 @@ BMU_checkCheckboxesCurrentStatus = BMU.checkCheckboxesCurrentStatus
 
 function BMU.updatePosition()
     local teleporterWin     = BMU.win
-	if SCENE_MANAGER:IsShowing(BG.worldMap) then
+	if SCENE_MANAGER:IsShowing("worldMap") then
 	
 		-- show anchor button
 		teleporterWin_anchorTexture:SetHidden(false)
@@ -2214,7 +2227,7 @@ function BMU.handleChatLinkClick(rawLink, mouseButton, linkText, linkStyle, link
 			worldMapManager:SetMapByIndex(1)
 			worldMapManager:SetMapByIndex(mapIndex)
 			-- start ping
-			if not SCENE_MANAGER:IsShowing(BG.worldMap) then SCENE_MANAGER:Show(BG.worldMap) end
+			if not SCENE_MANAGER:IsShowing("worldMap") then SCENE_MANAGER:Show("worldMap") end
 			PingMap(MAP_PIN_TYPE_RALLY_POINT, MAP_TYPE_LOCATION_CENTERED, coorX, coorY)
 		end
 		
