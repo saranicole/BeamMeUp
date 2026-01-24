@@ -2246,6 +2246,7 @@ function BMU.createTableHouses()
 	BMU_changeState(BMU_indexListOwnHouses)
 	local resultList = {}
 	local ownedHouses = {}
+	local houseId = nil
 	if BMU.IsNotKeyboard() then
     ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
   else
@@ -2253,32 +2254,37 @@ function BMU.createTableHouses()
   end
 	for _, house in pairs(ownedHouses) do
 		local entry = BMU.createBlankRecord()
-		entry.houseId = house.houseId
-		if IsPrimaryHouse(house.houseId) then
-			houseEntry.prio              = 1
-			houseEntry.textColorZoneName = colorGold
+		if BMU.IsNotKeyboard() then
+		  houseId = house:GetReferenceId()
+    else
+      houseId = house.houseId
+		end
+		entry.houseId = houseId
+		if IsPrimaryHouse(houseId) then
+			entry.prio = 1
+			entry.textColorZoneName = "gold"
 		else
 			houseEntry.prio              = 2
 			houseEntry.textColorZoneName = colorWhite
 		end
-		houseEntry.isOwnHouse           = true
-		houseEntry.zoneId               = GetHouseZoneId(house.houseId)
-		houseEntry.zoneNameUnformatted  = GetZoneNameById(houseEntry.zoneId)
-		houseEntry.textColorDisplayName = colorGray
-		houseEntry.zoneNameClickable    = true
-		houseEntry.mapIndex             = BMU_getMapIndex(houseEntry.zoneId)
-		houseEntry.parentZoneId         = BMU_getParentZoneId(houseEntry.zoneId)
-		houseEntry.parentZoneName       = BMU_formatName(GetZoneNameById(houseEntry.parentZoneId))
-		houseEntry.category             = BMU_categorizeZone(houseEntry.zoneId)
-		houseEntry.collectibleId        = GetCollectibleIdForHouse(houseEntry.houseId)
-		houseEntry.houseCategoryType    = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(houseEntry.houseId))
-		houseEntry.nickName             = BMU_formatName(GetCollectibleNickname(houseEntry.collectibleId))
-		houseEntry.zoneName             = BMU_formatName(houseEntry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
-
-		_, _, houseEntry.houseIcon      = GetCollectibleInfo(houseEntry.collectibleId)
-		houseEntry.houseBackgroundImage = GetHousePreviewBackgroundImage(houseEntry.houseId)
-		houseEntry.houseTooltip         = { houseEntry.zoneName, "\"" .. houseEntry.nickName .. "\"", houseEntry.parentZoneName, "", "", "|t75:75:" .. houseEntry.houseIcon .. "|t", "", "", houseEntry.houseCategoryType}
-
+		entry.isOwnHouse = true
+		entry.zoneId = GetHouseZoneId(houseId)
+		entry.zoneNameUnformatted = GetZoneNameById(entry.zoneId)
+		entry.textColorDisplayName = "gray"
+		entry.zoneNameClickable = true
+		entry.mapIndex = BMU.getMapIndex(entry.zoneId)
+		entry.parentZoneId = BMU.getParentZoneId(entry.zoneId)
+		entry.parentZoneName = BMU.formatName(GetZoneNameById(entry.parentZoneId))
+		entry.category = BMU.categorizeZone(entry.zoneId)
+		entry.collectibleId = GetCollectibleIdForHouse(entry.houseId)
+		entry.houseCategoryType = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(entry.houseId))
+		entry.nickName = BMU.formatName(GetCollectibleNickname(entry.collectibleId))
+		entry.zoneName = BMU.formatName(entry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
+		
+		_, _, entry.houseIcon = GetCollectibleInfo(entry.collectibleId)
+		entry.houseBackgroundImage = GetHousePreviewBackgroundImage(entry.houseId)
+		entry.houseTooltip = {entry.zoneName, "\"" .. entry.nickName .. "\"", entry.parentZoneName, "", "", "|t75:75:" .. entry.houseIcon .. "|t", "", "", entry.houseCategoryType}
+		
 		-- add house furniture count to tooltip
 		local currentFurnitureCount_LII = savedVarsServ.houseFurnitureCount_LII[houseEntry.houseId]
 		if currentFurnitureCount_LII ~= nil then

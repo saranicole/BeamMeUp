@@ -581,15 +581,15 @@ local function SetupUI()
   teleporterWin.zoneGuideSwapTexture:SetAnchor(TOPRIGHT, WorldMapZoneStoryTopLevel, TOPRIGHT, TOPRIGHT -10*BMU.savedVarsAcc.Scale, -35*BMU.savedVarsAcc.Scale)
   teleporterWin.zoneGuideSwapTexture:SetTexture(BMU.textures.swapBtn)
   teleporterWin.zoneGuideSwapTexture:SetMouseEnabled(true)
-  
+
   teleporterWin.zoneGuideSwapTexture:SetHandler("OnMouseUp", function()
 	  BMU.OpenTeleporter(true)
 	end)
 
-  teleporterWin_zoneGuideSwapTexture:SetHandler("OnMouseEnter", function(teleporterWinZoneGuideSwapTextureCtrl) --CHG251229 Baertram Performance improvement
-      teleporterWinZoneGuideSwapTextureCtrl:SetTexture(BMU_textures.swapBtnOver) --CHG251229 Baertram Performance improvement
-      BMU_tooltipTextEnter(BMU, teleporterWinZoneGuideSwapTextureCtrl,
-          BMU_SI_Get(SI_TELE_UI_BTN_TOGGLE_ZONE_GUIDE)) --CHG251229 Baertram Performance improvement
+  teleporterWin.zoneGuideSwapTexture:SetHandler("OnMouseEnter", function(self)
+      teleporterWin.zoneGuideSwapTexture:SetTexture(BMU.textures.swapBtnOver)
+      BMU:tooltipTextEnter(teleporterWin.zoneGuideSwapTexture,
+          SI.get(SI.TELE_UI_BTN_TOGGLE_ZONE_GUIDE))
   end)
 
   teleporterWin_zoneGuideSwapTexture:SetHandler("OnMouseExit", function(teleporterWinZoneGuideSwapTextureCtrl) --CHG251229 Baertram Performance improvement
@@ -597,7 +597,12 @@ local function SetupUI()
       BMU_tooltipTextEnter(BMU, teleporterWinZoneGuideSwapTextureCtrl) --CHG251229 Baertram Performance improvement
   end)
 
-  --------------------------------------------------------------------------------------------------------------------
+  if BMU.IsNotKeyboard() then
+    teleporterWin.zoneGuideSwapTexture:SetHidden(true)
+  end
+
+  ---------------------------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------
   -- Feedback BUTTON
   --------------------------------------------------------------------------------------------------------------------
   teleporterWin_feedbackTexture = wm:CreateControl(nil, teleporterWin_Main_Control, CT_TEXTURE)  --INS251229 Baertram
@@ -1912,13 +1917,17 @@ BMU_checkCheckboxesCurrentStatus = BMU.checkCheckboxesCurrentStatus
 
 function BMU.updatePosition()
     local teleporterWin     = BMU.win
-	if SCENE_MANAGER:IsShowing("worldMap") then
-	
-		-- show anchor button
-		teleporterWin_anchorTexture:SetHidden(false)
+  local worldMap = "worldMap"
+  if BMU.IsNotKeyboard() then
+    worldMap = "gamepad_worldMap"
+  end
+	if SCENE_MANAGER:IsShowing(worldMap) then
+
+    -- show anchor button
+    teleporterWin.anchorTexture:SetHidden(false)
 		-- show swap button
-		BMU.closeBtnSwitchTexture(true)
-		
+    BMU.closeBtnSwitchTexture(true)
+
 		if BMU.savedVarsAcc.anchorOnMap then
 			-- anchor to map
 			BMU.control_global.bd:ClearAnchors()
