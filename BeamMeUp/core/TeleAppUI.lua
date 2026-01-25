@@ -1174,7 +1174,12 @@ local function SetupUI()
 						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 						  checked = function() return BMU_savedVarsChar.displayAntiquityLeads.completed end,
 					  },
-				  }, nil, nil, nil, 5
+				  },
+				  {
+					  callback = function()
+						  d("Clicked Antiquity submenu openingControl")
+					  end
+				  } --additionalData.callback is the function which is called as you click the submenu's openingControl
 		  )
 
 		  -- Clues
@@ -1193,7 +1198,7 @@ local function SetupUI()
 		  )
 
 		  -- Add submenu for survey types filter
-		  AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_BANK_FILTER_HEADER), --INS251229 Baertram
+		  AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_BANK_FILTER_HEADER), --INS251229 Baertram Survey filters
 				  {
 					  {
 						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY14),
@@ -1249,7 +1254,12 @@ local function SetupUI()
 						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 						  checked = function() return BMU.savedVarsChar.displayMaps.jewelry end,
 					  },
-				  }, nil
+				  },
+				  {
+					  callback = function()
+						  d("Clicked Survey submenu openingControl")
+					  end
+				  } --additionalData.callback is the function which is called as you click the submenu's openingControl
 		  )
 
 		  -- divider
@@ -1462,7 +1472,13 @@ local function SetupUI()
 					entryType = LSM_ENTRY_TYPE_CHECKBOX,
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showDungeons end,
 				},
-			}, nil, nil, nil, 5
+			},
+		  {
+			  callback = function()
+				  d("Clicked filters submenu openingControl")
+			  end
+		  } --additionalData.callback is the function which is called as you click the submenu's openingControl
+
 		)
 
 		-- sorting (release or acronym)
@@ -2129,7 +2145,7 @@ function BMU.AdminAddContextMenuToGuildRoster()
 		
 		-- welcome message
 		table_insert(entries, {label = "Willkommensnachricht",
-								callback = function(state)
+								callback = function()
 									local guildId = currentGuildId
 									local guildIndex = BMU.AdminGetGuildIndexFromGuildId(guildId)
 									StartChatInput("Welcome on the bridge " .. data.displayName, _G["CHAT_CHANNEL_GUILD_" .. guildIndex])
@@ -2138,12 +2154,12 @@ function BMU.AdminAddContextMenuToGuildRoster()
 								
 		-- new message
 		table_insert(entries, {label = "Neue Nachricht",
-								callback = function(state) BMU.createMail(data.displayName, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.displayName) end,
+								callback = function() BMU.createMail(data.displayName, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.displayName) end,
 								})
 								
 		-- copy account name
 		table_insert(entries, {label = "Account-ID kopieren",
-								callback = function(state) BMU.AdminCopyTextToChat(data.displayName) end,
+								callback = function() BMU.AdminCopyTextToChat(data.displayName) end,
 								})
 		
 		-- invite to BMU guilds
@@ -2151,7 +2167,7 @@ function BMU.AdminAddContextMenuToGuildRoster()
 			for _, guildId in pairs(teleporterVars.BMUGuilds[worldName]) do
 				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.displayName) then
 					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
-											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.displayName) end,
+											callback = function() BMU.AdminInviteToGuilds(guildId, data.displayName) end,
 											})
 				end
 			end
@@ -2162,7 +2178,7 @@ function BMU.AdminAddContextMenuToGuildRoster()
 			for _, guildId in pairs(teleporterVars.partnerGuilds[worldName]) do
 				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.displayName) then
 					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
-											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.displayName) end,
+											callback = function() BMU.AdminInviteToGuilds(guildId, data.displayName) end,
 											})
 				end
 			end
@@ -2170,7 +2186,7 @@ function BMU.AdminAddContextMenuToGuildRoster()
 		
 		-- check if the player is also in other BMU guilds and add info
 		table_insert(entries, {label = memberStatusText,
-								callback = function(state) end,
+								callback = function() end,
 								})
 		
 		AddCustomScrollableSubMenuEntry("BMU Admin", entries)
@@ -2200,12 +2216,12 @@ function BMU.AdminAddContextMenuToGuildApplicationRoster()
 		
 		-- new message
 		table_insert(entries, {label = "Neue Nachricht",
-								callback = function(state) BMU.createMail(data.name, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.name) end,
+								callback = function() BMU.createMail(data.name, "", "") BMU.printToChat("Nachricht erstellt an: " .. data.name) end,
 								})
 								
 		-- copy account name
 		table_insert(entries, {label = "Account-ID kopieren",
-								callback = function(state) BMU.AdminCopyTextToChat(data.name) end,
+								callback = function() BMU.AdminCopyTextToChat(data.name) end,
 								})
 		
 		-- invite to BMU guilds
@@ -2213,7 +2229,7 @@ function BMU.AdminAddContextMenuToGuildApplicationRoster()
 			for _, guildId in pairs(teleporterVars.BMUGuilds[worldName]) do
 				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.name) then
 					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
-											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.name) end,
+											callback = function() BMU.AdminInviteToGuilds(guildId, data.name) end,
 											})
 				end
 			end
@@ -2224,7 +2240,7 @@ function BMU.AdminAddContextMenuToGuildApplicationRoster()
 			for _, guildId in pairs(teleporterVars.partnerGuilds[worldName]) do
 				if IsPlayerInGuild(guildId) and not GetGuildMemberIndexFromDisplayName(guildId, data.name) then
 					table_insert(entries, {label = "Einladen in: " .. GetGuildName(guildId),
-											callback = function(state) BMU.AdminInviteToGuilds(guildId, data.name) end,
+											callback = function() BMU.AdminInviteToGuilds(guildId, data.name) end,
 											})
 				end
 			end
@@ -2232,7 +2248,7 @@ function BMU.AdminAddContextMenuToGuildApplicationRoster()
 		
 		-- check if the player is also in other BMU guilds and add info
 		table_insert(entries, {label = memberStatusText,
-								callback = function(state) end,
+								callback = function() end,
 								})
 		
 		AddCustomScrollableSubMenuEntry("BMU Admin", entries)
