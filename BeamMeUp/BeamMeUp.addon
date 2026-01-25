@@ -6,10 +6,10 @@
 ## Version: 3.7.5
 ## AddOnVersion: 375
 ## IsLibrary: false
-## DependsOn: LibZone>=0895
+## DependsOn: LibZone>=0895 LibScrollableMenu>=020400 LibZone>=0895
 ## PCDependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
 ## ConsoleDependsOn: LibHarvensAddonSettings>=207 LibGPS LibDebugLogger LibChatMessage LibMapPing
-## OptionalDependsOn: LibSlashCommander LibSets LibMapPing LibChatMenuButton PortToFriendsHouse BanditsUserInterface MorrowindStyleUI
+## OptionalDependsOn: LibCustomMenu LibSlashCommander LibSets LibMapPing LibChatMenuButton PortToFriendsHouse BanditsUserInterface MorrowindStyleUI
 
 ## Globals / data sets
 GuildData.lua
