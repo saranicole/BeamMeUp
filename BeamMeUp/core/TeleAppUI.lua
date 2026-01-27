@@ -37,13 +37,27 @@ local zo_ChatWindow                         = ZO_ChatWindow
 local ClearCustomScrollableMenu 							= ClearCustomScrollableMenu
 local ShowCustomScrollableMenu 								= ShowCustomScrollableMenu
 --Other addon variables
----LibCustomMenu
---[[
-local libCustomMenuSubmenu = LibCustomMenuSubmenu --The control holding the currently shown submenu control entries (as a submenu is opened)
-local LCM_SubmenuEntryNamePrefix = "ZO_SubMenuItem" --row name of a ZO_Menu's submenu entrxy added by LibCustomMenu to the parent control LibCustomMenuSubmenu
-local zo_MenuSubmenuItemsHooked = {} --Items hooked by this code, to add a special OnMouseUp handler.
-local checkboxesAtSubmenuCurrentState = {} --Save the current checkboxes state (on/off) for a submenu opening control, so we can toggle all checkboxes in the submenu properly
-]]
+---v- INS BEARTRAM 20260125 LibScrollableMenu
+local LSM_ENTRY_TYPE_NORMAL 		= LSM_ENTRY_TYPE_NORMAL
+local LSM_ENTRY_TYPE_CHECKBOX 		= LSM_ENTRY_TYPE_CHECKBOX
+local LSM_ENTRY_TYPE_RADIOBUTTON	= LSM_ENTRY_TYPE_RADIOBUTTON
+local LSM_UPDATE_MODE_MAINMENU 		= LSM_UPDATE_MODE_MAINMENU
+
+local ClearCustomScrollableMenu 		= ClearCustomScrollableMenu
+local AddCustomScrollableMenuDivider    = AddCustomScrollableMenuDivider
+local AddCustomScrollableMenuCheckbox 	= AddCustomScrollableMenuCheckbox
+local RefreshCustomScrollableMenu 		= RefreshCustomScrollableMenu
+local AddCustomScrollableSubMenuEntry 	= AddCustomScrollableSubMenuEntry
+local ShowCustomScrollableMenu 			= ShowCustomScrollableMenu
+
+--The default options for a LSM contextMenu
+---Item filters
+local LSMVars = teleporterVars.LSMVars
+local LSM_itemFilterContextMenuOptions = LSMVars.itemFilterContextMenuOptions
+local LSM_dungeonFilterContextMenuOptions = LSMVars.dungeonFilterContextMenuOptions
+---^- INS BEARTRAM 20260125 LibScrollableMenu
+
+
 --BMU variables
 local BMU_textures                          = BMU.textures
 local colorGreen 							= "green"
@@ -2200,13 +2214,13 @@ local function SetupUI()
     local PortToFriend = PortToFriend --INS251229 Baertram performance improvement for 2 same used global variables
 	if PortToFriend and PortToFriend.GetFavorites then
 		-- enable tab
-		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseUp", function(self, button, upInside) --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
+		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseUp", function(ctrl, button, upInside) --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
 			ClearCustomScrollableMenu()
 			if upInside and button == MOUSE_BUTTON_INDEX_RIGHT then --CHG251229 Baertram Usage of upInside to properly check the user releaased the mouse on the control!!!
 				-- toggle between zone names and house names
 				addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_UI_TOOGLE_ZONE_NAME), BMU.savedVarsChar, "ptfHouseZoneNames", nil, nil, nil)
 
-				ShowCustomScrollableMenu()
+				ShowCustomScrollableMenu(ctrl, nil)
 			else
                 BMU_clearInputFields()
 				BMU.createTablePTF()
@@ -2253,7 +2267,7 @@ local function SetupUI()
   teleporterWin_Main_Control_OwnHouseTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_OwnHouseTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control_OwnHouseTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_OwnHouseTexture:SetHandler("OnMouseUp", function(ctrl, button)
 	ClearCustomScrollableMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- toggle between nicknames and standard names
@@ -2265,7 +2279,7 @@ local function SetupUI()
 		-- make default tab
 		addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_SETTINGS_DEFAULT_TAB), BMU.savedVarsChar, "defaultTab", nil, BMU.indexListOwnHouses, nil)
 
-		ShowCustomScrollableMenu()
+		ShowCustomScrollableMenu(ctrl, nil)
 	else
         BMU_clearInputFields( )
 		BMU_createTableHouses()
@@ -2296,7 +2310,7 @@ local function SetupUI()
   teleporterWin_Main_Control_QuestTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_QuestTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control_QuestTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_QuestTexture:SetHandler("OnMouseUp", function(ctrl, button)
 	ClearCustomScrollableMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- show context menu
@@ -2304,7 +2318,7 @@ local function SetupUI()
 		-- make default tab
 		addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_SETTINGS_DEFAULT_TAB), BMU_savedVarsChar, "defaultTab", nil, BMU.indexListQuests, nil)
 
-		ShowCustomScrollableMenu()
+		ShowCustomScrollableMenu(ctrl, nil)
 	else
 		BMU_createTable({index=BMU.indexListQuests})
 	end
@@ -2355,7 +2369,38 @@ local function SetupUI()
 		  -- show filter menu
 
 		  -- Add submenu for antiquity leads
-		  submenuIndicesToAddCallbackTo[#submenuIndicesToAddCallbackTo+1] = AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_VENDOR_ANTIQUITY_LEAD_GROUP_HEADER), --INS251229 Baertram
+		  -- Add submenu dynamically for all lead types: Each lead type = 1 filter checkbox
+		  local leadTypesSubmenuEntries = {}
+		  for leadTypeIndex, leadType in ipairs(leadTypes) do
+			  local leadTypeName         = leadTypeNames[leadTypeIndex] or leadType
+			  local leadTypeSubmenuEntry = {
+				  label = leadTypeName,
+				  callback = function(comboBox, itemName, item, checked, data)
+					  BMU.savedVarsChar.displayAntiquityLeads[leadType] = checked
+					  refreshLeadsMainMenu(comboBox)
+				  end,
+				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
+				  checked = function() return BMU.savedVarsChar.displayAntiquityLeads[leadType] end,
+			  }
+			  leadTypesSubmenuEntries[#leadTypesSubmenuEntries +1] = leadTypeSubmenuEntry
+		  end
+
+		  AddCustomScrollableSubMenuEntry(function() return BMU_updateContextMenuEntryAntiquityAll() end, --INS251229 Baertram Antiquity/Lead filters
+				  leadTypesSubmenuEntries,
+			    function(comboBox, itemName, item, selectionChanged, oldItem)
+				  --d("Clicked Leads submenu openingControl")
+					  allLeadFiltersEnabled = not allLeadFiltersEnabled
+					  -- check all subTypes (1) or uncheck all subtypes (2)
+					  BMU_updateCheckboxLeadsMap(allLeadFiltersEnabled and 1 or 2)
+					  refreshLeadsMainMenu(comboBox)
+			    end,
+				{ --additionalData
+					tooltip = BMU_SI_get(SI.CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
+				}
+		  )
+
+			--[[
+		  AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_VENDOR_ANTIQUITY_LEAD_GROUP_HEADER), --INS251229 Baertram
 				  {
 					  {
 						  label = GetString(SI_ANTIQUITY_SCRYABLE),
@@ -2398,69 +2443,12 @@ local function SetupUI()
 		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, function() return BMU_updateContextMenuEntrySurveyAll() end, nil, nil,
 				  function(comboBox, itemName, item, checked, data)
 					  -- check all subTypes (1) or uncheck all subtypes (2)
-					  BMU_updateCheckboxSurveyMap(checked and 1 or 2)
-				  end,
-				  function() return BMU_numOfSurveyTypesChecked() > 0  end, nil
-		  )
-
-		  -- Add submenu for survey types filter
-		  AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_BANK_FILTER_HEADER), --INS251229 Baertram
-				  {
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY14),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.alchemist = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.alchemist end,
-					  },
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY15),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.enchanter = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.enchanter end,
-					  },
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY12),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.woodworker = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.woodworker end,
-					  },
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY10),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.blacksmith = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.blacksmith end,
-					  },
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY11),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.clothier = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.clothier end,
-					  },
-					  {
-						  label = GetString(SI_ITEMTYPEDISPLAYCATEGORY13),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU.savedVarsChar.displayMaps.jewelry = checked
-							  --BMU_updateCheckboxSurveyMap(3)
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU.savedVarsChar.displayMaps.jewelry end,
-					  },
-				  }, nil
+					  BMU_updateCheckboxSurveyMap(allSurveyFiltersEnabled and 1 or 2)
+					  refreshSurveyMapMainMenu(comboBox)
+			    end,
+				{ --additionalData
+					tooltip = BMU_SI_get(SI.CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
+				}
 		  )
 
 		  -- divider
@@ -2618,7 +2606,7 @@ local function SetupUI()
   teleporterWin_Main_Control_OnlyYourzoneTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_OnlyYourzoneTexture:SetDrawLayer(2)
 
-	teleporterWin_Main_Control_OnlyYourzoneTexture:SetHandler("OnMouseUp", function(self, button)
+	teleporterWin_Main_Control_OnlyYourzoneTexture:SetHandler("OnMouseUp", function(ctrl, button)
 		ClearCustomScrollableMenu()
 		if button == MOUSE_BUTTON_INDEX_RIGHT then
 			-- show context menu
@@ -2626,7 +2614,7 @@ local function SetupUI()
 			-- make default tab
 			addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_SETTINGS_DEFAULT_TAB), BMU_savedVarsChar, "defaultTab", nil, BMU.indexListCurrentZone, nil)
 
-			ShowCustomScrollableMenu()
+			ShowCustomScrollableMenu(ctrl, nil)
 		else
 			BMU.createTable({index=BMU.indexListCurrentZone})
 		end
@@ -2656,7 +2644,7 @@ local function SetupUI()
   teleporterWin_Main_Control_DelvesTexture:SetMouseEnabled(true)
   teleporterWin_Main_Control_DelvesTexture:SetDrawLayer(2)
 
-  teleporterWin_Main_Control_DelvesTexture:SetHandler("OnMouseUp", function(self, button)
+  teleporterWin_Main_Control_DelvesTexture:SetHandler("OnMouseUp", function(ctrl, button)
 	ClearCustomScrollableMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
 		-- show context menu
@@ -2670,7 +2658,7 @@ local function SetupUI()
 		-- make default tab
 		addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_SETTINGS_DEFAULT_TAB), BMU.savedVarsChar, "defaultTab", nil, BMU.indexListDelves, nil)
 
-		ShowCustomScrollableMenu()
+		ShowCustomScrollableMenu(ctrl, nil)
 	else
 		BMU_createTable({index=BMU.indexListDelves})
 	end
@@ -2742,7 +2730,14 @@ local function SetupUI()
 					entryType = LSM_ENTRY_TYPE_CHECKBOX,
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showDungeons end,
 				},
-			}, nil, nil, nil, 5
+			},
+		  	function()
+				--d("Clicked filters submenu openingControl")
+				--todo enable/disable all checkboxes in submenu
+		  	end,
+			{ --additionalData
+				tooltip = BMU_SI_get(SI.CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
+			}
 		)
 
 		-- sorting (release or acronym)
@@ -2850,7 +2845,7 @@ local function SetupUI()
 		-- make default tab
 		addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_get(SI.TELE_SETTINGS_DEFAULT_TAB), BMU.savedVarsChar, "defaultTab", nil, BMU.indexListDungeons, nil)
 
-		ShowCustomScrollableMenu()
+		ShowCustomScrollableMenu(ctrl, LSM_dungeonFilterContextMenuOptions)
 	else
 		BMU_clearInputFields()
 		BMU.createTableDungeons()
