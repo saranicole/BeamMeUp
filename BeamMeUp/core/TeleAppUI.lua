@@ -1444,9 +1444,8 @@ BMU.ResetMainListFilterToAll = resetMainListFilterToAll
 local stringInstalled = BMU_colorizeText( BMU_SI_Get(SI_TELE_LIB_INSTALLED), colorGreen)
 local stringNotInstalled = BMU_colorizeText(BMU_SI_Get(SI_TELE_LIB_NOT_INSTALLED), colorRed)
 function BMU.getStringIsInstalledLibrary(addonName)
-	local stringInstalled = BMU_colorizeText("installed and enabled", "green")
-	local stringNotInstalled = BMU_colorizeText("not installed or disabled", "red")
-	
+	local lowerAddonName = string_lower(addonName)
+
 	-- PortToFriendsHouse
 	if lowerAddonName== "ptf" then
 		local PortToFriend = PortToFriend	 --INS251229 Baertram
