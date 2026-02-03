@@ -1,4 +1,3 @@
-BMU = {}
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
 -- -v- INS251229 Baertram BEGIN 0
@@ -18,6 +17,9 @@ local BMU_MediaPath = "/BeamMeUp/media/"
 
 --BMU reference variables
 local BMU_GUILD_DATA = BMU_GUILD_DATA
+local numVars = BMU.numVars
+local SI = BMU.SI
+local BMU_SI_Get = SI.get
 -- -^- INS251229 Baertram BEGIN 0
 
 
@@ -335,24 +337,21 @@ BMU.questDataChanged = true
 --------------------------------------------------
 -- second language dropdown choices/values
 local BMU_dropdownSecLangChoices = {}
-local BMU_dropdownSecLangChoicesShort = {}
 local BMU_dropdownSecLangValues = {}
 local secLangDropdownEntryPrefix = numVars.secLangDropdownEntryPrefix
 for i=1, numVars.numSecLangDropdownEntries, 1 do
-	BMU_dropdownSecLangChoices[i] = BMU_SI_Get(secLangDropdownEntryPrefix, i)
+	BMU_dropdownSecLangChoices[i] = BMU_SI_Get(SI[secLangDropdownEntryPrefix], i)
 	BMU_dropdownSecLangValues[i] = i
-	BMU_dropdownSecLangChoicesShort[i] = allowedLanguagesIndex[i] --Add the short language like "en" to the table so we can use it for LibZone's secondLanguage properly (via BMU.savedVarsAcc.secondLanguage)
 end
 BMU.dropdownSecLangValues = BMU_dropdownSecLangValues
 BMU.dropdownSecLangChoices = BMU_dropdownSecLangChoices
-BMU.dropdownSecLangChoicesShort = BMU_dropdownSecLangChoicesShort
 
 -- sorting dropdown choices/values
 local BMU_dropdownSortChoices = {}
 local BMU_dropdownSortValues = {}
 local sortDropdownEntryPrefix = BMU.numVars.sortDropdownEntryPrefix
 for i=1, numVars.numSortDropdownEntries, 1 do
-	BMU_dropdownSortChoices[i] = BMU_SI_Get(sortDropdownEntryPrefix, i)
+	BMU_dropdownSortChoices[i] = BMU_SI_Get(SI[sortDropdownEntryPrefix], i)
 	BMU_dropdownSortValues[i] = i
 end
 BMU.dropdownSortChoices = BMU_dropdownSortChoices

@@ -41,7 +41,7 @@ local GetItemType = GetItemType
 local GetItemName = GetItemName
 local GetBagSize = GetBagSize
 --BMU functions
-local BMU_SI_get                            = SI.get
+local BMU_SI_Get                            = SI.get
 local BMU_colorizeText 						= BMU.colorizeText
 local BMU_changeState 						= BMU.changeState
 local BMU_isFavoriteZone 					= BMU.isFavoriteZone
@@ -58,8 +58,16 @@ local BMU_getParentZoneId, BMU_getMapIndex, BMU_categorizeZone, BMU_getCurrentZo
 
 --String text variables
 --Lowercase constants for string comparisons
-local surveyMapStrLower   = 		string_lower(BMU_SI_get(SI.CONSTANT_SURVEY_MAP))
-local treasureMapStrLower = 		string_lower(BMU_SI_get(SI.CONSTANT_TREASURE_MAP))
+local surveyMapStrLower   = 		string_lower(BMU_SI_Get(SI_CONSTANT_SURVEY_MAP))
+local treasureMapStrLower = 		string_lower(BMU_SI_Get(SI_CONSTANT_TREASURE_MAP))
+local levelUpRewardSkillPointHeaderStr = GetString(SI_LEVEL_UP_REWARDS_SKILL_POINT_TOOLTIP_HEADER)
+local groupStr = GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_GROUP_MEMBERS)
+local friendsStr = GetString(SI_GAMEPAD_CAMPAIGN_BROWSER_TOOLTIP_FRIENDS)
+local itemCountSummaryStr = GetString(SI_ITEM_SET_SUMMARY_ITEM_COUNT_LABEL)
+local currencyLocation1Str = GetString(SI_CURRENCYLOCATION1)
+local noItemSetMatchesStr = GetString(SI_ITEM_SETS_BOOK_SEARCH_NO_MATCHES)
+local housingFurnishingLimit0Str = GetString(SI_HOUSINGFURNISHINGLIMITTYPE0)
+local guildTraderOnwershipHeaderStr = GetString(SI_GUILD_TRADER_OWNERSHIP_HEADER)
 -- -^- INS251229 Baertram END 0
 
 
@@ -970,9 +978,11 @@ function BMU.getZoneNameSecondLanguage(zoneId)
 		local localizedZoneName = localizedZoneIdData[zoneId]
 		if localizedZoneName == nil or type(localizedZoneName) ~= stringType then return nil end
 
-		return localizedZoneName
-	else
-		return nil
+		-- add header and return info
+		if #info > 0 then
+			table_insert(info, 1, levelUpRewardSkillPointHeaderStr .. " (" .. BMU_SI_Get(SI_TELE_UI_GROUP_EVENT) .. "):")
+			return info
+		end
 	end
 end
 BMU_createPublicDungeonAchiementInfo = BMU.createPublicDungeonAchiementInfo --INS251229 Baertram
@@ -1625,8 +1635,8 @@ function BMU.addLeadInformation(record, antiquityId)
 
 	local aName = color:Colorize(ZO_CachedStrFormat("<<C:1>>",GetAntiquityName(antiquityId)))
 	local aTooltip = color:Colorize(ZO_CachedStrFormat("<<C:1>>",GetAntiquityName(antiquityId))) .. "\n" ..
-					BMU_colorizeText(string.format(BMU_SI_get(SI.TELE_UI_DAYS_LEFT), math.floor(leadtimeleft/86400)) .. "\n" ..
-					zo_strformat(SI_ANTIQUITY_CODEX_ENTRIES_FOUND, numEntriesAcquired, numEntries), "gray")
+					BMU_colorizeText(string.format(BMU_SI_Get(SI_TELE_UI_DAYS_LEFT), math.floor(leadtimeleft/86400)) .. "\n" ..
+					zo_strformat(SI_ANTIQUITY_CODEX_ENTRIES_FOUND, numEntriesAcquired, numEntries), colorGray)
 
 	--create and add new item to record
 	local leadData = {}
@@ -1692,10 +1702,11 @@ BMU_createClickableZoneRecord = BMU.createClickableZoneRecord --INS251229 Baertr
 
 -- create record for items which could not be assigned to any zone
 function BMU.createZoneLessItemsInfo()
-	local info = BMU.createBlankRecord()
-	info.zoneName = BMU_SI_get(SI.TELE_UI_UNRELATED_ITEMS)
-	info.textColorDisplayName = "gray"
-	info.textColorZoneName = "gray"
+	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
+	local info = BMU_createBlankRecord()
+	info.zoneName = BMU_SI_Get(SI_TELE_UI_UNRELATED_ITEMS)
+	info.textColorDisplayName = colorGray
+	info.textColorZoneName = colorGray
 	info.zoneNameClickable = false -- show Tamriel on click
 
 	return info
@@ -1916,10 +1927,11 @@ end
 
 -- create message with all zoneless quests
 function BMU.createZoneLessQuestsInfo(zoneLessQuests)
-	local info = BMU.createBlankRecord()
-	info.zoneName = BMU_SI_get(SI.TELE_UI_UNRELATED_QUESTS)
-	--info.textColorDisplayName = "gray"
-	info.textColorZoneName = "gray"
+	BMU_createBlankRecord = BMU_createBlankRecord or BMU.createBlankRecord							--INS251229 Baertram
+	local info = BMU_createBlankRecord()
+	info.zoneName = BMU_SI_Get(SI_TELE_UI_UNRELATED_QUESTS)
+	--info.textColorDisplayName = colorGray
+	info.textColorZoneName = colorGray
 	info.prio = 4
 	info.zoneNameClickable = false
 
@@ -2533,9 +2545,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListEndlessDungeons > 0 then
-			local entry = BMU.createBlankRecord()
-			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_ENDLESS_DUNGEONS)) .. " --"
-			entry.textColorZoneName = "gray"
+			local entry = BMU_createBlankRecord()
+			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_ENDLESS_DUNGEONS)) .. " --"
+			entry.textColorZoneName = colorGray
 			table_insert(resultListEndlessDungeons, 1, entry)
 		end
 	end
@@ -2570,9 +2582,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListArenas > 0 then
-			local entry = BMU.createBlankRecord()
-			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_ARENAS)) .. " --"
-			entry.textColorZoneName = "gray"
+			local entry = BMU_createBlankRecord()
+			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_ARENAS)) .. " --"
+			entry.textColorZoneName = colorGray
 			table_insert(resultListArenas, 1, entry)
 		end
 	end
@@ -2607,9 +2619,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListGroupArenas > 0 then
-			local entry = BMU.createBlankRecord()
-			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_GROUP_ARENAS)) .. " --"
-			entry.textColorZoneName = "gray"
+			local entry = BMU_createBlankRecord()
+			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_ARENAS)) .. " --"
+			entry.textColorZoneName = colorGray
 			table_insert(resultListGroupArenas, 1, entry)
 		end
 	end
@@ -2644,9 +2656,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListTrials > 0 then
-			local entry = BMU.createBlankRecord()
-			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_TRIALS)) .. " --"
-			entry.textColorZoneName = "gray"
+			local entry = BMU_createBlankRecord()
+			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_TRIALS)) .. " --"
+			entry.textColorZoneName = colorGray
 			table_insert(resultListTrials, 1, entry)
 		end
 	end
@@ -2681,9 +2693,9 @@ function BMU.createTableDungeons(args)
 
 		-- add headline
 		if #resultListGroupDungeons > 0 then
-			local entry = BMU.createBlankRecord()
-			entry.zoneName = "-- " .. string.upper(BMU_SI_get(SI.TELE_UI_TOGGLE_GROUP_DUNGEONS)) .. " --"
-			entry.textColorZoneName = "gray"
+			local entry = BMU_createBlankRecord()
+			entry.zoneName = "-- " .. string_upper(BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_DUNGEONS)) .. " --"
+			entry.textColorZoneName = colorGray
 			table_insert(resultListGroupDungeons, 1, entry)
 		end
 	end
