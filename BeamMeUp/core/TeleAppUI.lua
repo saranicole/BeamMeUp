@@ -128,7 +128,7 @@ local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateCon
       BMU_getContextMenuEntrySurveyAllAppendix, BMU_getContextMenuEntryAntiquityAllAppendix, BMU_clearInputFields, BMU_createTable,
       BMU_createTableDungeons, BMU_createTableGuilds, BMU_numOfSurveyTypesChecked, BMU_updateCheckboxSurveyMap, BMU_numOfAntiquityTypesChecked,
       BMU_updateCheckboxLeadsMap, BMU_checkCheckboxesCurrentStatus, BMU_createTableHouses, BMU_getCurrentDungeonDifficulty, BMU_setDungeonDifficulty, BMU_PortalToPlayer, BMU_printToChat,
-	  BMU_has_value, BMU_showNotification
+	  BMU_has_value, BMU_showNotification, LSM_ButtonGroupDefaultContextMenu
 -- -^- INS251229 Baertram END 0
 
 -- list of tuples (guildId & displayname) for invite queue (only for admin)
@@ -1181,6 +1181,7 @@ local function SetupUI()
 	  BMU_updateContextMenuEntrySurveyAll = BMU_updateContextMenuEntrySurveyAll or BMU.updateContextMenuEntrySurveyAll				  --INS251229 Baertram
 	  BMU_updateContextMenuEntryAntiquityAll = BMU_updateContextMenuEntryAntiquityAll or BMU.updateContextMenuEntryAntiquityAll		  --INS251229 Baertram
 	  BMU_showNotification = BMU_showNotification or BMU.showNotification															  --INS251229 Baertram
+      LSM_ButtonGroupDefaultContextMenu = LSM_ButtonGroupDefaultContextMenu or LSM.ButtonGroupDefaultContextMenu
 
 	  ClearCustomScrollableMenu()
 	  if button == MOUSE_BUTTON_INDEX_RIGHT then
@@ -1203,7 +1204,7 @@ local function SetupUI()
 				  checked = function() return BMU.savedVarsChar[leadsSVTab][leadType] end,
 				  buttonGroup = 4,
 				  contextMenuCallback = function(comboBox, control, data)
-					LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				  end,
 
 			  }
@@ -1249,7 +1250,7 @@ local function SetupUI()
 				  checked = function() return BMU.savedVarsChar[surveySVTab][surveyType] end,
 				  buttonGroup = 5,
 				  contextMenuCallback = function(comboBox, control, data)
-					LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				  end,
 			  }
 			  surveyTypesSubmenuEntries[#surveyTypesSubmenuEntries+1] = surveyTypeSubmenuEntry
@@ -1452,8 +1453,10 @@ local function SetupUI()
 
   teleporterWin_Main_Control_DungeonTexture:SetHandler("OnMouseUp", function(ctrl, button)
 	BMU_createTableDungeons = BMU_createTableDungeons or BMU.createTableDungeons					--INS251229 Baertram
+	LSM_ButtonGroupDefaultContextMenu = LSM_ButtonGroupDefaultContextMenu or LSM.ButtonGroupDefaultContextMenu
     ClearCustomScrollableMenu()
 	if button == MOUSE_BUTTON_INDEX_RIGHT then
+
 		-- show filter menu
 		-- add filters
 		AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_BANK_FILTER_HEADER),
@@ -1465,7 +1468,7 @@ local function SetupUI()
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showEndlessDungeons end,
 					buttonGroup = 6,
 				    contextMenuCallback = function(comboBox, control, data)
-					  LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					  LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				    end,
 				},
 				{
@@ -1475,7 +1478,7 @@ local function SetupUI()
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showArenas end,
 					buttonGroup = 6,
 				    contextMenuCallback = function(comboBox, control, data)
-					  LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					  LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				    end,
 				},
 				{
@@ -1485,7 +1488,7 @@ local function SetupUI()
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showGroupArenas end,
 					buttonGroup = 6,
 				    contextMenuCallback = function(comboBox, control, data)
-					  LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					  LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				    end,
 				},
 				{
@@ -1495,7 +1498,7 @@ local function SetupUI()
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showTrials end,
 					buttonGroup = 6,
 				    contextMenuCallback = function(comboBox, control, data)
-					  LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					  LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				    end,
 				},
 				{
@@ -1505,14 +1508,15 @@ local function SetupUI()
 					checked = function() return BMU.savedVarsChar.dungeonFinder.showDungeons end,
 					buttonGroup = 6,
 				    contextMenuCallback = function(comboBox, control, data)
-					  LSM.ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
+					  LSM_ButtonGroupDefaultContextMenu(comboBox, control, data, true) --Show contextMenu at the checkbox, to check all/uncheck all/invert checked state
 				    end,
 				},
 			},
-		  	function()
+			function()
 				--d("Clicked filters submenu openingControl")
 				--todo enable/disable all checkboxes in submenu
-		  	end,
+
+			end,
 			{ --additionalData
 				--tooltip = BMU_SI_get(SI.CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
 			}
