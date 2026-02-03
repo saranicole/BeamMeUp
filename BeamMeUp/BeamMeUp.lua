@@ -817,6 +817,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
 		["chatOutputFastTravel"] = true,
 		["chatOutputAdditional"] = true,
 		["chatOutputUnlock"] = true,
+		["showContextMenuIcons"] = true, --INS 260203 Baertram
     }
     
 	BMU.DefaultsServer = {
