@@ -309,9 +309,16 @@ local BMU_textures = {
 	bank						= "/esoui/art/tooltips/icon_bank.dds",
 	treasureMap					= "/esoui/art/tradinghouse/tradinghouse_trophy_treasure_map_up.dds",
 	sortHeader					= "/esoui/art/miscellaneous/list_sortheader_icon_neutral.dds",
+	display						= "/esoui/art/login/login_icon_info.dds", --Alternative: /esoui/art/icons/heraldrycrests_misc_eye_01.dds
+	favorite					= "/esoui/art/Collections/Favorite_StarOnly.dds",
+	timer						= "/esoui/art/miscellaneous/timer_32.dds",
 }
-BMU_textures.dungeonDifficultyNormalStr  = "|t32:32:" .. BMU_textures.dungeonDifficultyNormal .. "|t"
-BMU_textures.dungeonDifficultyVeteranStr = "|t32:32:" .. BMU_textures.dungeonDifficultyVeteran .. "|t"
+BMU_textures.leadTypeCompletedStr20			= string_format(textureStrPattern20, BMU_textures.leadTypeCompleted)
+BMU_textures.dungeonDifficultyNormalStr  	= string_format(textureStrPattern32, BMU_textures.dungeonDifficultyNormal)
+BMU_textures.dungeonDifficultyVeteranStr 	= string_format(textureStrPattern32, BMU_textures.dungeonDifficultyVeteran)
+BMU_textures.bankStr20 						= string_format(textureStrPattern20, BMU_textures.bank)
+BMU_textures.timerStr20 					= string_format(textureStrPattern20, BMU_textures.timer)
+
 
 BMU.textures = BMU_textures																			--INS251229 Baertram
 
