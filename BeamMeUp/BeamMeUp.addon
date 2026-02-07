@@ -11,15 +11,14 @@
 ## ConsoleDependsOn: LibHarvensAddonSettings>=207 LibGPS LibDebugLogger LibChatMessage LibMapPing
 ## OptionalDependsOn: LibCustomMenu LibSlashCommander LibSets LibMapPing LibChatMenuButton PortToFriendsHouse BanditsUserInterface MorrowindStyleUI
 
-## Globals / data sets
+## Core translation files
 core/SI.lua
-GuildData.lua
-TeleporterGlobals.lua
-
-
-## Core
 localization/EN.lua
 localization/$(language).lua
+
+## Globals / data sets
+GuildData.lua
+TeleporterGlobals.lua
 
 ## Justa
 Console/i18n/en.lua
