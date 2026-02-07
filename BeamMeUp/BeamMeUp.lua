@@ -17,15 +17,14 @@ local worldMapScene_Keyboard				= WORLD_MAP_SCENE
 local worldMap = worldMapScene_Keyboard
 local worldMapScene_Gamepad					= GAMEPAD_WORLD_MAP_SCENE
 local worldMapZoneStoryTLC_Keyboard			= ZO_WorldMapZoneStoryTopLevel_Keyboard
-<<<<<<< HEAD
 
 if BMU.IsNotKeyboard() then
   worldMap = worldMapScene_Gamepad
   WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Gamepad
 end
-=======
+
 local ClearCustomScrollableMenu 							= ClearCustomScrollableMenu
->>>>>>> e7c51d7 (Change of LibCustomMenu to LibScrollableMenu)
+
 --Other addon variables
 local BMU_LibZone = BMU.LibZone
 --BMU variables
@@ -734,8 +733,14 @@ end
 ]]
 
 local function OnAddOnLoaded(eventCode, addOnName)
+    addOnName = "SaraTestBMU"
     if (appName ~= addOnName) then return end
 	EM:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
+
+	if not (GetDisplayName() == "@thisbeaurielle" or GetDisplayName() == "@thisbesaranicole" or GetDisplayName() == "@Saranicole1980") then
+	  d("SaraTestBMU: This plugin is a testing ground only.  Please uninstall.")
+	  return
+	end
 
 	--Libraries
 	BMU.GetLibraries() --Check if any BMU.* library variable needs an update
