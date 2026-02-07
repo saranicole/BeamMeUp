@@ -155,6 +155,15 @@ local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateCon
       BMU_updateCheckboxLeadsMap, BMU_checkCheckboxesCurrentStatus, BMU_createTableHouses, BMU_getCurrentDungeonDifficulty, BMU_setDungeonDifficulty, BMU_PortalToPlayer, BMU_printToChat,
 	  BMU_has_value, BMU_showNotification, LSM_ButtonGroupDefaultContextMenu, BMU_checkIfContextMenuIconShouldShow,
 	  BMU_updateContextMenuEntryDungeonAll, BMU_getContextMenuEntryDungeonAllAppendix, BMU_numOfDungeonTypesChecked, BMU_updateCheckboxDungeonMap
+
+--BMU functions
+local BMU_RefreshMainMenuPatternStr = "BMU_Refresh%sMainMenu"
+local refreshLeadsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Leads")
+local refreshSurveysMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Surveys")
+local refreshDungeonsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Dungeons")
+
+local BMU_ThrottledUpdate = BMU.ThrottledUpdate
+
 -- -^- INS251229 Baertram END 0
 
 -- list of tuples (guildId & displayname) for invite queue (only for admin)
@@ -2445,8 +2454,8 @@ local function SetupUI()
 			  local leadTypeSubmenuEntry = {
 				  label = leadTypeName,
 				  callback = function(comboBox, itemName, item, checked, data)
-					  BMU.savedVarsChar.displayAntiquityLeads[leadType] = checked
-					  refreshLeadsMainMenu(comboBox)
+					  BMU.savedVarsChar[leadsSVTab][leadType] = checked
+					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 250, refreshLeadsMainMenu, comboBox)
 				  end,
 				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 				  checked = function() return BMU.savedVarsChar[leadsSVTab][leadType] end,
@@ -2466,7 +2475,7 @@ local function SetupUI()
 					  allLeadFiltersEnabled = not allLeadFiltersEnabled
 					  -- check all subTypes (1) or uncheck all subtypes (2)
 					  BMU_updateCheckboxLeadsMap(allLeadFiltersEnabled and 1 or 2)
-					  refreshLeadsMainMenu(comboBox)
+					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 250, refreshLeadsMainMenu, comboBox)
 			    end,
 				{ --additionalData
 					tooltip = BMU_SI_Get(SI_CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
@@ -2524,7 +2533,7 @@ local function SetupUI()
 				  label = surveyTypeName,
 				  callback = function(comboBox, itemName, item, checked, data)
 					  BMU.savedVarsChar[surveySVTab][surveyType] = checked
-					  refreshSurveyMapMainAndSubMenu(comboBox)
+					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 250, refreshSurveyMapMainAndSubMenu, comboBox)
 				  end,
 				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 				  checked = function() return BMU.savedVarsChar[surveySVTab][surveyType] end,
@@ -2543,7 +2552,7 @@ local function SetupUI()
 				  function(comboBox, itemName, item, checked, data)
 					  -- check all subTypes (1) or uncheck all subtypes (2)
 					  BMU_updateCheckboxSurveyMap(allSurveyFiltersEnabled and 1 or 2)
-					  refreshSurveyMapMainMenu(comboBox)
+					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 250, refreshSurveyMapMainAndSubMenu, comboBox)
 			    end,
 				{ --additionalData
 					tooltip = BMU_SI_Get(SI_CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
@@ -2817,7 +2826,7 @@ local function SetupUI()
 				  label = leadTypeName,
 				  callback = function(comboBox, itemName, item, checked, data)
 					  BMU.savedVarsChar[dungeonsSVTab][dungeonType] = checked
-					  refreshDungeonsMainMenu(comboBox)
+					  BMU_ThrottledUpdate(refreshDungeonsMainMenuEventStr, 250, refreshDungeonsMainMenu, comboBox)
 				  end,
 				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 				  checked = function() return BMU.savedVarsChar[dungeonsSVTab][dungeonType] end,
@@ -2839,7 +2848,7 @@ local function SetupUI()
 					  allDungeonFiltersEnabled = BMU_checkCheckboxesCurrentStatus(subType_Leads, allDungeonFiltersEnabled)
 					  -- check all subTypes (1) or uncheck all subtypes (2)
 					  BMU_updateCheckboxDungeonMap(allDungeonFiltersEnabled and 1 or 2)
-					  refreshDungeonsMainMenu(comboBox)
+					  BMU_ThrottledUpdate(refreshDungeonsMainMenuEventStr, 250, refreshDungeonsMainMenu, comboBox)
 			    end,
 				{ --additionalData
 					tooltip = BMU_SI_Get(SI_CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),

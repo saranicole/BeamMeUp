@@ -1997,6 +1997,27 @@ function BMU.GetCurrentMapDisplayFilter()
 		BMU_SVChar_displayMaps.treasure
 end
 
+-- Determine if we are not in keyboard mode - returns true/false
 function BMU.IsNotKeyboard()
   return IsInGamepadPreferredMode() or IsConsoleUI()
+end
+
+--Run a function throttled (check if it should run already and overwrite the old call then with a new one to
+--prevent running it multiple times in a short time)
+function BMU.ThrottledUpdate(callbackName, timer, callback, ...)
+    if not callbackName or callbackName == "" or not callback then return end
+    local args
+    if ... ~= nil then
+        args = {...}
+    end
+    local function Update()
+        EVENT_MANAGER:UnregisterForUpdate(callbackName)
+        if args then
+            callback(unpack(args))
+        else
+            callback()
+        end
+    end
+    EVENT_MANAGER:UnregisterForUpdate(callbackName)
+    EVENT_MANAGER:RegisterForUpdate(callbackName, timer, Update)
 end
