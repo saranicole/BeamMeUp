@@ -1,0 +1,80 @@
+## Title: SaraTestBMU
+## Description: Free fast travel to available players from your friend list, guilds and group.
+## Author: DeadSoon, Gamer1986PAN, Treuce
+## APIVersion: 101048 101049
+## SavedVariables: SaraTestBMU_SV
+## Version: ${ADDON_VERSION}
+## AddOnVersion: ${ADDON_FORMATTED_VERSION}
+## IsLibrary: false
+## DependsOn: LibZone>=0895 LibScrollableMenu>=020400 LibZone>=0895
+## PCDependsOn: LibAddonMenu-2.0>=41 LibCustomMenu>=730
+## ConsoleDependsOn: LibHarvensAddonSettings>=207 LibGPS LibDebugLogger LibChatMessage LibMapPing
+## OptionalDependsOn: LibCustomMenu LibSlashCommander LibSets LibMapPing LibChatMenuButton PortToFriendsHouse BanditsUserInterface MorrowindStyleUI
+
+## Core translation files
+core/SI.lua
+localization/EN.lua
+localization/$(language).lua
+
+## Globals / data sets
+GuildData.lua
+TeleporterGlobals.lua
+
+## Libraries - temp?
+## "find -L lib -type f" is your friend
+lib/LibScrollableMenu/LSM_API.lua
+lib/LibScrollableMenu/test/LSM_test.lua
+lib/LibScrollableMenu/classes/buttonGroup_class.lua
+lib/LibScrollableMenu/classes/contextMenu_class.lua
+lib/LibScrollableMenu/classes/comboBox_base.lua
+lib/LibScrollableMenu/classes/comboBox_class.lua
+lib/LibScrollableMenu/classes/dropdown_class.lua
+lib/LibScrollableMenu/classes/subMenu_class.lua
+lib/LibScrollableMenu/code/LibScrollableMenu.lua
+lib/LibScrollableMenu/code/LSM_Util.lua
+lib/LibScrollableMenu/LibScrollableMenu.txt
+lib/LibScrollableMenu/XML/LibScrollableMenu.xml
+lib/LibScrollableMenu/constants.lua
+lib/LibScrollableMenu/lang/zh.lua
+lib/LibScrollableMenu/lang/en.lua
+lib/LibScrollableMenu/lang/ru.lua
+lib/LibScrollableMenu/lang/fr.lua
+lib/LibScrollableMenu/lang/es.lua
+lib/LibScrollableMenu/lang/de.lua
+lib/LibScrollableMenu/changelog.txt
+lib/LibScrollableMenu/debug/LSM_debug.lua
+lib/LibZone/LibZone_Constants.lua
+lib/LibZone/LibZone_Data.lua
+lib/LibZone/LibZone_AutoCompletion.lua
+lib/LibZone/LibZone_GeoData.lua
+lib/LibZone/LibZone.lua
+lib/LibZone/LibZone_Maps.xlsx
+lib/LibZone/LibZone.txt
+
+## Justa
+Console/i18n/en.lua
+Console/i18n/$(language).lua
+
+Console/globals.lua
+
+Console/IsJustaBmuGamepadPlugin.lua
+Console/IsJustaBmuGamepadPlugin.xml
+Console/core/dialogues.lua
+Console/core/listClassShared.lua
+Console/core/entryData.lua
+Console/core/categoryList.lua
+Console/core/telportList.lua
+Console/core/autoUnlock.lua
+Console/Settings.lua
+
+core/List.lua
+core/SettingsMenu.lua
+core/TeleAppUI.lua
+core/TeleSlashCommands.lua
+core/TeleporterChecker.lua
+
+## Bindings
+bindings/bindings.lua
+bindings/bindings.xml
+
+BeamMeUp.lua
