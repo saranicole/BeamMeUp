@@ -86,6 +86,7 @@ local housingFurnishingLimit0Str = GetString(SI_HOUSINGFURNISHINGLIMITTYPE0)
 local guildTraderOnwershipHeaderStr = GetString(SI_GUILD_TRADER_OWNERSHIP_HEADER)
 -- -^- INS251229 Baertram END 0
 
+local BMU_IsNotKeyboard = BMU.IsNotKeyboard
 
 
 -- format zone name and removes articles (if enabled)
@@ -349,10 +350,22 @@ function BMU.createTable(args)
 	if not BMU_savedVarsAcc.hideOwnHouses and not noOwnHouses then
 		-- 4. go over own houses
 		-- player can port outside own houses -> check own houses and add parent zone entries if not already in list
-		for _, house in pairs(COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()) do
-			local houseZoneId = GetHouseZoneId(house.houseId)
-			local mapIndex = BMU_getMapIndex(houseZoneId)
-			local parentZoneId = BMU.getParentZoneId(houseZoneId)
+		local ownedHouses = {}
+		if BMU_IsNotKeyboard() then
+		  ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
+		else
+		  ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
+    end
+
+		for _, house in pairs(ownedHouses) do
+      if BMU_IsNotKeyboard() then
+        houseId = house:GetReferenceId()
+      else
+        houseId = house.houseId
+      end
+			local houseZoneId = GetHouseZoneId(houseId)
+			--local mapIndex = BMU_getMapIndex(houseZoneId)
+			local parentZoneId = BMU_getParentZoneId(houseZoneId)
 			-- check if parent zone not already in result list
 			---if not allZoneIds[parentZoneId] then
 			local e = {}
@@ -361,7 +374,7 @@ function BMU.createTable(args)
 			e.parentZoneName = BMU_formatName(GetZoneNameById(e.parentZoneId))
 			e.zoneId = e.parentZoneId
 			e.displayName = ""
-			e.houseId = house.houseId
+			e.houseId = houseId
 			e.isOwnHouse = true
 			-- add flag to port outside the house
 			e.forceOutside = true
@@ -2146,29 +2159,41 @@ function BMU.createTableHouses()
 	BMU_changeState(BMU_indexListOwnHouses)
 	local resultList = {}
 
-	for _, house in pairs(COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()) do
-		local entry = BMU.createBlankRecord()
-		entry.houseId = house.houseId
-		if IsPrimaryHouse(house.houseId) then
-			entry.prio = 1
-			entry.textColorZoneName = "gold"
+	local ownedHouses = {}
+	if BMU_IsNotKeyboard() then
+    ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
+  else
+    ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
+  end
+
+	for _, house in pairs(ownedHouses) do
+		local houseEntry   = BMU_createBlankRecord()
+		if BMU_IsNotKeyboard() then
+		  houseId = house:GetReferenceId()
+    else
+      houseId = house.houseId
+		end
+		houseEntry.houseId = houseId
+		if IsPrimaryHouse(houseId) then
+			houseEntry.prio              = 1
+			houseEntry.textColorZoneName = colorGold
 		else
 			houseEntry.prio              = 2
 			houseEntry.textColorZoneName = colorWhite
 		end
-		entry.isOwnHouse = true
-		entry.zoneId = GetHouseZoneId(house.houseId)
-		entry.zoneNameUnformatted = GetZoneNameById(entry.zoneId)
-		entry.textColorDisplayName = "gray"
-		entry.zoneNameClickable = true
-		entry.mapIndex = BMU_getMapIndex(entry.zoneId)
-		entry.parentZoneId = BMU_getParentZoneId(entry.zoneId)
-		entry.parentZoneName = BMU_formatName(GetZoneNameById(entry.parentZoneId))
-		entry.category = BMU_categorizeZone(entry.zoneId)
-		entry.collectibleId = GetCollectibleIdForHouse(entry.houseId)
-		entry.houseCategoryType = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(entry.houseId))
-		entry.nickName = BMU_formatName(GetCollectibleNickname(entry.collectibleId))
-		entry.zoneName = BMU_formatName(entry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
+		houseEntry.isOwnHouse           = true
+		houseEntry.zoneId               = GetHouseZoneId(houseId)
+		houseEntry.zoneNameUnformatted  = GetZoneNameById(houseEntry.zoneId)
+		houseEntry.textColorDisplayName = colorGray
+		houseEntry.zoneNameClickable    = true
+		houseEntry.mapIndex             = BMU_getMapIndex(houseEntry.zoneId)
+		houseEntry.parentZoneId         = BMU_getParentZoneId(houseEntry.zoneId)
+		houseEntry.parentZoneName       = BMU_formatName(GetZoneNameById(houseEntry.parentZoneId))
+		houseEntry.category             = BMU_categorizeZone(houseEntry.zoneId)
+		houseEntry.collectibleId        = GetCollectibleIdForHouse(houseEntry.houseId)
+		houseEntry.houseCategoryType    = GetString("SI_HOUSECATEGORYTYPE", GetHouseCategoryType(houseEntry.houseId))
+		houseEntry.nickName             = BMU_formatName(GetCollectibleNickname(houseEntry.collectibleId))
+		houseEntry.zoneName             = BMU_formatName(houseEntry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
 
 		_, _, entry.houseIcon = GetCollectibleInfo(entry.collectibleId)
 		entry.houseBackgroundImage = GetHousePreviewBackgroundImage(entry.houseId)

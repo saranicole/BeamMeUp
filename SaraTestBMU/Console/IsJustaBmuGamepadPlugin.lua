@@ -113,7 +113,8 @@ fix quick select category causing select spam
 ---------------------------------------------------------------------------------------------------------------
 local addonData = {
 	displayName = "|r Beam Me Up Gamepad|r",
-	name = "BeamMeUp",
+	name = "SaraTestBMU",
+-- 	name = "BeamMeUp",
 	prefix = "IJA_BMU",
 	version = "1.4.2",
 }

@@ -2,6 +2,7 @@ local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU
 
 local LAM2 = BMU.LAM
 local SI = BMU.SI ---- used for localization
+local CS = BMU.CS
 
 local teleporterVars    = BMU.var
 local appName           = teleporterVars.appName
@@ -31,11 +32,9 @@ local worldName 							= GetWorldName()
 local typeFunc = "function"
 
 
-local zo_Menu                               = ZO_Menu     --ZO_Menu speed-up variable (so _G is not searched each time context menus are used)
-local zo_WorldMapZoneStoryTopLevel_Keyboard = ZO_WorldMapZoneStoryTopLevel_Keyboard
-local zo_ChatWindow                         = ZO_ChatWindow
-local ClearCustomScrollableMenu 							= ClearCustomScrollableMenu
-local ShowCustomScrollableMenu 								= ShowCustomScrollableMenu
+local WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Keyboard
+local zo_ChatWindow_Keyboard                         = ZO_ChatWindow
+
 --Other addon variables
 ---v- INS BEARTRAM 20260125 LibScrollableMenu
 local LSM_ENTRY_TYPE_NORMAL 		= LSM_ENTRY_TYPE_NORMAL
@@ -165,6 +164,14 @@ local refreshDungeonsMainMenuEventStr = string_format(BMU_RefreshMainMenuPattern
 local BMU_ThrottledUpdate = BMU.ThrottledUpdate
 
 -- -^- INS251229 Baertram END 0
+
+local FontGame = ZoFontGame
+local FontBookTablet = ZoFontBookTablet
+if BMU.IsNotKeyboard() then
+  FontGame = ZoFontGamepad36
+  FontBookTablet = ZoFontGamepadBookTablet
+  WorldMapZoneStoryTopLevel = ZO_WorldMapZoneStoryTopLevel_Gamepad
+end
 
 -- list of tuples (guildId & displayname) for invite queue (only for admin)
 local inviteQueue = {}
@@ -1648,13 +1655,13 @@ local function SetupUI()
 	
 	-- default font
 	local fontSize = BMU_round(17*scale, 0)   --CHG251229 Baertram
-	local fontStyle = ZoFontGame:GetFontInfo()
+	local fontStyle = FontGame:GetFontInfo()
 	local fontWeight = "soft-shadow-thin"
 	BMU.font1 = string_format(fontPattern, fontStyle, fontSize, fontWeight)
 	
 	-- font of statistics
 	fontSize = BMU_round(13*scale, 0)       --CHG251229 Baertram
-	fontStyle = ZoFontBookTablet:GetFontInfo()
+	fontStyle = FontBookTablet:GetFontInfo()
 	--fontStyle = "EsoUI/Common/Fonts/consola.ttf"
 	fontWeight = "soft-shadow-thin"
 	BMU.font2 = string_format(fontPattern, fontStyle, fontSize, fontWeight)
@@ -1675,30 +1682,33 @@ local function SetupUI()
 			-- NOTE: Since BMU.chatButtonTex is not defined, the option for the offset is disabled automatically (positioning is handled by the lib)
 			BMU.chatButtonLCMB = BMU.LCMB.addChatButton("!!!BMUChatButton", {BMU_textures_wayshrineBtn, BMU_textures_wayshrineBtnOver}, appName, function() BMU_OpenTeleporter(true) end) --CHG251229 Baertram Performance improvement by using defined local
 		else
-			-- do it the old way
-			-- Texture
-			BMU_chatButtonTex = wm:CreateControl("Teleporter_CHAT_MENU_BUTTON", zo_ChatWindow, CT_TEXTURE) --CHG251229 Baertram Performance improvedment for multiple used variable
-            BMU.chatButtonTex = BMU_chatButtonTex --INS251229 Baertram
-			BMU_chatButtonTex:SetDimensions(33, 33)  --CHG251229 Baertram
-			BMU_chatButtonTex:SetAnchor(TOPRIGHT, zo_ChatWindow, TOPRIGHT, -40 - BMU.savedVarsAcc.chatButtonHorizontalOffset, 6) --CHG251229 Baertram
-			BMU_chatButtonTex:SetTexture(BMU_textures_wayshrineBtn) --CHG251229 Baertram
-			BMU_chatButtonTex:SetMouseEnabled(true) --CHG251229 Baertram
-			BMU_chatButtonTex:SetDrawLayer(2) --CHG251229 Baertram
-			--Handlers
-			BMU_chatButtonTex:SetHandler("OnMouseUp", function() --CHG251229 Baertram
-				if button ~= MOUSE_BUTTON_INDEX_LEFT then return end  --INS BAERTRAM20260124
-				BMU_OpenTeleporter(true)
-			end)
-			
-			BMU_chatButtonTex:SetHandler("OnMouseEnter", function(chatButtonTexCtrl) --CHG251229 Baertram
-				chatButtonTexCtrl:SetTexture(BMU_textures_wayshrineBtnOver) --CHG251229 Baertram
-				BMU_tooltipTextEnter(BMU, chatButtonTexCtrl, appName) --CHG251229 Baertram Performance improvement for multiple called same function, respecting : notation (1st passed in param must be the BMU table then)
-			end)
-		
-			BMU_chatButtonTex:SetHandler("OnMouseExit", function(chatButtonTexCtrl) --CHG251229 Baertram
-				chatButtonTexCtrl:SetTexture(BMU_textures_wayshrineBtn) --CHG251229 Baertram
-				BMU_tooltipTextEnter(BMU, chatButtonTexCtrl) --CHG251229 Baertram Performance improvement for multiple called same function, respecting : notation (1st passed in param must be the BMU table then)
-			end)
+		  if not BMU.IsNotKeyboard() then
+        -- do it the old way
+        -- Texture
+        BMU_chatButtonTex = wm:CreateControl("Teleporter_CHAT_MENU_BUTTON", chatWindow, CT_TEXTURE) --CHG251229 Baertram Performance improvedment for multiple used variable
+              BMU.chatButtonTex = BMU_chatButtonTex --INS251229 Baertram
+
+        BMU_chatButtonTex:SetDimensions(33, 33)  --CHG251229 Baertram
+        BMU_chatButtonTex:SetAnchor(TOPRIGHT, chatWindow, TOPRIGHT, -40 - BMU_svAcc.chatButtonHorizontalOffset, 6) --CHG251229 Baertram
+        BMU_chatButtonTex:SetTexture(BMU_textures_wayshrineBtn) --CHG251229 Baertram
+        BMU_chatButtonTex:SetMouseEnabled(true) --CHG251229 Baertram
+        BMU_chatButtonTex:SetDrawLayer(2) --CHG251229 Baertram
+        --Handlers
+        BMU_chatButtonTex:SetHandler("OnMouseUp", function(self, button) --CHG251229 Baertram
+          if button ~= MOUSE_BUTTON_INDEX_LEFT then return end  --INS BAERTRAM20260124
+          BMU_OpenTeleporter(true)
+        end)
+
+        BMU_chatButtonTex:SetHandler("OnMouseEnter", function(chatButtonTexCtrl) --CHG251229 Baertram
+          chatButtonTexCtrl:SetTexture(BMU_textures_wayshrineBtnOver) --CHG251229 Baertram
+          BMU_tooltipTextEnter(BMU, chatButtonTexCtrl, appName) --CHG251229 Baertram Performance improvement for multiple called same function, respecting : notation (1st passed in param must be the BMU table then)
+        end)
+
+        BMU_chatButtonTex:SetHandler("OnMouseExit", function(chatButtonTexCtrl) --CHG251229 Baertram
+          chatButtonTexCtrl:SetTexture(BMU_textures_wayshrineBtn) --CHG251229 Baertram
+          BMU_tooltipTextEnter(BMU, chatButtonTexCtrl) --CHG251229 Baertram Performance improvement for multiple called same function, respecting : notation (1st passed in param must be the BMU table then)
+        end)
+      end
 		end
 	end
 	
@@ -1753,10 +1763,11 @@ local function SetupUI()
 
   --------------------------------------------------------------------------------------------------------------------
   -- Switch BUTTON ON ZoneGuide window
-  teleporterWin_zoneGuideSwapTexture = wm:CreateControl(nil, zo_WorldMapZoneStoryTopLevel_Keyboard, CT_TEXTURE) --CHG251229 Baertram Performance improvement
+  --------------------------------------------------------------------------------------------------------------------
+  teleporterWin_zoneGuideSwapTexture = wm:CreateControl(nil, WorldMapZoneStoryTopLevel, CT_TEXTURE) --CHG251229 Baertram Performance improvement
   teleporterWin.zoneGuideSwapTexture = teleporterWin_zoneGuideSwapTexture --CHG251229 Baertram Performance improvement
   teleporterWin_zoneGuideSwapTexture:SetDimensions(50*scale, 50*scale) --CHG251229 Baertram Performance improvement
-  teleporterWin_zoneGuideSwapTexture:SetAnchor(TOPRIGHT, zo_WorldMapZoneStoryTopLevel_Keyboard, TOPRIGHT, TOPRIGHT -10*scale, -35*scale) --CHG251229 Baertram Performance improvement
+  teleporterWin_zoneGuideSwapTexture:SetAnchor(TOPRIGHT, WorldMapZoneStoryTopLevel, TOPRIGHT, TOPRIGHT -10*scale, -35*scale) --CHG251229 Baertram Performance improvement
   teleporterWin_zoneGuideSwapTexture:SetTexture(BMU_textures.swapBtn) --CHG251229 Baertram Performance improvement
   teleporterWin_zoneGuideSwapTexture:SetMouseEnabled(true) --CHG251229 Baertram Performance improvement
   
@@ -3469,7 +3480,13 @@ end
 function BMU.TeleporterSetupUI(addOnName)
 	if appName ~= addOnName then return end
 		addOnName = appName .. " - Teleporter"
-		SetupOptionsMenu(addOnName)
+    d("in check")
+		if BMU.IsNotKeyboard() then
+		  d("in console setup")
+      CS.SetupOptionsMenu(addOnName)
+		else
+		  BMU.SetupOptionsMenu(addOnName)
+		end
 		SetupUI()
 end
 

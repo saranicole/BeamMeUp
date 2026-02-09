@@ -15,14 +15,9 @@ core/SI.lua
 localization/EN.lua
 localization/$(language).lua
 
-## Globals / data sets
-GuildData.lua
-TeleporterGlobals.lua
-
 ## Libraries - temp?
 ## "find -L lib -type f" is your friend
 lib/LibScrollableMenu/LSM_API.lua
-lib/LibScrollableMenu/test/LSM_test.lua
 lib/LibScrollableMenu/classes/buttonGroup_class.lua
 lib/LibScrollableMenu/classes/contextMenu_class.lua
 lib/LibScrollableMenu/classes/comboBox_base.lua
@@ -31,7 +26,6 @@ lib/LibScrollableMenu/classes/dropdown_class.lua
 lib/LibScrollableMenu/classes/subMenu_class.lua
 lib/LibScrollableMenu/code/LibScrollableMenu.lua
 lib/LibScrollableMenu/code/LSM_Util.lua
-lib/LibScrollableMenu/LibScrollableMenu.txt
 lib/LibScrollableMenu/XML/LibScrollableMenu.xml
 lib/LibScrollableMenu/constants.lua
 lib/LibScrollableMenu/lang/zh.lua
@@ -40,8 +34,6 @@ lib/LibScrollableMenu/lang/ru.lua
 lib/LibScrollableMenu/lang/fr.lua
 lib/LibScrollableMenu/lang/es.lua
 lib/LibScrollableMenu/lang/de.lua
-lib/LibScrollableMenu/changelog.txt
-lib/LibScrollableMenu/debug/LSM_debug.lua
 lib/LibZone/LibZone_Constants.lua
 lib/LibZone/LibZone_Data.lua
 lib/LibZone/LibZone_AutoCompletion.lua
@@ -49,6 +41,10 @@ lib/LibZone/LibZone_GeoData.lua
 lib/LibZone/LibZone.lua
 lib/LibZone/LibZone_Maps.xlsx
 lib/LibZone/LibZone.txt
+
+## Globals / data sets
+GuildData.lua
+TeleporterGlobals.lua
 
 ## Justa
 Console/i18n/en.lua

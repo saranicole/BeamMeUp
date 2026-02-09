@@ -20,6 +20,7 @@ local BMU_GUILD_DATA = BMU_GUILD_DATA
 local numVars = BMU.numVars
 local SI = BMU.SI
 local BMU_SI_Get = SI.get
+
 -- -^- INS251229 Baertram BEGIN 0
 
 
@@ -28,7 +29,8 @@ BMU.win =   {
 }
 
 BMU.var = {
-  appName               = "BeamMeUp",
+  appName = "SaraTestBMU",
+--   appName               = "BeamMeUp",
   appNameAbbr			= "BMU",
   version				= "", -- Will be set by help of function GetAddonVersionFromManifest(), see file BeamMeUp.lua event_add_on_loaded
   author				= "DeadSoon, Gamer1986PAN, Baertram",
@@ -398,7 +400,7 @@ BMU.dropdownSecLangChoices = BMU_dropdownSecLangChoices
 -- sorting dropdown choices/values
 local BMU_dropdownSortChoices = {}
 local BMU_dropdownSortValues = {}
-local sortDropdownEntryPrefix = BMU.numVars.sortDropdownEntryPrefix
+local sortDropdownEntryPrefix = numVars.sortDropdownEntryPrefix
 for i=1, numVars.numSortDropdownEntries, 1 do
 	BMU_dropdownSortChoices[i] = BMU_SI_Get(SI[sortDropdownEntryPrefix], i)
 	BMU_dropdownSortValues[i] = i
