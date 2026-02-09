@@ -3480,9 +3480,7 @@ end
 function BMU.TeleporterSetupUI(addOnName)
 	if appName ~= addOnName then return end
 		addOnName = appName .. " - Teleporter"
-    d("in check")
 		if BMU.IsNotKeyboard() then
-		  d("in console setup")
       CS.SetupOptionsMenu(addOnName)
 		else
 		  BMU.SetupOptionsMenu(addOnName)
