@@ -1,4 +1,6 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
+local BMU = BMU
+local em = EVENT_MANAGER
 
 --[[
 	Updated how mapInfo is updated
@@ -158,22 +160,22 @@ end
 
 local onPostPortEvent = 'IJA_BMUGP_onPostPortEvent'
 local function onTryToPort(zoneCategory, zoneId)
-	EVENT_MANAGER:UnregisterForEvent(onPostPortEvent, EVENT_PLAYER_DEACTIVATED)
-	EVENT_MANAGER:UnregisterForEvent(onPostPortEvent, EVENT_PLAYER_ACTIVATED)
-	EVENT_MANAGER:UnregisterForUpdate(onPostPortEvent)
+	em:UnregisterForEvent(onPostPortEvent, EVENT_PLAYER_DEACTIVATED)
+	em:UnregisterForEvent(onPostPortEvent, EVENT_PLAYER_ACTIVATED)
+	em:UnregisterForUpdate(onPostPortEvent)
 	
 	if zoneCategory then
-		EVENT_MANAGER:RegisterForEvent(onPostPortEvent, EVENT_PLAYER_ACTIVATED, function()
+		em:RegisterForEvent(onPostPortEvent, EVENT_PLAYER_ACTIVATED, function()
 			BMU.updateStatistic(zoneCategory, zoneId)
 			onTryToPort()
 		end)
 		
-		EVENT_MANAGER:RegisterForEvent(onPostPortEvent, EVENT_PLAYER_DEACTIVATED, function()
-			EVENT_MANAGER:UnregisterForUpdate(onPostPortEvent)
+		em:RegisterForEvent(onPostPortEvent, EVENT_PLAYER_DEACTIVATED, function()
+			em:UnregisterForUpdate(onPostPortEvent)
 		end)
 		
 		local xLoc, yLoc = GetMapPlayerPosition('player')
-		EVENT_MANAGER:RegisterForUpdate(onPostPortEvent, 100, function()
+		em:RegisterForUpdate(onPostPortEvent, 100, function()
 			local xNew, yNew = GetMapPlayerPosition('player')
 		
 			if xLoc ~= xNew or yLoc ~= yNew then

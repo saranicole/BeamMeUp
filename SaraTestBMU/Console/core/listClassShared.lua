@@ -1,4 +1,6 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
+local BMU = BMU
+local BMU_textures = BMU.textures
 
 local CATEGORY_TYPE_GROUP		= 0
 local CATEGORY_TYPE_ALL			= 1
@@ -105,7 +107,7 @@ local function addTooltipData(tooltipData, data)
 	if data then
 		if #tooltipData > 0 then
 			-- add separator
-			table.insert(tooltipData, BMU.textures.tooltipSeperator)
+			table.insert(tooltipData, BMU_textures.tooltipSeperator)
 		end
 		if type(data) == 'table' then
 			for k, entry in pairs(data) do
@@ -115,7 +117,7 @@ local function addTooltipData(tooltipData, data)
 			table.insert(tooltipData, data)
 		end
 	else
-		table.insert(tooltipData, BMU.textures.tooltipSeperator)
+		table.insert(tooltipData, BMU_textures.tooltipSeperator)
 	end
 end
 
@@ -136,7 +138,7 @@ local function getTargetTooltipData(targetData)
 	if targetData.zoneNameClickable == true and (targetData.zoneWayhsrineDiscoveryInfo ~= nil or targetData.zoneSkyshardDiscoveryInfo ~= nil) then
 		if #tooltipData > 0 then
 			-- add separator
-	--		table.insert(tooltipData, 1, BMU.textures.tooltipSeperator)
+	--		table.insert(tooltipData, 1, BMU_textures.tooltipSeperator)
 		end
 		
 		local discoveryInfo = {}
@@ -171,7 +173,7 @@ local function getTargetTooltipData(targetData)
 				targetData.zoneName = targetData.zoneName .. " (" .. totalItemsCountInv .. ")"
 			end
 			if totalItemsCountBank > 0 then
-				targetData.zoneName = targetData.zoneName .. BMU.var.color.colTrash .. " (" .. totalItemsCountBank .. ")"
+				targetData.zoneName = targetData.zoneName .. BMU_var_color.colTrash .. " (" .. totalItemsCountBank .. ")"
 			end
 		end
 
@@ -220,9 +222,9 @@ local function getTargetTooltipData(targetData)
 	if targetData.groupMemberSameInstance ~= nil then
 		-- add instance info
 		if targetData.groupMemberSameInstance == true then
-			addTooltipData(tooltipData, BMU.var.color.colGreen .. GetString(SI_TELE_UI_SAME_INSTANCE))
+			addTooltipData(tooltipData, BMU_var_color.colGreen .. GetString(SI_TELE_UI_SAME_INSTANCE))
 		else
-			addTooltipData(tooltipData, BMU.var.color.colRed .. GetString(SI_TELE_UI_DIFFERENT_INSTANCE))
+			addTooltipData(tooltipData, BMU_var_color.colRed .. GetString(SI_TELE_UI_DIFFERENT_INSTANCE))
 		end
 	end
 	------------------
@@ -375,16 +377,16 @@ function TeleportClass_Shared:UpdateTooltip(targetData)
 	end
 
 	if #tooltipData > 0 then -- add separator
-		table.insert(tooltipData, 1, BMU.textures.tooltipSeperator)
+		table.insert(tooltipData, 1, BMU_textures.tooltipSeperator)
 	end
 	if targetData.setCollectionProgress then
 		table.insert(tooltipData, 1, targetData.setCollectionProgress)
-		table.insert(tooltipData, 1, BMU.textures.tooltipSeperator)
+		table.insert(tooltipData, 1, BMU_textures.tooltipSeperator)
 	end
 	
 	if targetData.collectibleId then
 		if #tooltipData > 0 then -- add separator
-			table.insert(tooltipData, BMU.textures.tooltipSeperator)
+			table.insert(tooltipData, BMU_textures.tooltipSeperator)
 		end
 		local collectibleDescription = select(2, GetCollectibleInfo(targetData.collectibleId))
 		table.insert(tooltipData, collectibleDescription)
@@ -392,7 +394,7 @@ function TeleportClass_Shared:UpdateTooltip(targetData)
 	
 	if targetData.pinDesc and targetData.pinDesc ~= '' then
 		if #tooltipData > 0 then -- add separator
-			table.insert(tooltipData, BMU.textures.tooltipSeperator)
+			table.insert(tooltipData, BMU_textures.tooltipSeperator)
 		end
 		table.insert(tooltipData, targetData.pinDesc)
 	end
@@ -413,7 +415,7 @@ function TeleportClass_Shared:UpdateTooltip(targetData)
 		
 		if description ~= '' then
 			if #tooltipData > 0 then -- add separator
-				table.insert(tooltipData, BMU.textures.tooltipSeperator)
+				table.insert(tooltipData, BMU_textures.tooltipSeperator)
 			end
 			
 			if targetData.zoneId ~= targetData.parentZoneId then
@@ -426,7 +428,7 @@ function TeleportClass_Shared:UpdateTooltip(targetData)
 	
 	if #tooltipData == 0 then -- category info
 		if targetData.categoryType then -- category info
-			table.insert(tooltipData, 1, BMU.textures.tooltipSeperator)
+			table.insert(tooltipData, 1, BMU_textures.tooltipSeperator)
 			
 			local teleportPlayers = self.owner.portalPlayers
 			local addedEntries = {}
@@ -844,13 +846,13 @@ function TeleportClass_Shared:BuildMainCategroyOptions(groupId)
 		})
 
 		table.insert(dropdownData, { -- Group
-			filterName = BMU.var.color.colOrange .. GetString(SI_TELE_UI_FILTER_GROUP),
+			filterName = BMU_var_color.colOrange .. GetString(SI_TELE_UI_FILTER_GROUP),
 			filterIndex = 7,
 			filterSourceIndex = TELEPORTER_SOURCE_INDEX_GROUP,
 		})
 
 		table.insert(dropdownData, { -- Friends
-			filterName = BMU.var.color.colGreen .. GetString(SI_TELE_UI_FILTER_FRIENDS),
+			filterName = BMU_var_color.colGreen .. GetString(SI_TELE_UI_FILTER_FRIENDS),
 			filterIndex = 7,
 			filterSourceIndex = TELEPORTER_SOURCE_INDEX_FRIEND,
 		})
@@ -859,7 +861,7 @@ function TeleportClass_Shared:BuildMainCategroyOptions(groupId)
 			local guildId = GetGuildId(guildIndex)
 
 			table.insert(dropdownData, {
-				filterName = BMU.var.color.colWhite .. GetGuildName(guildId),
+				filterName = BMU_var_color.colWhite .. GetGuildName(guildId),
 				filterIndex = 7,
 				filterSourceIndex = TELEPORTER_SOURCE_INDEX_FRIEND + guildIndex,
 			})
@@ -1197,30 +1199,31 @@ end
 -- colorize text
 function TeleportClass_Shared.colorizeText(text, color)
 	if type(color) == "string" then
-		local code = BMU.var.color.colWhite
+	  local BMU_var_color = BMU.var.color
+		local code = BMU_var_color.colWhite
 
 		if string.lower(color) == "gray" then
-			code = BMU.var.color.colTrash
+			code = BMU_var_color.colTrash
 		elseif string.lower(color) == "yellow" then
-			code = BMU.var.color.colYellow
+			code = BMU_var_color.colYellow
 		elseif string.lower(color) == "blue" then
-			code = BMU.var.color.colArcane
+			code = BMU_var_color.colArcane
 		elseif string.lower(color) == "white" then
-			code = BMU.var.color.colWhite
+			code = BMU_var_color.colWhite
 		elseif string.lower(color) == "red" then
-			code = BMU.var.color.colRed
+			code = BMU_var_color.colRed
 		elseif string.lower(color) == "gold" then
-			code = BMU.var.color.colLegendary
+			code = BMU_var_color.colLegendary
 		elseif string.lower(color) == "green" then
-			code = BMU.var.color.colGreen
+			code = BMU_var_color.colGreen
 		elseif string.lower(color) == "orange" then
-			code = BMU.var.color.colOrange
+			code = BMU_var_color.colOrange
 		elseif string.lower(color) == "teal" then
-			code = BMU.var.color.colBlue
+			code = BMU_var_color.colBlue
 		elseif string.lower(color) == "dred" then
-			code = BMU.var.color.colDarkRed
+			code = BMU_var_color.colDarkRed
 		elseif string.lower(color) == "lgray" then
-			code = BMU.var.color.colGray
+			code = BMU_var_color.colGray
 		end
 
 		return "|c" .. code .. tostring(text) .. "|r"

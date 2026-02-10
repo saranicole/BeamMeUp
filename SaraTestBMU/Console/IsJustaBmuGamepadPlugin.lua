@@ -157,6 +157,10 @@ end
 local addon = ZO_DeferredInitializingObject:Subclass()
 BMU.IJA = addon
 
+local BMU = BMU
+local em = EVENT_MANAGER
+local cm = CALLBACK_MANAGER
+
 function addon:Init(self, control)
     self.categoryList = self.subclassTable.categoryList:New(self, control)
 		self.teleportList = self.subclassTable.teleportList:New(self, IJA_BMU_TeleportList_Gamepad)
@@ -498,12 +502,12 @@ do
 			-- stops selection jump on refresh while moving
 			if self.teleportList:IsMoving() then return end
 			
-			EVENT_MANAGER:UnregisterForUpdate(self.name)
-			CALLBACK_MANAGER:FireCallbacks('BMU_GAMEPAD_CATEGORY_CHANGED', self.categoryList:GetTargetData())
+			em:UnregisterForUpdate(self.name)
+			cm:FireCallbacks('BMU_GAMEPAD_CATEGORY_CHANGED', self.categoryList:GetTargetData())
 		end
 
-		EVENT_MANAGER:UnregisterForUpdate(self.name)
-		EVENT_MANAGER:RegisterForUpdate(self.name, REFRESH_ON_EVENT_TIME_DELAY, onUpdate)
+		em:UnregisterForUpdate(self.name)
+		em:RegisterForUpdate(self.name, REFRESH_ON_EVENT_TIME_DELAY, onUpdate)
 	end
 end
 
@@ -527,7 +531,7 @@ function addon:RegisterEvents()
 			self.categoryList.fragment:UpdateTooltip(self.categoryList:GetTargetData())
 		end
 	end
-	CALLBACK_MANAGER:RegisterCallback('BMU_GAMEPAD_CATEGORY_CHANGED', onCategoryChanged)
+	cm:RegisterCallback('BMU_GAMEPAD_CATEGORY_CHANGED', onCategoryChanged)
 
 	local function onBmuListUpdated()
 		if not self.currentFragment:IsHidden() then
@@ -543,27 +547,27 @@ function addon:RegisterEvents()
 			end
 		end
 	end
-	CALLBACK_MANAGER:RegisterCallback('BMU_List_Updated', onBmuListUpdated)
+	cm:RegisterCallback('BMU_List_Updated', onBmuListUpdated)
 
 	local function refreshOnEvent(_, ...)
 		self:RefreshOnEvent(GetFrameTimeMilliseconds(), ...)
 	end
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_FRIEND_ADDED, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_FRIEND_REMOVED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_FRIEND_ADDED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_FRIEND_REMOVED, refreshOnEvent)
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_LEFT, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_JOINED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_LEFT, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_JOINED, refreshOnEvent)
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_ADDED, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_REMOVED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_ADDED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_REMOVED, refreshOnEvent)
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_FRIEND_PLAYER_STATUS_CHANGED, refreshOnEvent)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_CONNECTED_STATUS, refreshOnEvent)
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_FRIEND_PLAYER_STATUS_CHANGED, refreshOnEvent)
+    em:RegisterForEvent(self.name, EVENT_GROUP_MEMBER_CONNECTED_STATUS, refreshOnEvent)
+    em:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_PLAYER_STATUS_CHANGED, refreshOnEvent)
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_FRIEND_CHARACTER_ZONE_CHANGED, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_CHARACTER_ZONE_CHANGED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_FRIEND_CHARACTER_ZONE_CHANGED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_GUILD_MEMBER_CHARACTER_ZONE_CHANGED, refreshOnEvent)
 
     local function OnZoneUpdate(evt, unitTag, newZone)
 --	d( '-- EVENT_ZONE_UPDATE', unitTag)
@@ -571,11 +575,11 @@ function addon:RegisterEvents()
             refreshOnEvent()
         end
     end
-    EVENT_MANAGER:RegisterForEvent(self.name, EVENT_ZONE_UPDATE, OnZoneUpdate)
+    em:RegisterForEvent(self.name, EVENT_ZONE_UPDATE, OnZoneUpdate)
 
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_QUEST_ADDED, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_QUEST_REMOVED, refreshOnEvent)
-	EVENT_MANAGER:RegisterForEvent(self.name, EVENT_QUEST_CONDITION_COUNTER_CHANGED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_QUEST_ADDED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_QUEST_REMOVED, refreshOnEvent)
+	em:RegisterForEvent(self.name, EVENT_QUEST_CONDITION_COUNTER_CHANGED, refreshOnEvent)
 
 	local trackedItems = {
 		[SPECIALIZED_ITEMTYPE_TROPHY_SURVEY_REPORT] = true,

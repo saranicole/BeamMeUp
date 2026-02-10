@@ -1,4 +1,9 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
+local BMU = BMU
+local BMU_createTable = BMU.createTable
+local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
+
+local em = EVENT_MANAGER
 
 
 local var_AUTOUNLOCK_PROGRESS_NONE = 0
@@ -23,7 +28,7 @@ mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY, "No more zones found to be di
 local setup_function_map = {
 	[var_AUTOUNLOCK_PROGRESS_ACTIVE] = function(self)
 		local zoneId = GetZoneId(GetUnitZoneIndex("player"))
-		local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(zoneId)
+		local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
 
 		local entry = {
 			dataType = NOTIFICATIONS_ALERT_DATA,
@@ -68,7 +73,7 @@ local setup_function_map = {
 local callback_Map = {
 	[var_AUTOUNLOCK_PROGRESS_ACTIVE] = function(self)
 		SCENE_MANAGER:ShowBaseScene() -- not working
-		IJA_BMU_GAMEPAD_PLUGIN:AutoUnlockContinue()
+		addon:AutoUnlockContinue()
 	end,
 	[var_AUTOUNLOCK_PROGRESS_COMPLETE] = function(self)
 		self.progress = var_AUTOUNLOCK_PROGRESS_NONE
@@ -83,7 +88,7 @@ local function getSetupFunction(progress)
 end
 
 ---------------------------------------------------------------------------------------------------------------
--- 
+--
 ---------------------------------------------------------------------------------------------------------------
 local AutoUnlockNotificationProvider = ZO_NotificationProvider:Subclass()
 
@@ -97,14 +102,14 @@ function AutoUnlockNotificationProvider:New(notificationManager)
 		end
 	end
 
-	EVENT_MANAGER:RegisterForUpdate(updateName, 1000, onUpdate)
+	em:RegisterForUpdate(updateName, 1000, onUpdate)
     return provider
 end
 
 function AutoUnlockNotificationProvider:BuildNotificationList()
     ZO_ClearNumericallyIndexedTable(self.list)
-	EVENT_MANAGER:UnregisterForUpdate(updateName)
-	
+	em:UnregisterForUpdate(updateName)
+
 	local setupFunction = getSetupFunction(self.progress)
 	if setupFunction then
 		self:AddNotification(setupFunction)
@@ -132,7 +137,7 @@ end
 function AutoUnlockNotificationProvider:Decline(data)
 	-- cancel
 	self.progress = var_AUTOUNLOCK_PROGRESS_NONE
-	IJA_BMU_GAMEPAD_PLUGIN:AutoUnlockCancel()
+	addon:AutoUnlockCancel()
 end
 local provider = AutoUnlockNotificationProvider:New(GAMEPAD_NOTIFICATIONS)
 
@@ -140,14 +145,14 @@ table.insert(GAMEPAD_NOTIFICATIONS.providers, provider)
 GAMEPAD_NOTIFICATIONS:RefreshNotificationList()
 -- /tb GAMEPAD_NOTIFICATIONS.providers[28]
 ---------------------------------------------------------------------------------------------------------------
--- 
+--
 ---------------------------------------------------------------------------------------------------------------
 function addon:AutoUnlockContinue()
 	self:ProceedAutoUnlock()
 end
 
 function addon:AutoUnlockCancel()
---	EVENT_MANAGER:UnregisterForUpdate(updateName)
+--	em:UnregisterForUpdate(updateName)
 	self:UnregisterAutoUnlockEvents()
 end
 
@@ -170,9 +175,9 @@ end
 function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
 	provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
 	-- ensure unlock process is not already running
-	if not BMU.uwData or not BMU.uwData.isStarted then
+	if not BMU_uwData or not BMU_uwData.isStarted then
 		local formattedZoneName = BMU.formatName(GetZoneNameById(zoneId), false)
-		local list = BMU.createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
+		local list = BMU_createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
 		-- check if list is empty
 		provider.formattedZoneName = formattedZoneName
 		local firstRecord = list[1]
@@ -180,10 +185,10 @@ function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
 			provider.progress = var_AUTOUNLOCK_PROGRESS_FAILED
 			return
 		end
-		
+
 		-- get wayshrine discovery info for that current map
-		local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(zoneId)
-		
+		local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+
 		-- set global variables
 		BMU.uwData = {
 			isStarted = true,
@@ -200,8 +205,9 @@ function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
 			gainedXP = 0,
 			isChatLogging = isChatLogging or false,
 		}
+		local BMU_uwData = BMU.uwData
 		self:RegisterAutoUnlockEvents()
-		
+
 		-- initiate fast travel loop
 		self:ProceedAutoUnlock()
 	end
@@ -210,54 +216,54 @@ end
 -- loop of the automatic teleportation
 function addon:ProceedAutoUnlock(nextPlayer)
 	-- only proceed if feature is active
-	if BMU.uwData.isStarted then
-		local _, allUnlockedWayshrines = BMU.getZoneWayshrineCompletion(BMU.uwData.zoneId)
-		
+	if BMU_uwData.isStarted then
+		local _, allUnlockedWayshrines = BMU_getZoneWayshrineCompletion(BMU_uwData.zoneId)
+
 		-- Note: multiple wayshrine can be discovered at once
-		BMU.uwData.unlockedWayshrines = allUnlockedWayshrines - BMU.uwData.discoveredWayshrinesBefore
-		
+		BMU_uwData.unlockedWayshrines = allUnlockedWayshrines - BMU_uwData.discoveredWayshrinesBefore
+
 		-- check if the zone is now complete
-		if allUnlockedWayshrines == BMU.uwData.totalWayshrines then
+		if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
 			-- just finish
 			provider.progress = var_AUTOUNLOCK_PROGRESS_COMPLETE
 			self:FinishedAutoUnlock("wayshrinesComplete")
 			return
 		end
-		
+
 		-- get all travel options
-		local list = BMU.createTable({index=8, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
-		
+		local list = BMU_createTable({index=8, fZoneId=BMU_uwData.zoneId, dontDisplay=true})
+
 		if #list ~= 0 or list[1].displayName ~= "" then
 			-- re-calculate total steps in case new players come available during process
 			-- totalSteps = currentStep(#displayNameList) + number of players which are in list but not in displayNameList
-			BMU.uwData.totalSteps = #BMU.uwData.displayNameList
-			
+			BMU_uwData.totalSteps = #BMU_uwData.displayNameList
+
 			-- shuffle list of players (sort randomly)
 			list = BMU.shuffle_table(list)
-			
+
 			for _, record in pairs(list) do
 				-- check list of players to which we traveled already
-				if record.displayName ~= "" and not BMU.has_value(BMU.uwData.displayNameList, record.displayName) then
+				if record.displayName ~= "" and not BMU.has_value(BMU_uwData.displayNameList, record.displayName) then
 					-- open player
 					if not nextPlayer then
 						-- identify next player for jump if not already set
 						nextPlayer = record
 					end
 					-- count to determine the number of open players
-					BMU.uwData.totalSteps = BMU.uwData.totalSteps + 1
+					BMU_uwData.totalSteps = BMU_uwData.totalSteps + 1
 					break
 				else
 					nextPlayer = nil
 				end
 			end
-			
+
 			self.nextPlayer = nextPlayer
 			if nextPlayer then
 				-- start travel
 				self:TryToJump()
 			--	BMU.PortalToPlayer(nextPlayer.displayName, nextPlayer.sourceIndexLeading, nextPlayer.zoneName, nextPlayer.zoneId, nextPlayer.category, false, false, false)
 				-- add player to list
-				table.insert(BMU.uwData.displayNameList, nextPlayer.displayName)
+				table.insert(BMU_uwData.displayNameList, nextPlayer.displayName)
 				-- NOTE: handling of fast travel error in function BMU.FinishedAutoUnlock() in case of timeout
 
 				zo_callLater(function()
@@ -284,39 +290,39 @@ function addon:FinishedAutoUnlock(reason)
 		self:ProceedAutoUnlock()
 		return
 	end
-	
+
 	CancelCast()
 	-- unregister events
 	self:UnregisterAutoUnlockEvents()
 	-- set flag to "inactivate" the proceed function (if unregister failed or it is called for some other reasons)
-	BMU.uwData.isStarted = false
-	
+	BMU_uwData.isStarted = false
+
 	-- show all infos in dialog
-	local unlockedWayshrinesString = BMU.uwData.unlockedWayshrines
+	local unlockedWayshrinesString = BMU_uwData.unlockedWayshrines
 	-- colorize if one or more wayshrines were unlocked
-	if BMU.uwData.unlockedWayshrines > 0 then
-		unlockedWayshrinesString = BMU.colorizeText(BMU.uwData.unlockedWayshrines, "green")
+	if BMU_uwData.unlockedWayshrines > 0 then
+		unlockedWayshrinesString = BMU.colorizeText(BMU_uwData.unlockedWayshrines, "green")
 	end
-	local allUnlockedWayshrines = BMU.uwData.discoveredWayshrinesBefore + BMU.uwData.unlockedWayshrines
-	local totalWayshrinesString = allUnlockedWayshrines .. "/" .. BMU.uwData.totalWayshrines
+	local allUnlockedWayshrines = BMU_uwData.discoveredWayshrinesBefore + BMU_uwData.unlockedWayshrines
+	local totalWayshrinesString = allUnlockedWayshrines .. "/" .. BMU_uwData.totalWayshrines
 	-- colorize if zone is complete
-	if allUnlockedWayshrines == BMU.uwData.totalWayshrines then
+	if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
 		totalWayshrinesString = BMU.colorizeText(totalWayshrinesString, "green")
 	end
 	-- colorize if XP was gained
-	local gainedXPString = BMU.formatGold(BMU.uwData.gainedXP)
-	if BMU.uwData.gainedXP > 0 then
+	local gainedXPString = BMU.formatGold(BMU_uwData.gainedXP)
+	if BMU_uwData.gainedXP > 0 then
 		gainedXPString = BMU.colorizeText(gainedXPString, "yellow")
 	end
-		
-	if BMU.uwData.isChatLogging then
+
+	if BMU_uwData.isChatLogging then
 		-- print summary into chat
 		BMU.printToChat(
-			string.format(unlockProgress, BMU.uwData.fZoneName, tostring(unlockedWayshrinesString), 
+			string.format(unlockProgress, BMU_uwData.fZoneName, tostring(unlockedWayshrinesString),
 				tostring(totalWayshrinesString), tostring(gainedXPString))
 			--[[
-			BMU.uwData.fZoneName .. ": " ..
-			GetString(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY) .. " " 
+			BMU_uwData.fZoneName .. ": " ..
+			GetString(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY) .. " "
 			.. tostring(unlockedWayshrinesString) .. " (" .. tostring(totalWayshrinesString) .. ")  " ..
 			GetString(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP) .. " " .. tostring(gainedXPString))
 			]]
@@ -324,14 +330,14 @@ function addon:FinishedAutoUnlock(reason)
 	end
 
 	-- if continuing with next zones and process finished successfully
-	if BMU.uwData.loopType and (reason == "finished" or reason == "wayshrinesComplete") then
+	if BMU_uwData.loopType and (reason == "finished" or reason == "wayshrinesComplete") then
 
 		-- set completed or could not finish ?
 		zo_callLater(function()
-			if BMU.uwData.loopType == "suffle" then
-				self:StartAutoUnlockLoopRandom(BMU.uwData.zoneId, BMU.uwData.loopType, BMU.uwData.isChatLogging)
+			if BMU_uwData.loopType == "suffle" then
+				self:StartAutoUnlockLoopRandom(BMU_uwData.zoneId, BMU_uwData.loopType, BMU_uwData.isChatLogging)
 			else
-				self:StartAutoUnlockLoopSorted(BMU.uwData.loopZoneList, BMU.uwData.loopType, BMU.uwData.isChatLogging)
+				self:StartAutoUnlockLoopSorted(BMU_uwData.loopZoneList, BMU_uwData.loopType, BMU_uwData.isChatLogging)
 			end
 		end, 1750)
 	end
@@ -352,18 +358,18 @@ function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
 			table.insert(overlandZoneIds, overlandZoneId)
 		end
 	end
-	
+
 	-- sort the table randomly
 	local shuffled = BMU.shuffle_table(overlandZoneIds)
-	
+
 	-- go over the zones and find one
 	for _, zoneId in ipairs(shuffled) do
 		if zoneId ~= prevZoneId then -- dont take the same zone twice in a row
-			local list = BMU.createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
+			local list = BMU_createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
 			-- check if list is empty
 			if #list > 0 and list[1] and list[1].displayName ~= "" then
-				local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(zoneId)
-				if numWayshrinesDiscovered < numWayshrines then		
+				local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+				if numWayshrinesDiscovered < numWayshrines then
 					zo_callLater(function()
 						self:PrepareAutoUnlock(zoneId, isChatLogging, loopType, nil)
 					end, 400)
@@ -384,9 +390,9 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 			-- consider only zones the user has access to (DLC)
 			if CanJumpToPlayerInZone(overlandZoneId) then
 				--table.insert(overlandZoneIds, overlandZoneId)
-				local resultList = BMU.createTable({index=8, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
+				local resultList = BMU_createTable({index=8, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
 				if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
-					local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(overlandZoneId)
+					local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(overlandZoneId)
 					if numWayshrinesDiscovered < numWayshrines then
 						record = {}
 						record.zoneId = overlandZoneId
@@ -401,7 +407,7 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 				end
 			end
 		end
-		
+
 		-- sort zone records
 		if loopType == "wayshrines" then
 			-- sort by ratio of undiscovered wayshrines (where more can be released in percent)
@@ -416,10 +422,10 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 		end
 		zoneRecordList = cleanZoneList
 	end
-	
+
 	-- at this moment: zoneRecordList was already given or was re-filled right now
 	for index, zoneRecord in pairs(zoneRecordList) do
-		local resultList = BMU.createTable({index=8, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
+		local resultList = BMU_createTable({index=8, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
 		if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
 			table.remove(zoneRecordList, index)
 			zo_callLater(function()
@@ -428,7 +434,7 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 			return
 		end
 	end
-	
+
 	-- if records are still in list, we know that zones were skipped --> start loop again
 	-- if no records are in list, we know that we could not find players/zones --> finish
 		-- because 1.: if we skipped entries, see case before
@@ -442,7 +448,7 @@ end
 
 function addon:TryToJump()
 	local nextPlayer = self.nextPlayer
-	
+
 	BMU.PortalToPlayer(nextPlayer.displayName, nextPlayer.sourceIndexLeading, nextPlayer.zoneName, nextPlayer.zoneId, nextPlayer.category, false, false, false)
 end
 
@@ -453,11 +459,11 @@ local ignoredResults = {
 }
 local eventHandlers = {
 	[EVENT_PLAYER_ACTIVATED] = function()
-		zo_callLater(function() IJA_BMU_GAMEPAD_PLUGIN:ProceedAutoUnlock() end, 1500)
+		zo_callLater(function() addon:ProceedAutoUnlock() end, 1500)
 	end,
 	[EVENT_DISCOVERY_EXPERIENCE] = function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
-		if BMU.uwData.isStarted then
-			BMU.uwData.gainedXP = BMU.uwData.gainedXP + (currentExperience-previousExperience)
+		if BMU_uwData.isStarted then
+			BMU_uwData.gainedXP = BMU_uwData.gainedXP + (currentExperience-previousExperience)
 		end
 	end,
 	[EVENT_JUMP_FAILED] = function(eventId, result)
@@ -465,7 +471,7 @@ local eventHandlers = {
 		if not ignoredResults[result] then
 		--	return ALERT, GetString("SI_JUMPRESULT", result)
 			zo_callLater(function()
-				IJA_BMU_GAMEPAD_PLUGIN:ProceedAutoUnlock()
+				addon:ProceedAutoUnlock()
 			end,var_AUTOUNLOCK_COOLDOWN)
 		end
 	end,
@@ -473,12 +479,12 @@ local eventHandlers = {
 
 function addon:RegisterAutoUnlockEvents()
 	for evenId, handler in pairs(eventHandlers) do
-		EVENT_MANAGER:RegisterForEvent(self.prefix .. "_AutoWayshrineUnlock", evenId, handler)
+		em:RegisterForEvent(self.prefix .. "_AutoWayshrineUnlock", evenId, handler)
 	end
 end
 function addon:UnregisterAutoUnlockEvents()
 	for evenId, handler in pairs(eventHandlers) do
-		EVENT_MANAGER:UnregisterForEvent(self.prefix .. "_AutoWayshrineUnlock", evenId)
+		em:UnregisterForEvent(self.prefix .. "_AutoWayshrineUnlock", evenId)
 	end
 end
 
@@ -491,15 +497,15 @@ end
 
 
 		-- register for event when coming out from loading screen
-		EVENT_MANAGER:RegisterForEvent(BMU.var.appName, EVENT_PLAYER_ACTIVATED, function() zo_callLater(function() self:ProceedAutoUnlock() end, 1500) end)
+		em:RegisterForEvent(BMU.var.appName, EVENT_PLAYER_ACTIVATED, function() zo_callLater(function() self:ProceedAutoUnlock() end, 1500) end)
 		-- register for event when gaining XP from wayshrine discovery
-		EVENT_MANAGER:RegisterForEvent(BMU.var.appName, EVENT_EXPERIENCE_GAIN, function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
-			if BMU.uwData.isStarted then
-				BMU.uwData.gainedXP = BMU.uwData.gainedXP + (currentExperience-previousExperience)
+		em:RegisterForEvent(BMU.var.appName, EVENT_EXPERIENCE_GAIN, function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
+			if BMU_uwData.isStarted then
+				BMU_uwData.gainedXP = BMU_uwData.gainedXP + (currentExperience-previousExperience)
 			end
 		end)
 
-EVENT_MANAGER:RegisterForEvent("AlertTextManager", EVENT_JUMP_FAILED, function(eventId, result)
+em:RegisterForEvent("AlertTextManager", EVENT_JUMP_FAILED, function(eventId, result)
 	-- make sure it's not a result handled by EVENT_ZONE_COLLECTIBLE_REQUIREMENT_FAILED, which will prompt a dialog
 	if not ignoredResults[result] then
 		return ALERT, GetString("SI_JUMPRESULT", result)
@@ -510,7 +516,7 @@ end
 /script IJA_BMU_GAMEPAD_PLUGIN.autoUnlockInProgess = 1
 /script IJA_BMU_GAMEPAD_PLUGIN.autoUnlockInProgess = false
 
-	EVENT_MANAGER:RegisterForUpdate(updateName)
+	em:RegisterForUpdate(updateName)
     local function OnUpdate(updateControl, currentFrameTimeSeconds)
 		if oldProgress ~= provider.progress then
 			oldProgress = provider.progress
@@ -519,6 +525,6 @@ end
 		end
     end
 
-	EVENT_MANAGER:RegisterForUpdate(updateName, 1000, OnUpdate)
+	em:RegisterForUpdate(updateName, 1000, OnUpdate)
 
 ]]

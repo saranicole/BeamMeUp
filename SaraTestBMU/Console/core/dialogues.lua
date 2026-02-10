@@ -1,4 +1,8 @@
+local BMU = BMU
 local SI = BMU.SI
+local SI_get = SI.get
+
+local zo_SharedGamepadEntry_OnSetup = ZO_SharedGamepadEntry_OnSetup
 
 local function ReleaseDialog(dialogName)
 	ZO_Dialogs_ReleaseDialogOnButtonPress(dialogName)
@@ -151,7 +155,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_MANAGE_FAVORITES_DIALOG",
 			local name = GetString(SI_TELE_UI_NO_MATCHES)
 
 			local entryData = ZO_GamepadEntryData:New(name)
-			entryData.setup = ZO_SharedGamepadEntry_OnSetup
+			entryData.setup = zo_SharedGamepadEntry_OnSetup
 
 			local listItem =
 			{
@@ -209,7 +213,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_MULTIPLE_SELECTIONS_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
 				text = GetString(SI_GAMEPAD_WORLD_MAP_TRAVEL),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog()
 					dialog.data.targetData:TryToPort()
@@ -223,7 +227,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_MULTIPLE_SELECTIONS_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
 				text = GetString(SI_ANTIQUITY_SCRYABLE_CURRENT_ZONE_SUBCATEGORY),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog()
 					local categoryList = dialog.data.categoryList
@@ -284,7 +288,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_DUNGEON_TELEPORT_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
 				text = GetString(SI_GAMEPAD_GROUP_DUNGEON_MODE_NORMAL),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					tryToPort(dialog.data.targetData, false)
 				end,
@@ -294,7 +298,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_DUNGEON_TELEPORT_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
 				text = GetString(SI_GAMEPAD_GROUP_DUNGEON_MODE_VETERAN),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					tryToPort(dialog.data.targetData, true)
 				end,
@@ -338,11 +342,11 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 		end
 	end,
 	title = {
-		text = SI.get(SI.TELE_DIALOG_AUTO_UNLOCK_TITLE),
+		text = SI_get(SI_TELE_DIALOG_AUTO_UNLOCK_TITLE),
 	},
 	mainText = {
 		align = TEXT_ALIGN_CENTER, 
-		text = SI.get(SI_TELE_DIALOG_AUTO_UNLOCK_BODY)
+		text = SI_get(SI_TELE_DIALOG_AUTO_UNLOCK_BODY)
 	},
 	
 	blockDialogReleaseOnPress = true, -- We'll handle Dialog Releases ourselves since we don't want DIALOG_PRIMARY to release the dialog on press.
@@ -354,8 +358,8 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 		{
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
-				text = SI.get(SI.TELE_UI_BTN_UNLOCK_WS),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				text = SI_get(SI_TELE_UI_BTN_UNLOCK_WS),
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG")
 					IJA_BMU_GAMEPAD_PLUGIN:CheckAndStartAutoUnlockOfZone(dialog.data.zoneId, BMU.savedVarsAcc.autoUnlockChatLogging)
@@ -365,10 +369,10 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 		},
 		{
 			template = "ZO_GamepadTextFieldSubmitItem",
-			header = SI.get(SI.TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION),
+			header = SI_get(SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION),
 			templateData = {
 				text = GetString(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG")
 					IJA_BMU_GAMEPAD_PLUGIN:StartAutoUnlockLoopRandom(nil, 'suffle', BMU.savedVarsAcc.autoUnlockChatLogging)
@@ -379,7 +383,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
 				text = GetString(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG")
 					IJA_BMU_GAMEPAD_PLUGIN:StartAutoUnlockLoopSorted(nil, 'wayshrines', BMU.savedVarsAcc.autoUnlockChatLogging)
@@ -390,7 +394,7 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 			template = "ZO_GamepadTextFieldSubmitItem",
 				templateData = {
 				text = GetString(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3),
-				setup = ZO_SharedGamepadEntry_OnSetup,
+				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)
 					ReleaseDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG")
 					IJA_BMU_GAMEPAD_PLUGIN:StartAutoUnlockLoopSorted(nil, 'players', BMU.savedVarsAcc.autoUnlockChatLogging)

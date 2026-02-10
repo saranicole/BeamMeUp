@@ -1,5 +1,10 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
+local BMU = BMU
 local TeleportClass_Shared = addon.subclassTable.list_Shared
+local data_manager = ZO_COLLECTIBLE_DATA_MANAGER
+local zo_Dialogs_ReleaseAllDialogsOfName = ZO_Dialogs_ReleaseAllDialogsOfName
+local zo_Dialogs_ShowGamepadDialog = ZO_Dialogs_ShowGamepadDialog
+local BMU_savedVarsServ = BMU.savedVarsServ
 
 local GPS = LibGPS3
 
@@ -15,8 +20,10 @@ local CATEGORY_TYPE_BMU = 7
 
 local USES_RIGHT_SIDE_CONTENT = true
 
+	local mapInfo = GAMEPAD_WORLD_MAP_INFO
+
 local function getCollectibleData(collectibleId)
-	return ZO_COLLECTIBLE_DATA_MANAGER:GetCollectibleDataById(collectibleId)
+	return data_manager:GetCollectibleDataById(collectibleId)
 end
 
 local function getMostUsedModifier()
@@ -130,7 +137,7 @@ function teleportList:InitializeKeybindDescriptor()
 						if targetData.numberPlayers and BMU.savedVarsAcc.zoneOnceOnly then
 							local categoryList = self.owner.categoryList
 							self.owner.categoryList.previouseIndex = categoryList:GetSelectedIndex()
-							ZO_Dialogs_ShowGamepadDialog("BMU_GAMEPAD_MULTIPLE_SELECTIONS_DIALOG", {targetData = targetData, categoryList = categoryList, selectedIndex = categoryList:GetSelectedIndex()})
+							zo_Dialogs_ShowGamepadDialog("BMU_GAMEPAD_MULTIPLE_SELECTIONS_DIALOG", {targetData = targetData, categoryList = categoryList, selectedIndex = categoryList:GetSelectedIndex()})
 						else
 							if targetData:TryToPort() then
 								SCENE_MANAGER:ShowBaseScene()
@@ -223,7 +230,6 @@ function teleportList:GetCurrentCategory()
 end
 
 function teleportList:GetHeaderData()
-	local mapInfo = GAMEPAD_WORLD_MAP_INFO
 	
 	local getTabHeader = function()
 		local categoryData = self.owner.categoryList:GetTargetData()
@@ -264,15 +270,13 @@ end
 
 function teleportList:OnShowTeleportList()
 	self:SetupOptions(self.categoryList:GetTargetData())
-	local mapInfo = GAMEPAD_WORLD_MAP_INFO
 	mapInfo.baseHeaderData = self.baseHeaderData
 	ZO_GamepadGenericHeader_Refresh(mapInfo.header, self:GetHeaderData())
 end
 
 function teleportList:OnHideTeleportList(selectedIndex)
-	local mapInfo = GAMEPAD_WORLD_MAP_INFO
 	mapInfo.baseHeaderData = self.orginalHeaderData
-	GAMEPAD_WORLD_MAP_INFO:OnShowing()
+	mapInfo:OnShowing()
 	
 	-- if was selected by dialogue then go back to last list
 	if selectedIndex then
@@ -286,9 +290,8 @@ function teleportList:OnHideTeleportList(selectedIndex)
 end
 
 function teleportList:InitializeCustomTabs()
-	local mapInfo = GAMEPAD_WORLD_MAP_INFO
 	local tabBarEntries = mapInfo.tabBarEntries
-	self.orginalHeaderData = GAMEPAD_WORLD_MAP_INFO.baseHeaderData
+	self.orginalHeaderData = mapInfo.baseHeaderData
 
 	local getTabHeader = function()
 		local categoryData = self.owner.categoryList:GetTargetData()
@@ -352,7 +355,7 @@ function teleportList:BuildOptionsList()
 	-- TODO: create string 'Manage Favorites'
 	local function manageFavoritesSetup()
 		local function callback()
-			ZO_Dialogs_ShowGamepadDialog("BMU_GAMEPAD_MANAGE_FAVORITES_DIALOG")
+			zo_Dialogs_ShowGamepadDialog("BMU_GAMEPAD_MANAGE_FAVORITES_DIALOG")
 			ZO_Dialogs_ReleaseDialogOnButtonPress("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
 		end
 
@@ -368,16 +371,16 @@ function teleportList:BuildPlayerOptionsList()
 
 	local function BuildIgnoreOption()
 		local callback = function()
-			ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
-			ZO_Dialogs_ShowGamepadDialog("CONFIRM_IGNORE_FRIEND", self.socialData, {mainTextParams={ ZO_FormatUserFacingDisplayName(self.socialData.displayName) }})
+			zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
+			zo_Dialogs_ShowGamepadDialog("CONFIRM_IGNORE_FRIEND", self.socialData, {mainTextParams={ ZO_FormatUserFacingDisplayName(self.socialData.displayName) }})
 		end
 		return self:BuildOptionEntry(nil, SI_FRIEND_MENU_IGNORE, callback)
 	end
 
 	local function BuildAddFriendOption()
 		local callback = function()
-			ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
-			ZO_Dialogs_ShowGamepadDialog("GAMEPAD_SOCIAL_ADD_FRIEND_DIALOG", { displayName = self.socialData.displayName, })
+			zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
+			zo_Dialogs_ShowGamepadDialog("GAMEPAD_SOCIAL_ADD_FRIEND_DIALOG", { displayName = self.socialData.displayName, })
 		end
 		return self:BuildOptionEntry(nil, SI_SOCIAL_MENU_ADD_FRIEND, callback)
 	end
@@ -422,8 +425,8 @@ function teleportList:BuildGroupOptionsList(groupId)
 
 	local function BuilLeaveGroupOption()
 		local callback = function()
-			ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
-			ZO_Dialogs_ShowGamepadDialog("GROUP_LEAVE_DIALOG")
+			zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
+			zo_Dialogs_ShowGamepadDialog("GROUP_LEAVE_DIALOG")
 		end
 		return self:BuildOptionEntry(nil, SI_GROUP_LIST_MENU_LEAVE_GROUP, callback)
 	end
@@ -441,7 +444,7 @@ end
 
 function teleportList:BuildKickMemberOption()
 	local callback = function()
-		ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
+		zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
 		GroupKick(self.socialData.unitTag)
 	end
 	return self:BuildOptionEntry(nil, SI_GROUP_LIST_MENU_KICK_FROM_GROUP, callback)
@@ -449,7 +452,7 @@ end
 
 function teleportList:BuildVoteKickMemberOption()
 	local callback = function()
-		ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
+		zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_SOCIAL_OPTIONS_DIALOG")
 		BeginGroupElection(GROUP_ELECTION_TYPE_KICK_MEMBER, ZO_GROUP_ELECTION_DESCRIPTORS.NONE, self.socialData.unitTag)
 	end
 	return self:BuildOptionEntry(nil, SI_GROUP_LIST_MENU_VOTE_KICK_FROM_GROUP, callback)
@@ -493,8 +496,8 @@ function teleportList:BuildAutoUnlockOptions(groupId)
 	local filterName = GetString(SI_TELE_UI_UNLOCK_WAYSHRINES)
 	local callback = function(data)
 		jo_callLaterOnNextScene("", function()
-			ZO_Dialogs_ShowGamepadDialog('BMU_GAMEPAD_AUTO_UNLOCK_DIALOG', self:GetSelectedData())
-			ZO_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_MANAGE_FAVORITES_DIALOG")
+			zo_Dialogs_ShowGamepadDialog('BMU_GAMEPAD_AUTO_UNLOCK_DIALOG', self:GetSelectedData())
+			zo_Dialogs_ReleaseAllDialogsOfName("BMU_GAMEPAD_MANAGE_FAVORITES_DIALOG")
 		end)
 		SCENE_MANAGER:ShowBaseScene()
 	end
@@ -511,9 +514,9 @@ end
 function teleportList:ToggleBUISetting(index, checked, key)
 	key = self:GetBUISettingKey(index, key)
 
-	local savedVars = BMU.savedVarsServ[index]
+	local savedVars = BMU_savedVarsServ[index]
 	savedVars[key] = checked or nil
-	BMU.savedVarsServ[index] = savedVars
+	BMU_savedVarsServ[index] = savedVars
 
 	self.owner:UpdatePortalPlayers()
 --	self:RefreshVisible()
@@ -522,12 +525,12 @@ end
 
 function teleportList:GetBUISetting(index, key)
 	key = self:GetBUISettingKey(index, key)
-	local savedVars = BMU.savedVarsServ[index]
+	local savedVars = BMU_savedVarsServ[index]
 	return savedVars[key]
 end
 
 function teleportList:GetBUISettingKey(index, key)
-	local savedVars = BMU.savedVarsServ[index]
+	local savedVars = BMU_savedVarsServ[index]
 	
 	for k, v in pairs(savedVars) do
 		if v == key then

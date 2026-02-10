@@ -1,5 +1,7 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
 local TeleportClass_Shared = addon.subclassTable.list_Shared
+local BMU = BMU
+local BMU_savedVarsChar = BMU.savedVarsChar
 
 local CATEGORY_TYPE_GROUP		= 0
 local CATEGORY_TYPE_ALL			= 1
@@ -66,8 +68,8 @@ local function categoryFilter_Group(data)
 end
 
 local function getTeleporterSetting(index)
-  if BMU.savedVarsChar == nil then return end
-	local setting = BMU.savedVarsChar[index]
+  if BMU_savedVarsChar == nil then return end
+	local setting = BMU_savedVarsChar[index]
 	return setting
 end
 
