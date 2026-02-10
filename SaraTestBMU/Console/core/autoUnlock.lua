@@ -1,7 +1,4 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
-local BMU = BMU
-local BMU_createTable = BMU.createTable
-local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 
 local em = EVENT_MANAGER
 
@@ -27,6 +24,7 @@ mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY, "No more zones found to be di
 ]]
 local setup_function_map = {
 	[var_AUTOUNLOCK_PROGRESS_ACTIVE] = function(self)
+	  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 		local zoneId = GetZoneId(GetUnitZoneIndex("player"))
 		local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
 
@@ -173,6 +171,9 @@ end
 ------------ AUTO UNLOCK CORE PROCESS ------------
 -- initialization
 function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
+  local BMU_createTable = BMU.createTable
+  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
+  local BMU_uwData = BMU.uwData
 	provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
 	-- ensure unlock process is not already running
 	if not BMU_uwData or not BMU_uwData.isStarted then
@@ -205,7 +206,6 @@ function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
 			gainedXP = 0,
 			isChatLogging = isChatLogging or false,
 		}
-		local BMU_uwData = BMU.uwData
 		self:RegisterAutoUnlockEvents()
 
 		-- initiate fast travel loop
@@ -215,6 +215,9 @@ end
 
 -- loop of the automatic teleportation
 function addon:ProceedAutoUnlock(nextPlayer)
+  local BMU_createTable = BMU.createTable
+  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
+  local BMU_uwData = BMU.uwData
 	-- only proceed if feature is active
 	if BMU_uwData.isStarted then
 		local _, allUnlockedWayshrines = BMU_getZoneWayshrineCompletion(BMU_uwData.zoneId)
@@ -281,6 +284,7 @@ end
 
 -- finalize auto unlock and show dialog
 function addon:FinishedAutoUnlock(reason)
+  local BMU_uwData = BMU.uwData
 --	d( 'FinishedAutoUnlock', reason)
 	-- check if the timeout was caused by a fast travel error (loading screen)
 	if reason == "timeout" and BMU.flagSocialErrorWhilePorting ~= 0 then
@@ -350,6 +354,8 @@ end
 ------------------------
 -- checks for zones that can be unlocked and picks a random one to start auto unlock
 function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
+  local BMU_createTable = BMU.createTable
+  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 	local overlandZoneIds = {}
 	-- add all overlandZoneIds to a new table
 	for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
@@ -382,6 +388,8 @@ end
 
 -- checks for zones that can be unlocked, sort them and queue the list for auto unlock
 function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging)
+  local BMU_createTable = BMU.createTable
+  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 	if not zoneRecordList or #zoneRecordList == 0 then
 		local overlandZoneIds = {}
 		local cleanZoneList = {}
@@ -462,8 +470,8 @@ local eventHandlers = {
 		zo_callLater(function() addon:ProceedAutoUnlock() end, 1500)
 	end,
 	[EVENT_DISCOVERY_EXPERIENCE] = function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
-		if BMU_uwData.isStarted then
-			BMU_uwData.gainedXP = BMU_uwData.gainedXP + (currentExperience-previousExperience)
+		if BMU.uwData.isStarted then
+			BMU.uwData.gainedXP = BMU.uwData.gainedXP + (currentExperience-previousExperience)
 		end
 	end,
 	[EVENT_JUMP_FAILED] = function(eventId, result)

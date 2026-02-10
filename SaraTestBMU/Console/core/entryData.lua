@@ -1,5 +1,4 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
-local BMU = BMU
 local em = EVENT_MANAGER
 
 --[[

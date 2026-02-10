@@ -1,5 +1,4 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
-local BMU = BMU
 local BMU_textures = BMU.textures
 
 local CATEGORY_TYPE_GROUP		= 0

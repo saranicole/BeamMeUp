@@ -1,10 +1,8 @@
 local addon = IJA_BMU_GAMEPAD_PLUGIN
-local BMU = BMU
 local TeleportClass_Shared = addon.subclassTable.list_Shared
 local data_manager = ZO_COLLECTIBLE_DATA_MANAGER
 local zo_Dialogs_ReleaseAllDialogsOfName = ZO_Dialogs_ReleaseAllDialogsOfName
 local zo_Dialogs_ShowGamepadDialog = ZO_Dialogs_ShowGamepadDialog
-local BMU_savedVarsServ = BMU.savedVarsServ
 
 local GPS = LibGPS3
 
@@ -514,9 +512,9 @@ end
 function teleportList:ToggleBUISetting(index, checked, key)
 	key = self:GetBUISettingKey(index, key)
 
-	local savedVars = BMU_savedVarsServ[index]
+	local savedVars = BMU.savedVarsServ[index]
 	savedVars[key] = checked or nil
-	BMU_savedVarsServ[index] = savedVars
+	BMU.savedVarsServ[index] = savedVars
 
 	self.owner:UpdatePortalPlayers()
 --	self:RefreshVisible()
@@ -525,12 +523,12 @@ end
 
 function teleportList:GetBUISetting(index, key)
 	key = self:GetBUISettingKey(index, key)
-	local savedVars = BMU_savedVarsServ[index]
+	local savedVars = BMU.savedVarsServ[index]
 	return savedVars[key]
 end
 
 function teleportList:GetBUISettingKey(index, key)
-	local savedVars = BMU_savedVarsServ[index]
+	local savedVars = BMU.savedVarsServ[index]
 	
 	for k, v in pairs(savedVars) do
 		if v == key then

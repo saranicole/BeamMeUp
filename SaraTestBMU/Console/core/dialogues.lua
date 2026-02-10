@@ -1,4 +1,3 @@
-local BMU = BMU
 local SI = BMU.SI
 local SI_get = SI.get
 
