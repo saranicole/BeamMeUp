@@ -525,7 +525,7 @@ function BMU.finishedAutoUnlock(reason)
 		BMU_SI_Get(SI_TELE_DIALOG_FINISH_AUTO_UNLOCK_BODY_PART) .. "\n\n" ..
 		BMU_SI_Get(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY) .. " " .. tos(unlockedWayshrinesString) .. " (" .. tos(totalWayshrinesString) .. ")" .. "\n" ..
 		BMU_SI_Get(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP) .. " " .. tos(gainedXPString)
-	
+
 	local globalDialogName, dialogReference = BMU_showDialogSimple("AutoUnlockFinished", finishDialogTitle, finishDialogBody, nil, nil)
 
 	-- print summary into chat
@@ -673,8 +673,8 @@ end
 -- zoneId: optional, if not set use current zone (where the player actually is)
 function BMU.showDialogAutoUnlock(zoneId)
 	-- use player's zone if no specific zoneId is given
-	zoneId = zoneId or GetZoneId(GetUnitZoneIndex("player"))
-	
+	zoneId = zoneId or GetZoneId(GetUnitZoneIndex(playerTag))
+
 	-- approach: create seperate control and anchor it to the default dialog control (ZO_Dialog1Text) (used by many dialogs)
 	-- via the dialog's update function we can interact (show, hide etc.) with the control
 	local controlName = "BMU_CustomDialogControl"
@@ -698,11 +698,11 @@ function BMU.showDialogAutoUnlock(zoneId)
 		local entry1 = BMU.customDialog_dropdownControl:CreateItemEntry(BMU_SI_Get(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1), function() end)
 		entry1.key = "suffle"
 		BMU.customDialog_dropdownControl:AddItem(entry1)
-		
+
 		local entry2 = BMU.customDialog_dropdownControl:CreateItemEntry(BMU_SI_Get(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2), function() end)
 		entry2.key = "wayshrines"
 		BMU.customDialog_dropdownControl:AddItem(entry2)
-		
+
 		local entry3 = BMU.customDialog_dropdownControl:CreateItemEntry(BMU_SI_Get(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3), function() end)
 		entry3.key = "players"
 		BMU.customDialog_dropdownControl:AddItem(entry3)
@@ -1037,12 +1037,12 @@ local function _create_listview_row(listView, i)
     if message ~= nil then
 		-- RGB color code for mouse over feedback
 		local bmuGoldColorRGB = colorLegendary
-		local rowControlOfList_ColumnNumberPlayers = wm:CreateControl(name .. "_NumberPlayers", rowControlOfList, CT_LABEL)
-		rowControlOfList.ColumnNumberPlayers = rowControlOfList_ColumnNumberPlayers
-		rowControlOfList_ColumnNumberPlayers:SetDimensions(35*scale, 20*scale)
-		rowControlOfList_ColumnNumberPlayers:SetFont(BMU.font1)
-		rowControlOfList_ColumnNumberPlayers:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-		rowControlOfList_ColumnNumberPlayers:SetAnchor(0, rowControlOfList, 0, LEFT -40*scale, 50*scale)
+
+		list.ColumnNumberPlayers = wm:CreateControl(name .. "_NumberPlayers", list, CT_LABEL)
+		list.ColumnNumberPlayers:SetDimensions(35*scale, 20*scale)
+		list.ColumnNumberPlayers:SetFont(BMU.font1)
+		list.ColumnNumberPlayers:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+		list.ColumnNumberPlayers:SetAnchor(0, list, 0, LEFT -40*scale, 50*scale)
 
 		--Create another control (Texture) for MouseOver interactions
 		local rowControlOfList_ColumnNumberPlayersTex = WINDOW_MANAGER:CreateControl(name .. "_NumberPlayersOver", rowControlOfList_ColumnNumberPlayers, CT_TEXTURE)
@@ -1053,6 +1053,7 @@ local function _create_listview_row(listView, i)
 		-- set rgb color instead of texture
 		rowControlOfList_ColumnNumberPlayersTex:SetColor(bmuGoldColorRGB:UnpackRGBA())
 		rowControlOfList_ColumnNumberPlayersTex:SetAlpha(0)
+
 
 
 		-- COLUMN PLAYER NAME
@@ -1084,11 +1085,10 @@ local function _create_listview_row(listView, i)
 
 
 		-- COLUMN ZONE NAME
-		local rowControlOfList_ColumnZoneName = wm:CreateControl(name .. "_Zone", rowControlOfList, CT_LABEL)
-		rowControlOfList.ColumnZoneName = rowControlOfList_ColumnZoneName
-		rowControlOfList_ColumnZoneName:SetDimensions(240*scale, 25*scale)
-		rowControlOfList_ColumnZoneName:SetFont(BMU.font1)
-		rowControlOfList_ColumnZoneName:SetAnchor(0, rowControlOfList, 0, LEFT + 165*scale, 50*scale)
+		list.ColumnZoneName = wm:CreateControl(name .. "_Zone", list, CT_LABEL)
+		list.ColumnZoneName:SetDimensions(240*scale, 25*scale)
+		list.ColumnZoneName:SetFont(BMU.font1)
+		list.ColumnZoneName:SetAnchor(0, list, 0, LEFT + 165*scale, 50*scale)
 
 		-- Create another control (Texture) for Mouse interaction
 		local rowControlOfList_ColumnZoneNameTex = WINDOW_MANAGER:CreateControl(name .. "_ZoneOver", rowControlOfList_ColumnZoneName, CT_TEXTURE)
@@ -1107,7 +1107,13 @@ local function _create_listview_row(listView, i)
 		rowControlOfList_portalToPlayerTex:SetMouseEnabled(true)
 		rowControlOfList_portalToPlayerTex:SetDrawLayer(2)
 
-        return rowControlOfList
+		list.portalToPlayerTex = WINDOW_MANAGER:CreateControl(name .. "_TeleTex", list, CT_TEXTURE)
+		list.portalToPlayerTex:SetDimensions(45*scale, 45*scale)
+		list.portalToPlayerTex:SetAnchor(0, list, 0, LEFT + 400*scale, 41*scale) --490 ... 15
+		list.portalToPlayerTex:SetMouseEnabled(true)
+		list.portalToPlayerTex:SetDrawLayer(2)
+
+        return list
     end
 end
 
@@ -1147,22 +1153,21 @@ local function _on_resize(listView)
 		viewable_lines_pct = BMU_round(listView.num_visible_lines / #listView.lines, 1) or 1
 	end
 
-	local slider = BMU_control_global_2.slider
     -- Can we see all the lines?
     if viewable_lines_pct >= 1.0 then
         slider:SetHidden(true)
     else
         -- If not, make sure the slider is showing.
-        slider:SetHidden(false)
-        slider:SetMinMax(0, listView.num_hidden_lines)
+        BMU.control_global_2.slider:SetHidden(false)
+        self.control.slider:SetMinMax(0, self.num_hidden_lines)
 
-		local totalListHeight = BMU_calculateListHeight()
+		local totalListHeight = BMU.calculateListHeight()
 		-- slider height = totalListHeight  *  percentage of visible lines
 		local sliderHeight = totalListHeight*viewable_lines_pct
 		-- while the list control is heigher than the visible space (because of the leaking backgroundin the bottom), we just cut a percentage
 		local listHeightForSlider = (0.82*totalListHeight) -- no need of scaling because totalListHeight is already scaled
 
-		slider:SetHeight(listHeightForSlider)
+		BMU.control_global_2.slider:SetHeight(listHeightForSlider)
         -- The more lines we can see, the bigger the slider should be.
         local tex = listView.slider_texture
         slider:SetThumbTexture(tex, tex, tex, SLIDER_WIDTH*BMU.savedVarsAcc.Scale, sliderHeight, 0, 0, 1, 1)
@@ -1199,53 +1204,48 @@ local function _initialize_listview(self_listview, width, height, left, top)
 	local BMU_font2 = BMU.font2
 
     -- main control
-    BMU_control_global:SetDimensions(width, height)
-    BMU_control_global:SetHidden(true)
-    BMU_control_global:SetMouseEnabled(true)
-    BMU_control_global:SetClampedToScreen(true)
-	--BMU_control_global:SetResizeHandleSize(MOUSE_CURSOR_RESIZE_NS)
+    BMU.control_global:SetDimensions(width, height)
+    BMU.control_global:SetHidden(true)
+    BMU.control_global:SetMouseEnabled(true)
+    BMU.control_global:SetClampedToScreen(true)
+	--BMU.control_global:SetResizeHandleSize(MOUSE_CURSOR_RESIZE_NS)
 
 
 	-- create Backdrop / BackGround
-	local BMU_control_global_bd = WINDOW_MANAGER:CreateControl(nil, BMU_control_global, CT_TEXTURE)
-	BMU_control_global.bd = BMU_control_global_bd
-	BMU_control_global_bd:SetMouseEnabled(true)
+	BMU.control_global.bd = WINDOW_MANAGER:CreateControl(nil, BMU.control_global, CT_TEXTURE)
+	BMU.control_global.bd:SetMouseEnabled(true)
 	-- Users with Full-HD resolution run into problems because of the space!!
-	--BMU_control_global_bd:SetClampedToScreen(true)
+	--BMU.control_global.bd:SetClampedToScreen(true)
 
 	-- set position
-	BMU_control_global_bd:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, LEFT + BMU_SVAcc.pos_x, BMU_SVAcc.pos_y)
+	BMU.control_global.bd:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, LEFT + BMU.savedVarsAcc.pos_x, BMU.savedVarsAcc.pos_y)
 	-- set dimensions
-	BMU_control_global_bd:SetDimensions(BMU_control_global:GetWidth() + 110*scale, BMU_control_global:GetHeight() + 300*scale)
+	BMU.control_global.bd:SetDimensions(BMU.control_global:GetWidth() + 110*scale, BMU.control_global:GetHeight() + 300*scale)
 	-- set texture
-	BMU_control_global_bd:SetTexture("/esoui/art/miscellaneous/centerscreen_left.dds")
+	BMU.control_global.bd:SetTexture("/esoui/art/miscellaneous/centerscreen_left.dds")
 
 	-- !! anchor & place main control on backdrop !!
-	BMU_control_global:SetAnchor(CENTER, BMU_control_global_bd, nil, 15*scale)
+	BMU.control_global:SetAnchor(CENTER, BMU.control_global.bd, nil, 15*scale)
 	-- set moveable
-	BMU_control_global_bd:SetMovable(not BMU_SVAcc.fixedWindow)
+	BMU.control_global.bd:SetMovable(not BMU.savedVarsAcc.fixedWindow)
 	-- bring BMU window from draw layer 1 (default) to draw layer 2, to make sure that other addons and map scene are not in front of BMU window
-	--> Hint Baertram 260209: You should not change the drawLayer here and you should use the constants defined in the game not any fixed values like 1 or 2!
-	--> UI elements should stay on normal layer DL_CONTROL, unless they are context menus and other special UI elements.
-	--> 2 (DL_TEXT) means it is text and should draw above controls. So your addon is making other addon or vanilla text maybe draw wrong then if they overlay each other...
-	---> Rather use DrawLayer DL_CONTROLS and DrawLevel "a high value" to make the UI of BMU show above others on the same DrawLayer but still make text and other DL* > 1 draw above your UI as intended.
-	BMU_control_global:SetDrawLayer(DL_TEXT) --2
+	BMU.control_global:SetDrawLayer(2)
 
 
 	------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------
 	-- Total & Statistics
-	
+
 	BMU.control_global.statisticGold = wm:CreateControl(name .. "_StatisticGold", BMU.control_global, CT_LABEL)
 	BMU.control_global.statisticGold:SetFont(BMU.font2)
     BMU.control_global.statisticGold:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 25*scale)
 	BMU.control_global.statisticGold:SetText(BMU_SI_Get(SI_TELE_UI_GOLD) .. " " .. BMU.formatGold(BMU.savedVarsAcc.savedGold))
-	
+
 	BMU.control_global.statisticTotal = wm:CreateControl(name .. "_StatisticTotal", BMU.control_global, CT_LABEL)
 	BMU.control_global.statisticTotal:SetFont(BMU.font2)
     BMU.control_global.statisticTotal:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 45*scale)
 	BMU.control_global.statisticTotal:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL_PORTS) .. " " .. BMU.formatGold(BMU.savedVarsAcc.totalPortCounter))
-		
+
 	BMU.control_global.total = wm:CreateControl(name .. "_Total", BMU.control_global, CT_LABEL)
     BMU.control_global.total:SetFont(BMU.font2)
     BMU.control_global.total:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 65*scale)
@@ -1268,7 +1268,7 @@ local function _initialize_listview(self_listview, width, height, left, top)
     -- event: mwheel / scrolling
     BMU_control_global:SetHandler("OnMouseWheel", function(listView, delta)
         local new_value = clamp(self_listview.offset - delta, 0, self_listview.num_hidden_lines)
-		listView.slider:SetValue(new_value)
+		self.slider:SetValue(new_value)
 
 		-- if the mouse hovers over the list, we need to update the current tooltip
 		-- because the control under the mouse changed by scrolling
@@ -1338,7 +1338,7 @@ function ListView.new(control, name, settings)
         currently_resizing = false,
     }
 
-	local height = BMU_calculateListHeight()
+	local height = BMU.calculateListHeight()
 	local width = 450*scale
     local left = 30*scale
     local top = 150*scale
@@ -1377,10 +1377,10 @@ function ListView:update()
 	
 	-- suggestion by otac0n (Discord, 2022_10)
 	-- To make it robust, you may want to create a unique ID per ListView.  This assumes a singleton.
-	EM:UnregisterForUpdate(BMU_TeleporterListUpdateEventName)
+	EM:UnregisterForUpdate("TeleportList_Update")
 
-	--local throttle_time = (isResizing and 0.02) or 0.1
-    if BMU_throttle(self, 0.05) then
+	local throttle_time = self.currently_resizing and 0.02 or 0.1
+    if BMU.throttle(self, 0.05) then
 		-- suggestion by otac0n (Discord, 2022_10)
 		EM:RegisterForUpdate(BMU_TeleporterListUpdateEventName, 100, function() self:update() end)
         return
@@ -1391,7 +1391,6 @@ function ListView:update()
     if isResizing then
         _on_resize(self)
     end
-
 
     -- Clean the list !!!
 	local listLines = listControl.lines
@@ -1413,29 +1412,23 @@ function ListView:update()
 		self.control.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. totalPortals)
 	end
 
-    for i, rowControlOfList in pairs(listLines) do
+
+    for i, list in pairs(self.control.lines) do
         local message = self.lines[i + self.offset] -- self.offset = how much we've scrolled down
 		local tooltipTextPlayer = {}
 		local tooltipTextZone = {}
 		local tooltipTextLevel = ""
-		local isHouseEntry = false
 
         -- Only show messages that will be displayed within the control
-		local numVisibleLines = self.num_visible_lines
-        if message ~= nil and i <= numVisibleLines then
-            if i >= numVisibleLines + 1 then return end
+        if message ~= nil and i <= self.num_visible_lines then
+            if i >= self.num_visible_lines + 1 then return end;
+            if message == nil then return end;
 
-			local messageZoneName = message.zoneName
-			if messageZoneName == nil then return end
-
-			local messageZoneNameClickable = message.zoneNameClickable
-			local messageZoneNameSecondLanguage = message.zoneNameSecondLanguage
-			local displayNameOfMessage = message.displayName
+			if message.zoneName == nil then return end;
 
 			--------- player tooltip ---------
-			local championRank = message.championRank
-			if displayNameOfMessage ~= "" and championRank then
-				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
+			if message.displayName ~= "" and message.championRank then
+				list.ColumnPlayerNameTex:SetHidden(false)
 
 				-- set level text for player tooltip
 				if championRank >= 1 then
@@ -1478,24 +1471,8 @@ function ListView:update()
 					rowControlOfList.ColumnPlayerNameTex.tooltipText = tooltipTextPlayer
 				end
 
-				-- set handler for Player context menu
-				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", nil)
-				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnPlayerName(button, message) end)
-
-
-			--House right click menu
-			elseif message.houseId ~= nil then
-				isHouseEntry = true
-				--Clear the tooltip
-				disableTooltipAndResetOnMouseUp(rowControlOfList)
-				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnHouseName(button, message) end)
-				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
-			--Empty zone right click menu (no player in the zone)
-			elseif message.zoneId ~= nil then
-				--Clear the tooltip
-				disableTooltipAndResetOnMouseUp(rowControlOfList)
-				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnEmptyZoneName(button, message) end)
-				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
+				-- set handler for making favorite
+				list.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnPlayerName(button, message) end)
 			else
 				-- make tooltip invisible (no DisplayName of Player -> no Tooltip)
 				disableTooltipAndResetOnMouseUp(rowControlOfList)
@@ -1614,6 +1591,7 @@ function ListView:update()
 							messageZoneName = messageZoneName .. BMU_getItemTypeIcon(itemType, BMU_round(16*scale, 0))
 						end
 					end
+
 					message.addedTotalItems = true
 				end
 
@@ -1706,16 +1684,9 @@ function ListView:update()
 			end
 			------------------
 
-			-- set text and color of the player name (or house)
-			if isHouseEntry then
-				--respect nicknames of houses
-				local houseName = BMU_getHouseNameByHouseId(message.houseId)
-				local houseNickName = (showHouseNickNames == true and BMU_formatName(GetCollectibleNickname(GetCollectibleIdForHouse((message.houseId))))) or ""
-				rowControlOfList.ColumnPlayerName:SetText(BMU_colorizeText((houseNickName ~= "" and houseNickName) or zo_strformat(formatStringFirstUppercase, houseName), "lime"))
-			else
-				rowControlOfList.ColumnPlayerName:SetText(BMU_colorizeText(displayNameOfMessage, message.textColorDisplayName))
-			end
-			rowControlOfList.ColumnZoneName:SetText(BMU_colorizeText(messageZoneName, message.textColorZoneName))
+			-- set text and color
+			list.ColumnPlayerName:SetText(BMU_colorizeText(message.displayName, message.textColorDisplayName))
+			list.ColumnZoneName:SetText(BMU_colorizeText(message.zoneName, message.textColorZoneName))
 
 			-- number of players
 			if message.numberPlayers then
@@ -1799,8 +1770,8 @@ function ListView:update()
 				list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn)
 				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtnOver) BMU.pauseAutoRefresh = true end)
 				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnTeleportToOwnHouseButton(list.portalToPlayerTex, button, message) end)
-				
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToOwnHouseButton(list.portalToPlayerTex, button, message) end)
+
 			elseif message.isPTFHouse and CanJumpToHouseFromCurrentLocation() and CanLeaveCurrentLocationViaTeleport() then
 				-- "Port to Freind's House" integration
 				rowControlOfList.portalToPlayerTex:SetHidden(false)
@@ -1835,8 +1806,8 @@ function ListView:update()
 					end
 					BMU.pauseAutoRefresh = true end)
 				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, list.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToDungeonButton(list.portalToPlayerTex, button, message) end)
-				
+				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToDungeonButton(list.portalToPlayerTex, button, message) end)
+
 			elseif message.displayName ~= "" and CanJumpToPlayerInZone(message.zoneId) and CanLeaveCurrentLocationViaTeleport() then
 				-- player
 				list.portalToPlayerTex:SetHidden(false)
@@ -1871,9 +1842,9 @@ function ListView:update()
 				rowControlOfList.portalToPlayerTex:SetHidden(true)
 			end
 
-				rowControlOfList:SetHidden(false)
-		else
-            rowControlOfList:SetHidden(true)
+            list:SetHidden(false)
+        else
+            list:SetHidden(true)
 		end
     end
 end
@@ -1970,7 +1941,7 @@ function BMU.clickOnTeleportToOwnHouseButton(textureControl, button, message)
 	-- click effect
 	textureControl:SetAlpha(0.65)
 	zo_callLater(function() textureControl:SetAlpha(1) end, 200)
-	
+
 	if message.forceOutside then
 		BMU_clickOnTeleportToOwnHouseButton_2(button, message, true)
 	else
@@ -2306,17 +2277,18 @@ function BMU.clickOnZoneName(button, record)
 
 		-- start generating context menus
 		ClearCustomScrollableMenu()
-		
+
+		-------Own house contextMenu-------
 		if inOwnHouseTab then
 
 			-- 1. custom sorting (not for primary residence which is always on top)
 			if record.prio ~= 1 then
 				-- divider
 				AddCustomScrollableMenuDivider()
-				
+
 				-- button to increase sorting ("move up")
-				AddCustomScrollableMenuEntry(BMU_textures.arrowUp, function()
-					
+				AddCustomScrollableMenuEntry(BMU_textures.arrowUpStr, function()
+
 					if not BMU_savedVarsServ.houseCustomSorting[record.houseId] then
 						if next(BMU_savedVarsServ.houseCustomSorting) == nil then
 							-- table is empty, just set start value
@@ -2508,7 +2480,7 @@ function BMU.clickOnZoneName(button, record)
 				AddCustomScrollableMenuEntry(BMU_SI_Get(SI_TELE_UI_UNLOCK_WAYSHRINES), function() BMU_showDialogAutoUnlock(record.zoneId) end)
 			end
 		end
-		
+
 		-- open item set collection book (collectibles)
 		if not inOwnHouseTab then
 			local numUnlocked, numTotal, workingZoneId = BMU_getNumSetCollectionProgressPieces(record.zoneId, record.category, record.parentZoneId)
@@ -2545,7 +2517,7 @@ function BMU.clickOnZoneName(button, record)
 				BMU_HideTeleporter()
 			end
 		end)
-		
+
 		ShowCustomScrollableMenu()
 	end
 end

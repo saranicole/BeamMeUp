@@ -68,6 +68,8 @@ core/TeleAppUI.lua
 core/TeleSlashCommands.lua
 core/TeleporterChecker.lua
 
+Console/TeleportCheckerOptimized.lua
+
 ## Bindings
 bindings/bindings.lua
 bindings/bindings.xml

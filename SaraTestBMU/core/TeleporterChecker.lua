@@ -4,7 +4,7 @@ local teleporterVars = BMU.var --INS251229 Baertram
 
 local SI = BMU.SI
 local portalPlayers = {}
-local TeleportAllPlayersTable = {}
+local TeleportAllPlayersTable = BMU.TeleportAllPlayersTable or {}
 local allZoneIds = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
 
 -- -v- INS251229 Baertram BEGIN 0
@@ -178,18 +178,30 @@ BMU_getCurrentZoneId = BMU.getCurrentZoneId
 -- dontResetSlider: flag if the slider/scroll bar should not be reset (reset to top of the list)
 -- noOwnHouses: flag if the owned houses shall not appear in result list
 function BMU.createTable(args)
-	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex 										    --INS251229 Baertram
-	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId                                --INS251229 Baertram
-	BMU_checkOnceOnly = BMU_checkOnceOnly or BMU.checkOnceOnly                                		--INS251229 Baertram
-	BMU_has_value = BMU_has_value or BMU.has_value                                					--INS251229 Baertram
-	BMU_has_value_special = BMU_has_value_special or BMU.has_value_special        					--INS251229 Baertram
-	BMU_addInfo_2 = BMU_addInfo_2 or BMU.addInfo_2        											--INS251229 Baertram
-	BMU_filterAndDecide = BMU_filterAndDecide or BMU.filterAndDecide								--INS251229 Baertram
-	BMU_sortByStringFindPosition = BMU_sortByStringFindPosition or BMU.sortByStringFindPosition		--INS251229 Baertram
-	BMU_syncWithItems = BMU_syncWithItems or BMU.syncWithItems										--INS251229 Baertram
-	BMU_syncWithQuests = BMU_syncWithQuests or BMU.syncWithQuests									--INS251229 Baertram
-	BMU_createNoResultsInfo = BMU_createNoResultsInfo or BMU.createNoResultsInfo					--INS251229 Baertram
-	local BMU_savedVarsAcc = BMU.savedVarsAcc														--INS251229 Baertram
+
+  return BMU.createTableOptimized(args)
+end
+
+function BMU.oldcreateTable(args)
+	-- -v- INS251229 Baertram Local reference updates for functions further down below in the file
+	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
+	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
+	BMU_checkOnceOnly = BMU_checkOnceOnly or BMU.checkOnceOnly
+	BMU_has_value = BMU_has_value or BMU.has_value
+	BMU_has_value_special = BMU_has_value_special or BMU.has_value_special
+	BMU_addInfo_1 = BMU_addInfo_1 or BMU.addInfo_1
+	BMU_addInfo_2 = BMU_addInfo_2 or BMU.addInfo_2
+	BMU_filterAndDecide = BMU_filterAndDecide or BMU.filterAndDecide
+	BMU_sortByStringFindPosition = BMU_sortByStringFindPosition or BMU.sortByStringFindPosition
+	BMU_syncWithItems = BMU_syncWithItems or BMU.syncWithItems
+	BMU_syncWithQuests = BMU_syncWithQuests or BMU.syncWithQuests
+	BMU_createNoResultsInfo = BMU_createNoResultsInfo or BMU.createNoResultsInfo
+	BMU_addNumberPlayers = BMU_addNumberPlayers or BMU.addNumberPlayers
+	BMU_decidePrioDisplay = BMU_decidePrioDisplay or BMU.decidePrioDisplay
+	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
+	local BMU_savedVarsAcc = BMU.savedVarsAcc
+	local BMU_savedVarsChar = BMU.savedVarsChar
+	-- -^- INS251229 Baertram
 
 	local index = args.index or 0
 	local inputString = args.inputString or ""
@@ -2064,7 +2076,7 @@ function BMU.getExistingEntry(zoneId)
 			return record
 		end
 	end
-	d("NOT FOUND: " .. zoneId)
+	BMU_printToChat("NOT FOUND: " .. zoneId, BMU.MSG_DB)
 end
 BMU_getExistingEntry = BMU.getExistingEntry							--INS251229 Baertram
 
@@ -2072,6 +2084,9 @@ BMU_getExistingEntry = BMU.getExistingEntry							--INS251229 Baertram
 -- returns true if the first record is preferred
 -- return false if the second record is preferred
 function BMU.decidePrioDisplay(record1, record2)
+  if not record2 then
+    return true
+  end
 	if record1.isLeader and not record2.isLeader then
 		return true
 	elseif record2.isLeader and not record1.isLeader then

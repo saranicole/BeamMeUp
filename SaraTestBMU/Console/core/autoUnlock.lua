@@ -394,27 +394,27 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 		local overlandZoneIds = {}
 		local cleanZoneList = {}
 		-- add all overlandZoneIds to a new table
-		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
-			-- consider only zones the user has access to (DLC)
-			if CanJumpToPlayerInZone(overlandZoneId) then
+-- 		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
+-- 			-- consider only zones the user has access to (DLC)
+-- 			if CanJumpToPlayerInZone(overlandZoneId) then
 				--table.insert(overlandZoneIds, overlandZoneId)
-				local resultList = BMU_createTable({index=8, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
-				if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
-					local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(overlandZoneId)
-					if numWayshrinesDiscovered < numWayshrines then
-						record = {}
-						record.zoneId = overlandZoneId
-						record.numPlayers = #resultList
-						if numWayshrinesDiscovered == 0 then
-							record.ratioWayshrines = 0 -- zones with no discovered wayhsrines get "highest prio" independent of the total number
-						else
-							record.ratioWayshrines = numWayshrinesDiscovered/numWayshrines
-						end
-						table.insert(cleanZoneList, record)
-					end
-				end
-			end
-		end
+    local resultList = BMU_createTable({index=8, fZoneId=BMU.overlandDelvesPublicDungeons, noOwnHouses=true, dontDisplay=true})
+    if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
+      local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(overlandZoneId)
+      if numWayshrinesDiscovered < numWayshrines then
+        record = {}
+        record.zoneId = overlandZoneId
+        record.numPlayers = #resultList
+        if numWayshrinesDiscovered == 0 then
+          record.ratioWayshrines = 0 -- zones with no discovered wayhsrines get "highest prio" independent of the total number
+        else
+          record.ratioWayshrines = numWayshrinesDiscovered/numWayshrines
+        end
+        table.insert(cleanZoneList, record)
+      end
+    end
+-- 			end
+-- 		end
 
 		-- sort zone records
 		if loopType == "wayshrines" then
