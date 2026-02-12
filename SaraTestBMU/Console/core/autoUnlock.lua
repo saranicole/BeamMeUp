@@ -484,7 +484,7 @@ local ignoredResults = {
 }
 local eventHandlers = {
 	[EVENT_PLAYER_ACTIVATED] = function()
-	  if IsConsoleUI()
+	  if IsConsoleUI() then
 	    zo_callLater(function() addon:ProceedAutoUnlock() end, var_AUTOUNLOCK_COOLDOWN)
 	  else
 		  zo_callLater(function() addon:ProceedAutoUnlock() end, 1500)

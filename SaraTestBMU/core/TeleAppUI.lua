@@ -1685,11 +1685,11 @@ local function SetupUI()
 		  if not BMU.IsNotKeyboard() then
         -- do it the old way
         -- Texture
-        BMU_chatButtonTex = wm:CreateControl("Teleporter_CHAT_MENU_BUTTON", chatWindow, CT_TEXTURE) --CHG251229 Baertram Performance improvedment for multiple used variable
-              BMU.chatButtonTex = BMU_chatButtonTex --INS251229 Baertram
+        BMU.chatButtonTex = wm:CreateControl("Teleporter_CHAT_MENU_BUTTON", zo_ChatWindow_Keyboard, CT_TEXTURE) --CHG251229 Baertram Performance improvedment for multiple used variable
+        BMU_chatButtonTex = BMU.chatButtonTex --INS251229 Baertram
 
         BMU_chatButtonTex:SetDimensions(33, 33)  --CHG251229 Baertram
-        BMU_chatButtonTex:SetAnchor(TOPRIGHT, chatWindow, TOPRIGHT, -40 - BMU_svAcc.chatButtonHorizontalOffset, 6) --CHG251229 Baertram
+        BMU_chatButtonTex:SetAnchor(TOPRIGHT, zo_ChatWindow_Keyboard, TOPRIGHT, -40 - BMU_svAcc.chatButtonHorizontalOffset, 6) --CHG251229 Baertram
         BMU_chatButtonTex:SetTexture(BMU_textures_wayshrineBtn) --CHG251229 Baertram
         BMU_chatButtonTex:SetMouseEnabled(true) --CHG251229 Baertram
         BMU_chatButtonTex:SetDrawLayer(2) --CHG251229 Baertram
