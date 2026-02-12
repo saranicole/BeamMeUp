@@ -4,8 +4,10 @@ local teleporterVars = BMU.var --INS251229 Baertram
 
 local SI = BMU.SI
 local portalPlayers = {}
-local TeleportAllPlayersTable = BMU.TeleportAllPlayersTable or {}
-local allZoneIds = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
+local TeleportAllPlayersTable = {}
+local allZoneIds              = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
+local BMU_GUILD_CACHE_TTL    = BMU.GUILD_CACHE_TTL or 5
+local BMU_GuildCache = BMU.GuildCache or {}
 
 -- -v- INS251229 Baertram BEGIN 0
 --Performance reference
@@ -177,12 +179,58 @@ BMU_getCurrentZoneId = BMU.getCurrentZoneId
 -- filterSourceIndex: specific sourceIndex (filter the list according to that index e.g. guild1, or friends)
 -- dontResetSlider: flag if the slider/scroll bar should not be reset (reset to top of the list)
 -- noOwnHouses: flag if the owned houses shall not appear in result list
-function BMU.createTable(args)
 
-  return BMU.createTableOptimized(args)
+local function Now()
+    return GetFrameTimeSeconds()
 end
 
-function BMU.oldcreateTable(args)
+local function IsGuildCacheValid(guildId)
+    local cache = BMU_GuildCache[guildId]
+    if not cache then return false end
+    return (Now() - cache.timestamp) < BMU_GUILD_CACHE_TTL
+end
+
+
+function BMU.GetGuildMemberStatusTable(guildId, guildIndex)
+    if IsGuildCacheValid(guildId) then
+        return BMU_GuildCache[guildId].members
+    end
+
+    local members    = {}
+    local e = {}
+
+    local numMembers = GetNumGuildMembers(guildId)
+
+    for j = 1, numMembers do
+        e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
+        e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
+        e.guildIndex = guildIndex
+        if status ~= PLAYER_STATUS_OFFLINE then
+          table_insert(members, e)
+        end
+        e = {}
+    end
+
+    BMU_GuildCache[guildId] =
+    {
+        timestamp = Now(),
+        members   = members,
+    }
+    return members
+end
+local BMU_GetGuildMemberStatusTable = BMU.GetGuildMemberStatusTable
+
+function BMU.getGuildMembersCached(guildId, guildIndex)
+    local cache = BMU_GuildCache[guildId]
+    local now = GetGameTimeMilliseconds() / 1000
+    if cache and (now - cache.timestamp <= BMU_GUILD_CACHE_TTL) then
+        return cache.members
+    end
+    return BMU_GetGuildMemberStatusTable(guildId, guildIndex)
+end
+local BMU_getGuildMembersCached = BMU.getGuildMembersCached
+
+function BMU.createTable(args)
 	-- -v- INS251229 Baertram Local reference updates for functions further down below in the file
 	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
 	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
@@ -331,14 +379,12 @@ function BMU.oldcreateTable(args)
 
 	-- 3. go over all Guild members
     for i = 1, TeleTotalGuilds do
-        local totalGuildMembers = GetNumGuildMembers(GetGuildId(i))
-
-        for j = 1, totalGuildMembers do
+        local guildId = GetGuildId(i)
+        local totalGuildMembers = GetNumGuildMembers(guildId)
+        local members = BMU_getGuildMembersCached(guildId, i)
+        for j = 1, #members do
 			-- gathering information
-            local e = {}
-            e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(GetGuildId(i), j)
-            e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(GetGuildId(i), j)
-			e.guildIndex = i
+            local e = members[j]
 
 			-- first big layer of filtering, second layer is placed in seperate function
             -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
