@@ -2195,7 +2195,9 @@ BMU_getDataMapInfo = BMU.getDataMapInfo
 -- return (geographical) parent zone id (if parent zone id can not be found -> parentZoneId = zoneId)
 function BMU.getParentZoneId(zoneId)
 	-- use LibZone function that already handles exceptions and returns true geographical parent zone
-	local parentZoneId = BMU.LibZone:GetZoneGeographicalParentZoneId(zoneId)
+	assert(BMU_LibZone, "BMU: LibZone is not loaded")
+
+	local parentZoneId = BMU_LibZone:GetZoneGeographicalParentZoneId(zoneId)
 
 	-- fallback: use API to get parent zone
 	if not parentZoneId or parentZoneId == 0 then

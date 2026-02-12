@@ -12,7 +12,7 @@ local var_AUTOUNLOCK_COOLDOWN = 100
 
 if IsConsoleUI() then
   -- actual console UI has a stricter cooldown time
-  var_AUTOUNLOCK_COOLDOWN = 10000
+  var_AUTOUNLOCK_COOLDOWN = 5000
 end
 
 local unlockProgress = string.format('%%s: %s %%s(%%s) %s %%s', GetString(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY), GetString(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP))
@@ -343,7 +343,7 @@ function addon:FinishedAutoUnlock(reason)
 			else
 				self:StartAutoUnlockLoopSorted(BMU_uwData.loopZoneList, BMU_uwData.loopType, BMU_uwData.isChatLogging)
 			end
-		end, 1750)
+		end, var_AUTOUNLOCK_COOLDOWN)
 	end
 
 	if reason == "finished" then
@@ -378,7 +378,7 @@ function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
 				if numWayshrinesDiscovered < numWayshrines then
 					zo_callLater(function()
 						self:PrepareAutoUnlock(zoneId, isChatLogging, loopType, nil)
-					end, 400)
+					end, var_AUTOUNLOCK_COOLDOWN)
 					return
 				end
 			end
@@ -438,7 +438,7 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 			table.remove(zoneRecordList, index)
 			zo_callLater(function()
 				self:PrepareAutoUnlock(zoneRecord.zoneId, isChatLogging, loopType, zoneRecordList)
-			end, 400)
+			end, var_AUTOUNLOCK_COOLDOWN)
 			return
 		end
 	end
@@ -467,7 +467,7 @@ local ignoredResults = {
 }
 local eventHandlers = {
 	[EVENT_PLAYER_ACTIVATED] = function()
-		zo_callLater(function() addon:ProceedAutoUnlock() end, 1500)
+		zo_callLater(function() addon:ProceedAutoUnlock() end, var_AUTOUNLOCK_COOLDOWN)
 	end,
 	[EVENT_DISCOVERY_EXPERIENCE] = function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
 		if BMU.uwData.isStarted then
