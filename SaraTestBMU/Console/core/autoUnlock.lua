@@ -165,7 +165,11 @@ function addon:PrepareAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
 	-- hide world map if open
 	SCENE_MANAGER:ShowBaseScene()
 	-- delay function call, otherwise the auto-unlock-dialog fails (for whatever reason)
-	zo_callLater(function() self:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList) end, 150)
+	if IsConsoleUI() then
+	  zo_callLater(function() self:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList) end, var_AUTOUNLOCK_COOLDOWN)
+	else
+	  zo_callLater(function() self:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList) end, 150)
+	end
 end
 
 ------------ AUTO UNLOCK CORE PROCESS ------------
@@ -337,13 +341,18 @@ function addon:FinishedAutoUnlock(reason)
 	if BMU_uwData.loopType and (reason == "finished" or reason == "wayshrinesComplete") then
 
 		-- set completed or could not finish ?
+		local timeout = 1750
+		if IsConsoleUI() then
+		  timeout = var_AUTOUNLOCK_COOLDOWN
+		end
+
 		zo_callLater(function()
 			if BMU_uwData.loopType == "suffle" then
 				self:StartAutoUnlockLoopRandom(BMU_uwData.zoneId, BMU_uwData.loopType, BMU_uwData.isChatLogging)
 			else
 				self:StartAutoUnlockLoopSorted(BMU_uwData.loopZoneList, BMU_uwData.loopType, BMU_uwData.isChatLogging)
 			end
-		end, var_AUTOUNLOCK_COOLDOWN)
+		end, timeout)
 	end
 
 	if reason == "finished" then
@@ -376,9 +385,13 @@ function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
 			if #list > 0 and list[1] and list[1].displayName ~= "" then
 				local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
 				if numWayshrinesDiscovered < numWayshrines then
+				  local unlocktimeout = 400
+          if IsConsoleUI() then
+            unlocktimeout = var_AUTOUNLOCK_COOLDOWN
+          end
 					zo_callLater(function()
 						self:PrepareAutoUnlock(zoneId, isChatLogging, loopType, nil)
-					end, var_AUTOUNLOCK_COOLDOWN)
+					end, unlocktimeout)
 					return
 				end
 			end
@@ -436,9 +449,13 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 		local resultList = BMU_createTable({index=8, fZoneId=zoneRecord.zoneId, noOwnHouses=true, dontDisplay=true})
 		if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
 			table.remove(zoneRecordList, index)
+			local autounlockTime = 400
+			if IsConsoleUI() then
+			  autounlockTime = var_AUTOUNLOCK_COOLDOWN
+			end
 			zo_callLater(function()
 				self:PrepareAutoUnlock(zoneRecord.zoneId, isChatLogging, loopType, zoneRecordList)
-			end, var_AUTOUNLOCK_COOLDOWN)
+			end, autounlockTime)
 			return
 		end
 	end
@@ -467,7 +484,11 @@ local ignoredResults = {
 }
 local eventHandlers = {
 	[EVENT_PLAYER_ACTIVATED] = function()
-		zo_callLater(function() addon:ProceedAutoUnlock() end, var_AUTOUNLOCK_COOLDOWN)
+	  if IsConsoleUI()
+	    zo_callLater(function() addon:ProceedAutoUnlock() end, var_AUTOUNLOCK_COOLDOWN)
+	  else
+		  zo_callLater(function() addon:ProceedAutoUnlock() end, 1500)
+		end
 	end,
 	[EVENT_DISCOVERY_EXPERIENCE] = function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
 		if BMU.uwData.isStarted then
