@@ -92,6 +92,7 @@ local stringsEN = {
     ["SI_TELE_ADDON_EXT_IJAGBMUGP_DESC"] = "Use BeamMeUp in the gamepad mode. With this addon, BeamMeUp gets a dedicated gamepad support. |cFF00FFIsJusta|r Beam Me Up Gamepad Plugin integrates the features of BeamMeUp in the gamepad interface and allows you to travel more comfortable than ever before.",
 
     --Other settings
+    ["SI_TELE_SETTINGS_TOGGLE_DISCOVERY"] = "Turn on wayshrine discovery in shuffle mode",
     ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN"] = "Open BeamMeUp when the map is opened",
     ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP"] = "When you open the map, BeamMeUp will automatically open as well, otherwise you'll see a button on the map top left and also a swap button in the map completion window.",
     ["SI_TELE_SETTINGS_ZONE_ONCE_ONLY"] = "Show every Zone once only",

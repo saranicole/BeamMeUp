@@ -75,115 +75,116 @@ local strings = {
 
 
 
-    -----------------------------------------------------------------------------
-    -- SETTINGS
-    -----------------------------------------------------------------------------
-    ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN"] = "マップと同時にBeamMeUpも開く",
-    ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP"] = "マップを開いた時、 BeamMeUpも自動で開きます。そうでない場合はマップの左上と「完了した地図」ウィンドウに切り替えボタンが表示されます。",
-    ["SI_TELE_SETTINGS_ZONE_ONCE_ONLY"] = "ゾーンでグループ化する",
-    ["SI_TELE_SETTINGS_ZONE_ONCE_ONLY_TOOLTIP"] = "テレポート先プレイヤーを一行ずつ表示せず、ゾーンごとにまとめて表示します。",
-    ["SI_TELE_SETTINGS_AUTO_PORT_FREQ"] = "旅の祠の自動解除頻度 (ms)",
-    ["SI_TELE_SETTINGS_AUTO_PORT_FREQ_TOOLTIP"] = "自動的に解除する旅の祠を調整します。 低スペックのコンピュータやゲームからのキックを防ぐために役立ちます。",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH"] = "BeamMeUpを開いたら更新とリセット",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_TOOLTIP"] = "BeamMeUpを開くたびに結果リストを更新します。 また入力フィールドはクリアされます。",
-    ["SI_TELE_SETTINGS_HEADER_BLACKLISTING"] = "非表示化",
-    ["SI_TELE_SETTINGS_HIDE_OTHERS"] = "アクセス出来ないゾーンを隠す",
-    ["SI_TELE_SETTINGS_HIDE_OTHERS_TOOLTIP"] = "メイルストローム闘技場、無法者の避難所やソロのゾーンを隠します。",
-    ["SI_TELE_SETTINGS_HIDE_PVP"] = "PVPゾーンを隠す",
-    ["SI_TELE_SETTINGS_HIDE_PVP_TOOLTIP"] = "シロディール、インペリアルシティやバトルグラウンドのようなゾーンを隠します。",
-    ["SI_TELE_SETTINGS_HIDE_CLOSED_DUNGEONS"] = "グループダンジョンと試練を隠す",
-    ["SI_TELE_SETTINGS_HIDE_CLOSED_DUNGEONS_TOOLTIP"] = "全ての4人のグループダンジョン、12人の試練とクラグローンのグループダンジョンを非表示にします。 これらのゾーンのグループメンバーは引き続き表示されます。",
-    ["SI_TELE_SETTINGS_HIDE_HOUSES"] = "住居を隠す",
-    ["SI_TELE_SETTINGS_HIDE_HOUSES_TOOLTIP"] = "全ての住居を隠します。",
-    ["SI_TELE_SETTINGS_WINDOW_STAY"] = "BeamMeUpを開いたままにする",
-    ["SI_TELE_SETTINGS_WINDOW_STAY_TOOLTIP"] = "BeamMeUp をマップなしで開くと、移動したり他のウィンドウを開いたりしてもマップは表示されたままになります。このオプションを使用する場合は、「マップ付きで BeamMeUp を閉じる」オプションを無効にすることをお勧めします。",
-    ["SI_TELE_SETTINGS_ONLY_MAPS"] = "リージョン／オーバーランドのみ表示",
-    ["SI_TELE_SETTINGS_ONLY_MAPS_TOOLTIP"] = "デシャーンやサマーセットといったような主要なリージョンのみ表示します。",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_FREQ"] = "更新間隔 (s)",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_FREQ_TOOLTIP"] = "BeamMeUpが開いている場合、結果の自動更新はx秒ごとに実行されます。 自動更新を無効にするには、値を0に設定します。",
-    ["SI_TELE_SETTINGS_FOCUS_ON_MAP_OPEN"] = "マップを開いたらゾーン検索にフォーカス",
-    ["SI_TELE_SETTINGS_FOCUS_ON_MAP_OPEN_TOOLTIP"] = "BMUが地図画面と一緒に開かれた時は、ゾーンの検索ボックスにカーソルが移動します。",
-    ["SI_TELE_SETTINGS_HIDE_DELVES"] = "洞窟を隠す",
-    ["SI_TELE_SETTINGS_HIDE_DELVES_TOOLTIP"] = "全ての洞窟を隠します。",
-    ["SI_TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS"] = "パブリックダンジョンを隠す",
-    ["SI_TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS_TOOLTIP"] = "全てのパブリックダンジョンを隠します。",
-    ["SI_TELE_SETTINGS_FORMAT_ZONE_NAME"] = "ゾーン名の記事を非表示にする",
-    ["SI_TELE_SETTINGS_FORMAT_ZONE_NAME_TOOLTIP"] = "ゾーン名の記事を非表示にすることで、ゾーンをより速く見つけるためのソートを確実にします。",
-    ["SI_TELE_SETTINGS_NUMBER_LINES"] = "行数/登録数",
-    ["SI_TELE_SETTINGS_NUMBER_LINES_TOOLTIP"] = "表示される行数を調整することで、BeamMeUp全体の高さをコントロールできます。",
-    ["SI_TELE_SETTINGS_HEADER_ADVANCED"] = "その他の設定",
-    ["SI_TELE_SETTINGS_HEADER_UI"] = "全般",
-    ["SI_TELE_SETTINGS_HEADER_RECORDS"] = "リスト表示設定",
-    ["SI_TELE_SETTINGS_CLOSE_ON_PORTING"] = "テレポートを開始したら閉じる",
-    ["SI_TELE_SETTINGS_CLOSE_ON_PORTING_TOOLTIP"] = "テレポートを開始したら、マップ画面とBeamMeUpを閉じます。",
-    ["SI_TELE_SETTINGS_SHOW_NUMBER_PLAYERS"] = "マップ毎のプレイヤー数を表示する",
-    ["SI_TELE_SETTINGS_SHOW_NUMBER_PLAYERS_TOOLTIP"] = "そのマップにいるテレポート可能なプレイヤーの数を表示します。数値部分をクリックするとプレイヤー一覧が確認できます。",
-    ["SI_TELE_SETTINGS_CHAT_BUTTON_OFFSET"] = "チャットウィンドウの設定ボタンの位置",
-    ["SI_TELE_SETTINGS_CHAT_BUTTON_OFFSET_TOOLTIP"] = "チャットウィンドウに表示しているBeamMeUp表示用ボタンのオフセット値です。表示用ボタンが他のアドオンの表示項目と重なりましたら利用してください。",
-    ["SI_TELE_SETTINGS_SEARCH_CHARACTERNAMES"] = "プレイヤー名でも検索する",
-    ["SI_TELE_SETTINGS_SEARCH_CHARACTERNAMES_TOOLTIP"] = "アカウントIDのみでなく、プレイヤー名でも検索します。",
-    ["SI_TELE_SETTINGS_SORTING"] = "表示順",
-    ["SI_TELE_SETTINGS_SORTING_TOOLTIP"] = "ソートの組み合わせから一つを選択してください。",
-    ["SI_TELE_SETTINGS_SECOND_SEARCH_LANGUAGE"] = "サブ言語",
-    ["SI_TELE_SETTINGS_SECOND_SEARCH_LANGUAGE_TOOLTIP"] = "ゾーン名の検索にて、クライアントの言語と一緒にここで指定した言語でも検索ができます。ツールチップに表示されるゾーン名もこちらの言語に変更されます。",
-    ["SI_TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE"] = "お気に入りプレイヤーをログイン通知する",
-    ["SI_TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE_TOOLTIP"] = "お気に入りプレイヤーがログインした時に、通知を表示します。（表示位置：画面中央）",
-    ["SI_TELE_SETTINGS_HIDE_ON_MAP_CLOSE"] = "マップと同時にBeamMeUpも閉じる",
-    ["SI_TELE_SETTINGS_HIDE_ON_MAP_CLOSE_TOOLTIP"] = "マップ画面を閉じた時、BeamMeUpも自動で閉じます。",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL"] = "マップ画面との結合位置のオフセット(横軸)",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL_TOOLTIP"] = "BeamMeUpウィンドウのマップとの結合位置（横軸）オフセットを設定します。",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL"] = "マップ画面との結合位置のオフセット(縦軸)",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL_TOOLTIP"] = "BeamMeUpウィンドウのマップとの結合位置（縦軸）オフセットを設定します。",
-    ["SI_TELE_SETTINGS_RESET_ALL_COUNTERS"] = "ゾーンカウンタをリセット",
-    ["SI_TELE_SETTINGS_RESET_ALL_COUNTERS_TOOLTIP"] = "テレポートしたゾーンのカウンタをリセットします。ゾーンの利用回数によるソート順もリセットされます。",
-    ["SI_TELE_SETTINGS_OFFLINE_NOTE"] = "オフラインリマインダー",
-    ["SI_TELE_SETTINGS_OFFLINE_NOTE_TOOLTIP"] = "しばらくの間オフラインに設定されていた場合、誰かにささやきかけたり移動したりすると、リマインダーとして短い画面メッセージが表示されます。オフライン設定されている間はささやきメッセージを受信することはできず、誰もあなたの所に移動することはできません。(しかし、共有は思いやりです)",
-    ["SI_TELE_SETTINGS_SCALE"] = "ウィンドウ・文字・アイコンの大きさ",
-    ["SI_TELE_SETTINGS_SCALE_TOOLTIP"] = "BeamMeUpのUI全般のスケール値です。設定値の反映にはリロードが必要となります。",
-    ["SI_TELE_SETTINGS_RESET_UI"] = "UI設定を初期化する",
-    ["SI_TELE_SETTINGS_RESET_UI_TOOLTIP"] = "当項目のUI設定を初期化します（スケール、ボタンオフセット、ウィンドウ表示位置）。 初期化されたUIがリロードされます。",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION"] = "重複した調査の地図の通知",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_TOOLTIP"] = "調査の地図の収穫完了時、インベントリに同じ地図がまだ残っていたら通知を表示します。 (画面中央のメッセージ)",
-    ["SI_TELE_SETTINGS_HEADER_PRIO"] = "表示優先度",
-    ["SI_TELE_SETTINGS_HEADER_CHAT_COMMANDS"] = "チャットコマンド",
-    ["SI_TELE_SETTINGS_PRIORITIZATION_DESCRIPTION"] = "テレポート先として利用するプレイヤーの優先度を設定できます。ギルドへの加入と脱退のあとにはリロードが必要です。",
-    ["SI_TELE_SETTINGS_SHOW_BUTTON_ON_MAP"] = "マップにBeamMeUp呼び出しリンクを表示",
-    ["SI_TELE_SETTINGS_SHOW_BUTTON_ON_MAP_TOOLTIP"] = "マップ左上にBeamMeUp切り替え用のテキストリンクを表示します。",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND"] = "通知音",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND_TOOLTIP"] = "この通知を表示する時に音を鳴らします。",
-    ["SI_TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL"] = "旅の祠へのファストトラベルを自動承認",
-    ["SI_TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL_TOOLTIP"] = "旅の祠へファストトラベルする時の確認メッセージを表示しません。",
-    ["SI_TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP"] = "現在のゾーンを常に一番上に表示",
-    ["SI_TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP_TOOLTIP"] = "現在のゾーンを常にリストの一番上に表示します。",
-    ["SI_TELE_SETTINGS_HIDE_OWN_HOUSES"] = "自宅を隠す",
-    ["SI_TELE_SETTINGS_HIDE_OWN_HOUSES_TOOLTIP"] = "メインリストから自宅(外へ移動)を隠します。",
-    ["SI_TELE_SETTINGS_HEADER_STATS"] = "統計情報",
-    ["SI_TELE_SETTINGS_MOST_PORTED_ZONES"] = "最も移動したゾーン：",
-    ["SI_TELE_SETTINGS_INSTALLED_SCINCE"] = "インストール日：",
-    ["SI_TELE_SETTINGS_INFO_CHARACTER_DEPENDING"] = "この項目はキャラクター毎に設定されます(グローバル設定ではありません)！",
-    ["SI_TELE_SETTINGS_SHOW_TELEPORT_ANIMATION"] = "テレポートアニメーション",
-    ["SI_TELE_SETTINGS_SHOW_TELEPORT_ANIMATION_TOOLTIP"] = "BeamMeUpでファストトラベルを開始する際に追加のテレポートアニメーションを表示します。記念品「フィヴニールの小装飾品」のアンロックが必要です。",
-    ["SI_TELE_SETTINGS_SHOW_CHAT_BUTTON"] = "チャットウィンドウにボタンを表示",
-    ["SI_TELE_SETTINGS_SHOW_CHAT_BUTTON_TOOLTIP"] = "BeamMeUpを起動するボタンをチャットウィンドウのヘッダーに表示します。",
-    ["SI_TELE_SETTINGS_USE_PAN_AND_ZOOM"] = "パン＆ズーム",
-    ["SI_TELE_SETTINGS_USE_PAN_AND_ZOOM_TOOLTIP"] = "グループメンバーや特定のゾーン(ダンジョン、家など)をクリックすると、マップ上の目的地までパン＆ズームします。",
-    ["SI_TELE_SETTINGS_USE_RALLY_POINT"] = "マップピン",
-    ["SI_TELE_SETTINGS_USE_RALLY_POINT_TOOLTIP"] = "グループメンバーや特定のゾーン(ダンジョン、家など)をクリックすると、マップ上の目的地にピン(再集結地点)を表示します。'LibMapPing'というライブラリがインストールされている必要があります。また覚えておいてほしいのは、あなたがグループリーダーの場合、あなたのピン(再集結地点)はグループメンバー全員に見えるということです。",
-    ["SI_TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS"] = "プレイヤーや家のないゾーンを表示",
-    ["SI_TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS_TOOLTIP"] = "ファストトラベルできるプレーヤーや家がない場合でも、メインリストにゾーンを表示します。そのゾーンで少なくとも1つの旅の祠を発見していれば、ゴールドを払って移動する選択肢はまだ残っています。",
-    ["SI_TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP"] = "表示されているゾーンとサブゾーンを常に先頭に表示",
-    ["SI_TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP_TOOLTIP"] = "現在表示されているゾーンとサブゾーン (開いているワールドマップ) を常にリストの先頭に表示します。",
-    ["SI_TELE_SETTINGS_DEFAULT_TAB"] = "Default list",
-    ["SI_TELE_SETTINGS_DEFAULT_TAB_TOOLTIP"] = "The list that is displayed by default when opening BeamMeUp.",
-    ["SI_TELE_SETTINGS_HEADER_CHAT_OUTPUT"] = "Chat Output",
-    ["SI_TELE_SETTINGS_OUTPUT_FAST_TRAVEL"] = "Fast travel executions",
-    ["SI_TELE_SETTINGS_OUTPUT_FAST_TRAVEL_TOOLTIP"] = "Informative chat messages about the initiated fast travels. Error messages are still displayed in the chat.",
-    ["SI_TELE_SETTINGS_OUTPUT_ADDITIONAL"] = "Supporting messages",
-    ["SI_TELE_SETTINGS_OUTPUT_ADDITIONAL_TOOLTIP"] = "Further helpful chat messages on various actions of the addon.",
-    ["SI_TELE_SETTINGS_OUTPUT_UNLOCK"] = "Automatic discovery results",
-    ["SI_TELE_SETTINGS_OUTPUT_UNLOCK_TOOLTIP"] = "Interim results (discovered wayshrines and XP) and supporting messages of the automatic wayshrine discovery.",
-    ["SI_TELE_SETTINGS_OUTPUT_DEBUG"] = "Debug messages",
-    ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
+-----------------------------------------------------------------------------
+-- SETTINGS
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_SETTINGS_TOGGLE_DISCOVERY, "シャッフルモードでウェイシュラインの発見をオンにする"),
+mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN, "マップと同時にBeamMeUpも開く")
+mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP, "マップを開いた時、 BeamMeUpも自動で開きます。そうでない場合はマップの左上と「完了した地図」ウィンドウに切り替えボタンが表示されます。")
+mkstr(SI.TELE_SETTINGS_ZONE_ONCE_ONLY, "ゾーンでグループ化する")
+mkstr(SI.TELE_SETTINGS_ZONE_ONCE_ONLY_TOOLTIP, "テレポート先プレイヤーを一行ずつ表示せず、ゾーンごとにまとめて表示します。")
+mkstr(SI.TELE_SETTINGS_AUTO_PORT_FREQ, "旅の祠の自動解除頻度 (ms)")
+mkstr(SI.TELE_SETTINGS_AUTO_PORT_FREQ_TOOLTIP, "自動的に解除する旅の祠を調整します。 低スペックのコンピュータやゲームからのキックを防ぐために役立ちます。")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH, "BeamMeUpを開いたら更新とリセット")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_TOOLTIP, "BeamMeUpを開くたびに結果リストを更新します。 また入力フィールドはクリアされます。")
+mkstr(SI.TELE_SETTINGS_HEADER_BLACKLISTING, "非表示化")
+mkstr(SI.TELE_SETTINGS_HIDE_OTHERS, "アクセス出来ないゾーンを隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_OTHERS_TOOLTIP, "メイルストローム闘技場、無法者の避難所やソロのゾーンを隠します。")
+mkstr(SI.TELE_SETTINGS_HIDE_PVP, "PVPゾーンを隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_PVP_TOOLTIP, "シロディール、インペリアルシティやバトルグラウンドのようなゾーンを隠します。")
+mkstr(SI.TELE_SETTINGS_HIDE_CLOSED_DUNGEONS, "グループダンジョンと試練を隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_CLOSED_DUNGEONS_TOOLTIP, "全ての4人のグループダンジョン、12人の試練とクラグローンのグループダンジョンを非表示にします。 これらのゾーンのグループメンバーは引き続き表示されます。")
+mkstr(SI.TELE_SETTINGS_HIDE_HOUSES, "住居を隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_HOUSES_TOOLTIP, "全ての住居を隠します。")
+mkstr(SI.TELE_SETTINGS_WINDOW_STAY, "BeamMeUpを開いたままにする")
+mkstr(SI.TELE_SETTINGS_WINDOW_STAY_TOOLTIP, "キーバインドでBeamMeUpを開くと、他のウィンドウを移動したり開いたりしてもBeamMeUpはそのまま残ります。 このオプションを使用する場合は、[マップと同時にBeamMeUpも閉じる／開く]オプションを無効にすることをお勧めします。")
+mkstr(SI.TELE_SETTINGS_ONLY_MAPS, "リージョン／オーバーランドのみ表示")
+mkstr(SI.TELE_SETTINGS_ONLY_MAPS_TOOLTIP, "デシャーンやサマーセットといったような主要なリージョンのみ表示します。")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_FREQ, "更新間隔 (s)")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_FREQ_TOOLTIP, "BeamMeUpが開いている場合、結果の自動更新はx秒ごとに実行されます。 自動更新を無効にするには、値を0に設定します。")
+mkstr(SI.TELE_SETTINGS_FOCUS_ON_MAP_OPEN, "マップを開いたらゾーン検索にフォーカス")
+mkstr(SI.TELE_SETTINGS_FOCUS_ON_MAP_OPEN_TOOLTIP, "BMUが地図画面と一緒に開かれた時は、ゾーンの検索ボックスにカーソルが移動します。")
+mkstr(SI.TELE_SETTINGS_HIDE_DELVES, "洞窟を隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_DELVES_TOOLTIP, "全ての洞窟を隠します。")
+mkstr(SI.TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS, "パブリックダンジョンを隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS_TOOLTIP, "全てのパブリックダンジョンを隠します。")
+mkstr(SI.TELE_SETTINGS_FORMAT_ZONE_NAME, "ゾーン名の記事を非表示にする")
+mkstr(SI.TELE_SETTINGS_FORMAT_ZONE_NAME_TOOLTIP, "ゾーン名の記事を非表示にすることで、ゾーンをより速く見つけるためのソートを確実にします。")
+mkstr(SI.TELE_SETTINGS_NUMBER_LINES, "行数/登録数")
+mkstr(SI.TELE_SETTINGS_NUMBER_LINES_TOOLTIP, "表示される行数を調整することで、BeamMeUp全体の高さをコントロールできます。")
+mkstr(SI.TELE_SETTINGS_HEADER_ADVANCED, "その他の設定")
+mkstr(SI.TELE_SETTINGS_HEADER_UI, "全般")
+mkstr(SI.TELE_SETTINGS_HEADER_RECORDS, "リスト表示設定")
+mkstr(SI.TELE_SETTINGS_CLOSE_ON_PORTING, "テレポートを開始したら閉じる")
+mkstr(SI.TELE_SETTINGS_CLOSE_ON_PORTING_TOOLTIP, "テレポートを開始したら、マップ画面とBeamMeUpを閉じます。")
+mkstr(SI.TELE_SETTINGS_SHOW_NUMBER_PLAYERS, "マップ毎のプレイヤー数を表示する")
+mkstr(SI.TELE_SETTINGS_SHOW_NUMBER_PLAYERS_TOOLTIP, "そのマップにいるテレポート可能なプレイヤーの数を表示します。数値部分をクリックするとプレイヤー一覧が確認できます。")
+mkstr(SI.TELE_SETTINGS_CHAT_BUTTON_OFFSET, "チャットウィンドウの設定ボタンの位置")
+mkstr(SI.TELE_SETTINGS_CHAT_BUTTON_OFFSET_TOOLTIP, "チャットウィンドウに表示しているBeamMeUp表示用ボタンのオフセット値です。表示用ボタンが他のアドオンの表示項目と重なりましたら利用してください。")
+mkstr(SI.TELE_SETTINGS_SEARCH_CHARACTERNAMES, "プレイヤー名でも検索する")
+mkstr(SI.TELE_SETTINGS_SEARCH_CHARACTERNAMES_TOOLTIP, "アカウントIDのみでなく、プレイヤー名でも検索します。")
+mkstr(SI.TELE_SETTINGS_SORTING, "表示順")
+mkstr(SI.TELE_SETTINGS_SORTING_TOOLTIP, "ソートの組み合わせから一つを選択してください。")
+mkstr(SI.TELE_SETTINGS_SECOND_SEARCH_LANGUAGE, "サブ言語")
+mkstr(SI.TELE_SETTINGS_SECOND_SEARCH_LANGUAGE_TOOLTIP, "ゾーン名の検索にて、クライアントの言語と一緒にここで指定した言語でも検索ができます。ツールチップに表示されるゾーン名もこちらの言語に変更されます。")
+mkstr(SI.TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE, "お気に入りプレイヤーをログイン通知する")
+mkstr(SI.TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE_TOOLTIP, "お気に入りプレイヤーがログインした時に、通知を表示します。（表示位置：画面中央）")
+mkstr(SI.TELE_SETTINGS_HIDE_ON_MAP_CLOSE, "マップと同時にBeamMeUpも閉じる")
+mkstr(SI.TELE_SETTINGS_HIDE_ON_MAP_CLOSE_TOOLTIP, "マップ画面を閉じた時、BeamMeUpも自動で閉じます。")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL, "マップ画面との結合位置のオフセット(横軸)")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL_TOOLTIP, "BeamMeUpウィンドウのマップとの結合位置（横軸）オフセットを設定します。")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL, "マップ画面との結合位置のオフセット(縦軸)")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL_TOOLTIP, "BeamMeUpウィンドウのマップとの結合位置（縦軸）オフセットを設定します。")
+mkstr(SI.TELE_SETTINGS_RESET_ALL_COUNTERS, "ゾーンカウンタをリセット")
+mkstr(SI.TELE_SETTINGS_RESET_ALL_COUNTERS_TOOLTIP, "テレポートしたゾーンのカウンタをリセットします。ゾーンの利用回数によるソート順もリセットされます。")
+mkstr(SI.TELE_SETTINGS_OFFLINE_NOTE, "オフラインリマインダー")
+mkstr(SI.TELE_SETTINGS_OFFLINE_NOTE_TOOLTIP, "しばらくの間オフラインに設定されていた場合、誰かにささやきかけたり移動したりすると、リマインダーとして短い画面メッセージが表示されます。オフライン設定されている間はささやきメッセージを受信することはできず、誰もあなたの所に移動することはできません。(しかし、共有は思いやりです)")
+mkstr(SI.TELE_SETTINGS_SCALE, "ウィンドウ・文字・アイコンの大きさ")
+mkstr(SI.TELE_SETTINGS_SCALE_TOOLTIP, "BeamMeUpのUI全般のスケール値です。設定値の反映にはリロードが必要となります。")
+mkstr(SI.TELE_SETTINGS_RESET_UI, "UI設定を初期化する")
+mkstr(SI.TELE_SETTINGS_RESET_UI_TOOLTIP, "当項目のUI設定を初期化します（スケール、ボタンオフセット、ウィンドウ表示位置）。 初期化されたUIがリロードされます。")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION, "重複した調査の地図の通知")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_TOOLTIP, "調査の地図の収穫完了時、インベントリに同じ地図がまだ残っていたら通知を表示します。 (画面中央のメッセージ)")
+mkstr(SI.TELE_SETTINGS_HEADER_PRIO, "表示優先度")
+mkstr(SI.TELE_SETTINGS_HEADER_CHAT_COMMANDS, "チャットコマンド")
+mkstr(SI.TELE_SETTINGS_PRIORITIZATION_DESCRIPTION, "テレポート先として利用するプレイヤーの優先度を設定できます。ギルドへの加入と脱退のあとにはリロードが必要です。")
+mkstr(SI.TELE_SETTINGS_SHOW_BUTTON_ON_MAP, "マップにBeamMeUp呼び出しリンクを表示")
+mkstr(SI.TELE_SETTINGS_SHOW_BUTTON_ON_MAP_TOOLTIP, "マップ左上にBeamMeUp切り替え用のテキストリンクを表示します。")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND, "通知音")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND_TOOLTIP, "この通知を表示する時に音を鳴らします。")
+mkstr(SI.TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL, "旅の祠へのファストトラベルを自動承認")
+mkstr(SI.TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL_TOOLTIP, "旅の祠へファストトラベルする時の確認メッセージを表示しません。")
+mkstr(SI.TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP, "現在のゾーンを常に一番上に表示")
+mkstr(SI.TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP_TOOLTIP, "現在のゾーンを常にリストの一番上に表示します。")
+mkstr(SI.TELE_SETTINGS_HIDE_OWN_HOUSES, "自宅を隠す")
+mkstr(SI.TELE_SETTINGS_HIDE_OWN_HOUSES_TOOLTIP, "メインリストから自宅(外へ移動)を隠します。")
+mkstr(SI.TELE_SETTINGS_HEADER_STATS, "統計情報")
+mkstr(SI.TELE_SETTINGS_MOST_PORTED_ZONES, "最も移動したゾーン：")
+mkstr(SI.TELE_SETTINGS_INSTALLED_SCINCE, "インストール日：")
+mkstr(SI.TELE_SETTINGS_INFO_CHARACTER_DEPENDING, "この項目はキャラクター毎に設定されます(グローバル設定ではありません)！")
+mkstr(SI.TELE_SETTINGS_SHOW_TELEPORT_ANIMATION, "テレポートアニメーション")
+mkstr(SI.TELE_SETTINGS_SHOW_TELEPORT_ANIMATION_TOOLTIP, "BeamMeUpでファストトラベルを開始する際に追加のテレポートアニメーションを表示します。記念品「フィヴニールの小装飾品」のアンロックが必要です。")
+mkstr(SI.TELE_SETTINGS_SHOW_CHAT_BUTTON, "チャットウィンドウにボタンを表示")
+mkstr(SI.TELE_SETTINGS_SHOW_CHAT_BUTTON_TOOLTIP, "BeamMeUpを起動するボタンをチャットウィンドウのヘッダーに表示します。")
+mkstr(SI.TELE_SETTINGS_USE_PAN_AND_ZOOM, "パン＆ズーム")
+mkstr(SI.TELE_SETTINGS_USE_PAN_AND_ZOOM_TOOLTIP, "グループメンバーや特定のゾーン(ダンジョン、家など)をクリックすると、マップ上の目的地までパン＆ズームします。")
+mkstr(SI.TELE_SETTINGS_USE_RALLY_POINT, "マップピン")
+mkstr(SI.TELE_SETTINGS_USE_RALLY_POINT_TOOLTIP, "グループメンバーや特定のゾーン(ダンジョン、家など)をクリックすると、マップ上の目的地にピン(再集結地点)を表示します。'LibMapPing'というライブラリがインストールされている必要があります。また覚えておいてほしいのは、あなたがグループリーダーの場合、あなたのピン(再集結地点)はグループメンバー全員に見えるということです。")
+mkstr(SI.TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS, "プレイヤーや家のないゾーンを表示")
+mkstr(SI.TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS_TOOLTIP, "ファストトラベルできるプレーヤーや家がない場合でも、メインリストにゾーンを表示します。そのゾーンで少なくとも1つの旅の祠を発見していれば、ゴールドを払って移動する選択肢はまだ残っています。")
+mkstr(SI.TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP, "表示されているゾーンとサブゾーンを常に先頭に表示")
+mkstr(SI.TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP_TOOLTIP, "現在表示されているゾーンとサブゾーン (開いているワールドマップ) を常にリストの先頭に表示します。")
+mkstr(SI.TELE_SETTINGS_DEFAULT_TAB, "Default list")
+mkstr(SI.TELE_SETTINGS_DEFAULT_TAB_TOOLTIP, "The list that is displayed by default when opening BeamMeUp.")
+mkstr(SI.TELE_SETTINGS_HEADER_CHAT_OUTPUT, "Chat Output")
+mkstr(SI.TELE_SETTINGS_OUTPUT_FAST_TRAVEL, "Fast travel executions")
+mkstr(SI.TELE_SETTINGS_OUTPUT_FAST_TRAVEL_TOOLTIP, "Informative chat messages about the initiated fast travels. Error messages are still displayed in the chat.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_ADDITIONAL, "Supporting messages")
+mkstr(SI.TELE_SETTINGS_OUTPUT_ADDITIONAL_TOOLTIP, "Further helpful chat messages on various actions of the addon.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_UNLOCK, "Automatic discovery results")
+mkstr(SI.TELE_SETTINGS_OUTPUT_UNLOCK_TOOLTIP, "Interim results (discovered wayshrines and XP) and supporting messages of the automatic wayshrine discovery.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_DEBUG, "Debug messages")
+mkstr(SI.TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP, "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!")
 
 
 -----------------------------------------------------------------------------

@@ -80,6 +80,7 @@ mkstr(SI.TELE_CHAT_AUTO_UNLOCK_SKIP, "快速旅行失败：跳过当前玩家。
 -----------------------------------------------------------------------------
 -- SETTINGS
 -----------------------------------------------------------------------------
+mkstr(SI.TELE_SETTINGS_TOGGLE_DISCOVERY, "开启随机模式下的路标发现"),
 mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN, "打开地图时打开BeamMeUp")
 mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP, "当您打开地图时, BeamMeUp也将自动打开, 否则的话您将在地图左上部看见一个按钮, 地图完成度窗口中也会有一个切换按钮。")
 mkstr(SI.TELE_SETTINGS_ZONE_ONCE_ONLY, "每个区域只显示一次")

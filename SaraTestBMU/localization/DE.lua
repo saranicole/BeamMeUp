@@ -81,6 +81,7 @@ local strings = {
     -----------------------------------------------------------------------------
     -- SETTINGS
     -----------------------------------------------------------------------------
+    [SI.TELE_SETTINGS_TOGGLE_DISCOVERY] = "Wegschrein-Entdeckung im Zufallsmodus aktivieren",
     [SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN] = "Öffne BeamMeUp zusammen mit der Karte",
     [SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP] = "Wenn du die Karte öffnest, öffnet sich auch BeamMeUp. Wenn du diese Funktion deaktivierst, kannst du BeamMeUp auch über den Button auf der Karte oben links, über den Button in der Chat-Box und über den Toggle-Button öffnen.",
     [SI.TELE_SETTINGS_ZONE_ONCE_ONLY] = "Nur ein Eintrag pro Gebiet",

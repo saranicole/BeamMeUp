@@ -2,6 +2,8 @@ local addon = IJA_BMU_GAMEPAD_PLUGIN
 
 local em = EVENT_MANAGER
 
+BMU.IsWayshrineDiscoveryActive = false
+
 
 local var_AUTOUNLOCK_PROGRESS_NONE = 0
 local var_AUTOUNLOCK_PROGRESS_ACTIVE = 1
@@ -151,6 +153,7 @@ end
 
 function addon:AutoUnlockCancel()
 --	em:UnregisterForUpdate(updateName)
+  BMU.IsWayshrineDiscoveryActive = false
 	self:UnregisterAutoUnlockEvents()
 end
 
@@ -178,6 +181,7 @@ function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
   local BMU_createTable = BMU.createTable
   local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
   local BMU_uwData = BMU.uwData
+  BMU.IsWayshrineDiscoveryActive = true
 	provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
 	-- ensure unlock process is not already running
 	if not BMU_uwData or not BMU_uwData.isStarted then
@@ -223,6 +227,7 @@ function addon:ProceedAutoUnlock(nextPlayer)
   local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
   local BMU_uwData = BMU.uwData
 	-- only proceed if feature is active
+
 	if BMU_uwData.isStarted then
 		local _, allUnlockedWayshrines = BMU_getZoneWayshrineCompletion(BMU_uwData.zoneId)
 
@@ -289,6 +294,7 @@ end
 -- finalize auto unlock and show dialog
 function addon:FinishedAutoUnlock(reason)
   local BMU_uwData = BMU.uwData
+  BMU.IsWayshrineDiscoveryActive = false
 --	d( 'FinishedAutoUnlock', reason)
 	-- check if the timeout was caused by a fast travel error (loading screen)
 	if reason == "timeout" and BMU.flagSocialErrorWhilePorting ~= 0 then
@@ -399,35 +405,33 @@ function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
 	end
 end
 
--- checks for zones that can be unlocked, sort them and queue the list for auto unlock
 function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging)
   local BMU_createTable = BMU.createTable
-  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
-	if not zoneRecordList or (zoneRecordList and #zoneRecordList == 0) then
+	if not zoneRecordList or #zoneRecordList == 0 then
 		local overlandZoneIds = {}
 		local cleanZoneList = {}
 		-- add all overlandZoneIds to a new table
--- 		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
--- 			-- consider only zones the user has access to (DLC)
--- 			if CanJumpToPlayerInZone(overlandZoneId) then
+		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
+			-- consider only zones the user has access to (DLC)
+			if CanJumpToPlayerInZone(overlandZoneId) then
 				--table.insert(overlandZoneIds, overlandZoneId)
-    local resultList = BMU_createTable({index=8, fZoneId=BMU.overlandDelvesPublicDungeons, noOwnHouses=true, dontDisplay=true})
-    if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
-      local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(overlandZoneId)
-      if numWayshrinesDiscovered < numWayshrines then
-        record = {}
-        record.zoneId = overlandZoneId
-        record.numPlayers = #resultList
-        if numWayshrinesDiscovered == 0 then
-          record.ratioWayshrines = 0 -- zones with no discovered wayhsrines get "highest prio" independent of the total number
-        else
-          record.ratioWayshrines = numWayshrinesDiscovered/numWayshrines
-        end
-        table.insert(cleanZoneList, record)
-      end
-    end
--- 			end
--- 		end
+				local resultList = BMU.createTable({index=8, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
+				if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
+					local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(overlandZoneId)
+					if numWayshrinesDiscovered < numWayshrines then
+						record = {}
+						record.zoneId = overlandZoneId
+						record.numPlayers = #resultList
+						if numWayshrinesDiscovered == 0 then
+							record.ratioWayshrines = 0 -- zones with no discovered wayhsrines get "highest prio" independent of the total number
+						else
+							record.ratioWayshrines = numWayshrinesDiscovered/numWayshrines
+						end
+						table.insert(cleanZoneList, record)
+					end
+				end
+			end
+		end
 
 		-- sort zone records
 		if loopType == "wayshrines" then

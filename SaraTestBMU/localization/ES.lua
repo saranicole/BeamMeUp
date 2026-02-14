@@ -75,115 +75,116 @@ local strings = {
 
 
 
-    -----------------------------------------------------------------------------
-    -- SETTINGS
-    -----------------------------------------------------------------------------
-    ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN"] = "Abrir BeamMeUp cuando el mapa esta abierto",
-    ["SI_TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP"] = "Cuando abras el mapa, BeamMeUp automaticamente se abrira tambien, de otra manera veras un boton en la parte superior izquierda ademas de un boton de cambio en la ventada completa del mapa.",
-    ["SI_TELE_SETTINGS_ZONE_ONCE_ONLY"] = "Mostrar cada zona solo una vez",
-    ["SI_TELE_SETTINGS_ZONE_ONCE_ONLY_TOOLTIP"] = "Mostrar solo un listado para cada zona.",
-    ["SI_TELE_SETTINGS_AUTO_PORT_FREQ"] = "Frecuencia de desbloqueo de ermitas (ms)",
-    ["SI_TELE_SETTINGS_AUTO_PORT_FREQ_TOOLTIP"] = "Ajustar frecuencia de desbloqueo automatico de ermitas. Para computadoras lentas o prevenir posible expulsion del juego, un valor mas alto puede ayudar.",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH"] = "Actualizar & Resetear al abrir",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_TOOLTIP"] = "Actualizar resultado de lista cada vez que se abra BeamMeUp. Area de entrada seran despejadas.",
-    ["SI_TELE_SETTINGS_HEADER_BLACKLISTING"] = "Listar en lista negra",
-    ["SI_TELE_SETTINGS_HIDE_OTHERS"] = "Ocultar varias Zonas inaccesibles",
-    ["SI_TELE_SETTINGS_HIDE_OTHERS_TOOLTIP"] = "Ocultar Zonas como la Arena Maelstrom, Refugio de Foragidos u zonas en solitario.",
-    ["SI_TELE_SETTINGS_HIDE_PVP"] = "Ocultar Zonas JyJ",
-    ["SI_TELE_SETTINGS_HIDE_PVP_TOOLTIP"] = "Ocultar zonas como Cyrodiil, Ciudad Imperial y Campos de Batalla.",
-    ["SI_TELE_SETTINGS_HIDE_CLOSED_DUNGEONS"] = "Ocultar Mazmorras Grupales y Pruebas",
-    ["SI_TELE_SETTINGS_HIDE_CLOSED_DUNGEONS_TOOLTIP"] = "Ocultar todas las Mazmorras de grupos de 4 personas, Pruebas de 12 personas y Mazmorras grupales en Craglorn. Miembros grupales en estas zonas aun seran desplegados!",
-    ["SI_TELE_SETTINGS_HIDE_HOUSES"] = "Ocultar casas",
-    ["SI_TELE_SETTINGS_HIDE_HOUSES_TOOLTIP"] = "Ocultar todas las casas.",
-    ["SI_TELE_SETTINGS_WINDOW_STAY"] = "Mantener BeamMeUp abierto",
-    ["SI_TELE_SETTINGS_WINDOW_STAY_TOOLTIP"] = "Cuando usted abra BeamMeUp sin el mapa, se mantendra abierto incluso si usted abre o mueve otra ventana. Si utiliza esta opcion, se recomienda deshabilitar la opcion 'Cerrar BeamMeUp con mapa'.",
-    ["SI_TELE_SETTINGS_ONLY_MAPS"] = "Mostrar solo Regiones / Zonas terrestres",
-    ["SI_TELE_SETTINGS_ONLY_MAPS_TOOLTIP"] = "Mostrar solamente regiones principales como Deshaan o Estivalia.",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_FREQ"] = "Actualizar intervalos (s)",
-    ["SI_TELE_SETTINGS_AUTO_REFRESH_FREQ_TOOLTIP"] = "Cuando BeamMeUp esta abierto, una actualizacion automatica de la lista de resultados  es realizada cada x segundos. Configura el valor a 0 para desabilitar la actualizacion automatica.",
-    ["SI_TELE_SETTINGS_FOCUS_ON_MAP_OPEN"] = "Centrar el cuadro de búsqueda de zona",
-    ["SI_TELE_SETTINGS_FOCUS_ON_MAP_OPEN_TOOLTIP"] = "Enfoca el cuadro de búsqueda de zona cuando se abre BeamMeUp junto con el mapa.",
-    ["SI_TELE_SETTINGS_HIDE_DELVES"] = "Ocultar Cuevas",
-    ["SI_TELE_SETTINGS_HIDE_DELVES_TOOLTIP"] = "Ocultar todas las Cuevas.",
-    ["SI_TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS"] = "Ocultar Mazmorras Publicas",
-    ["SI_TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS_TOOLTIP"] = "Ocultar todas las Mazmorras Publicas.",
-    ["SI_TELE_SETTINGS_FORMAT_ZONE_NAME"] = "Ocultar articulos de nombres de Zonas",
-    ["SI_TELE_SETTINGS_FORMAT_ZONE_NAME_TOOLTIP"] = "Ocultar todos los articulos de nombres de Zonas para asegurar una mejor clasificacion para acelerar busqueda de Zonas.",
-    ["SI_TELE_SETTINGS_NUMBER_LINES"] = "Numero de lineas / listado",
-    ["SI_TELE_SETTINGS_NUMBER_LINES_TOOLTIP"] = "Al configurar el numero de lineas visibles / listados podra controlar la total altura del complemento.",
-    ["SI_TELE_SETTINGS_HEADER_ADVANCED"] = "Caracteristicas Extras",
-    ["SI_TELE_SETTINGS_HEADER_UI"] = "General",
-    ["SI_TELE_SETTINGS_HEADER_RECORDS"] = "Listado",
-    ["SI_TELE_SETTINGS_CLOSE_ON_PORTING"] = "Cierre automatico de mapa y BeamMeUp",
-    ["SI_TELE_SETTINGS_CLOSE_ON_PORTING_TOOLTIP"] = "Cerrar mapa y BeamMeUp tras el proceso de transporte ha sido iniciado.",
-    ["SI_TELE_SETTINGS_SHOW_NUMBER_PLAYERS"] = "Mostrar numero de jugadores en el mapa",
-    ["SI_TELE_SETTINGS_SHOW_NUMBER_PLAYERS_TOOLTIP"] = "Mostrar numero de jugadores por mapa, a los cuales puedas transportar. Podras hacer click en el numero para ver a todos estos jugadores.",
-    ["SI_TELE_SETTINGS_CHAT_BUTTON_OFFSET"] = "Desplazamiento del botón en el cuadro de chat",
-    ["SI_TELE_SETTINGS_CHAT_BUTTON_OFFSET_TOOLTIP"] = "Aumente el desplazamiento horizontal del botón en el encabezado del cuadro de chat para evitar conflictos visuales con otros íconos de Complementos.",
-    ["SI_TELE_SETTINGS_SEARCH_CHARACTERNAMES"] = "Tambien busca nombres de personajes",
-    ["SI_TELE_SETTINGS_SEARCH_CHARACTERNAMES_TOOLTIP"] = "También busque nombres de personajes cuando busque jugadores..",
-    ["SI_TELE_SETTINGS_SORTING"] = "Clasificar",
-    ["SI_TELE_SETTINGS_SORTING_TOOLTIP"] = "Elija uno de los posibles tipos de lista.",
-    ["SI_TELE_SETTINGS_SECOND_SEARCH_LANGUAGE"] = "Segunda busqueda de Lenguaje",
-    ["SI_TELE_SETTINGS_SECOND_SEARCH_LANGUAGE_TOOLTIP"] = "Puede buscar por nombres de Zonas en el idioma de cliente y este segundo Lenguaje al mismo tiempo. La información sobre herramientas del nombre de la zona también muestra el nombre en el segundo idioma.",
-    ["SI_TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE"] = "Notificacion de Jugador Favorito en Linea",
-    ["SI_TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE_TOOLTIP"] = "Recibira una notificacion (mensaje en pantalla central) cuando un jugador favotiro se conecte en Linea.",
-    ["SI_TELE_SETTINGS_HIDE_ON_MAP_CLOSE"] = "Cerrar BeamMeUp cuando el mapa este cerrado",
-    ["SI_TELE_SETTINGS_HIDE_ON_MAP_CLOSE_TOOLTIP"] = "Cuando usted cierra el mapa, BeamMeUp tambien se cerrara.",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL"] = "Desplazamiento de la posición del acoplamiento del mapa - Horizontal",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL_TOOLTIP"] = "Aquí puede personalizar el desplazamiento horizontal del acoplamiento en el mapa.",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL"] = "Desplazamiento de la posición del acoplamiento del mapa - Vertical",
-    ["SI_TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL_TOOLTIP"] = "Aquí puede personalizar el desplazamiento vertical del acoplamiento en el mapa.",
-    ["SI_TELE_SETTINGS_RESET_ALL_COUNTERS"] = "Resetear contadores de Todas las Zonas",
-    ["SI_TELE_SETTINGS_RESET_ALL_COUNTERS_TOOLTIP"] = "Todos los contadores de Zonas han sido reseteados. Por ello, la clasificacion de mas utilizados ha sido reseteada.",
-    ["SI_TELE_SETTINGS_OFFLINE_NOTE"] = "Recordatorio de desconeccion",
-    ["SI_TELE_SETTINGS_OFFLINE_NOTE_TOOLTIP"] = "Si está desconectado por un tiempo y susurra o viaja con alguien, recibirá un mensaje de pantalla corto como recordatorio. Mientras esté desconectado, no podrá recibir ningún mensaje susurrado y nadie podrá viajar hasta usted (pero compartir es cuidar).",
-    ["SI_TELE_SETTINGS_SCALE"] = "UI ajuste",
-    ["SI_TELE_SETTINGS_SCALE_TOOLTIP"] = "Factor de ajuste para la interfaz de usuario/ventana completa de BeamMeUp. Es necesaria una recarga para aplicar los cambios..",
-    ["SI_TELE_SETTINGS_RESET_UI"] = "Resetear UI",
-    ["SI_TELE_SETTINGS_RESET_UI_TOOLTIP"] = "Resetear BeamMeUp UI configurando las siguientes opciones de nuevo a los valores predeterminados: ajustes, compensación de botones, compensaciones de base de mapa y posiciones de ventana. Se volverá a cargar la interfaz de usuario completa..",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION"] = "Notificación de mapa prospeccion ",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_TOOLTIP"] = "Si extrae un mapa de prospeccion y todavía hay algunos mapas idénticos (misma ubicación) en su inventario, una notificación (mensaje en la pantalla central) le informará.",
-    ["SI_TELE_SETTINGS_HEADER_PRIO"] = "Priorización",
-    ["SI_TELE_SETTINGS_HEADER_CHAT_COMMANDS"] = "Comandos de Chat",
-    ["SI_TELE_SETTINGS_PRIORITIZATION_DESCRIPTION"] = "Aqui podra definir cuales jugadores seran preferentemente utilizados para viaje rapido. Tras dejar o unirse a un Gremio, una recarga sera necesaria para desplazarse correctamente ahi.",
-    ["SI_TELE_SETTINGS_SHOW_BUTTON_ON_MAP"] = "Mostrar boton adicional en el mapa.",
-    ["SI_TELE_SETTINGS_SHOW_BUTTON_ON_MAP_TOOLTIP"] = "Desplegar un boton de texto en la esquina superior izquierda del mapa mundial para abrir BeamMeUp.",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND"] = "Reproducir sonido",
-    ["SI_TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND_TOOLTIP"] = "Reproducir un sonido cuando muestra una notificacion.",
-    ["SI_TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL"] = "Confirmacion automatica de viaje a ermitas",
-    ["SI_TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL_TOOLTIP"] = "Deshabilitar el dialogo de confirmacion cuando viaja a otras ermitas.",
-    ["SI_TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP"] = "Mostrar zona actual siempre en la parte superior",
-    ["SI_TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP_TOOLTIP"] = "Mostrar zona actual siempre en la parte superior de la lista.",
-    ["SI_TELE_SETTINGS_HIDE_OWN_HOUSES"] = "Ocultar casas propias",
-    ["SI_TELE_SETTINGS_HIDE_OWN_HOUSES_TOOLTIP"] = "Ocultar casas propias  (transportar afuera) en la lista principal.",
-    ["SI_TELE_SETTINGS_HEADER_STATS"] = "Estadisticas",
-    ["SI_TELE_SETTINGS_MOST_PORTED_ZONES"] = "Zonas mas transportadas:",
-    ["SI_TELE_SETTINGS_INSTALLED_SCINCE"] = "Instalado desde:",
-    ["SI_TELE_SETTINGS_INFO_CHARACTER_DEPENDING"] = "Esta opcion esta  enlazada a tu personaje (no a todas las cuentas)!",
-    ["SI_TELE_SETTINGS_SHOW_TELEPORT_ANIMATION"] = "Animacion de teletransporte",
-    ["SI_TELE_SETTINGS_SHOW_TELEPORT_ANIMATION_TOOLTIP"] = "Mostrar una animación de teletransportación adicional al iniciar un viaje rápido a través de BeamMeUp. El objeto coleccionable 'Baratija de Finvir' debe estar desbloqueado.",
-    ["SI_TELE_SETTINGS_SHOW_CHAT_BUTTON"] = "Boton en la ventana del chat",
-    ["SI_TELE_SETTINGS_SHOW_CHAT_BUTTON_TOOLTIP"] = "Mostrar un botón en el encabezado de la ventana de chat para abrir BeamMeUp.",
-    ["SI_TELE_SETTINGS_USE_PAN_AND_ZOOM"] = "Panorámica y zoom",
-    ["SI_TELE_SETTINGS_USE_PAN_AND_ZOOM_TOOLTIP"] = "Panoramica y zoom al destino en el mapa al hacer clic en miembros del grupo o zonas específicas (mazmorras, casas, etc.).",
-    ["SI_TELE_SETTINGS_USE_RALLY_POINT"] = "Ping en mapa",
-    ["SI_TELE_SETTINGS_USE_RALLY_POINT_TOOLTIP"] = "Muestre un ping de mapa (punto de reunión) en el destino en el mapa cuando haga clic en miembros del grupo o zonas específicas (mazmorras, casas, etc.). La biblioteca LibMapPing debe estar instalada. Recuerde también: si usted es el líder del grupo, sus pings (puntos de reunión) son visibles para todos los miembros del grupo.",
-    ["SI_TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS"] = "Muesta zonas sin jugadores o casas",
-    ["SI_TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS_TOOLTIP"] = "Desplegar zonas en la lista principal incluso sin jugadores ni casas a las cuales transportarse.  Usted aun tiene la opcion de transportarse con oro si ha descubierto al menos una Ermita en la zona.",
-    ["SI_TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP"] = "Mostrar zonas y subzonas siempre en la parte superior",
-    ["SI_TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP_TOOLTIP"] = "Mostrar la zona actual y subzonas (mapa mundial abierto) siempre en la parte superior de la lista.",
-    ["SI_TELE_SETTINGS_DEFAULT_TAB"] = "Default list",
-    ["SI_TELE_SETTINGS_DEFAULT_TAB_TOOLTIP"] = "The list that is displayed by default when opening BeamMeUp.",
-    ["SI_TELE_SETTINGS_HEADER_CHAT_OUTPUT"] = "Chat Output",
-    ["SI_TELE_SETTINGS_OUTPUT_FAST_TRAVEL"] = "Fast travel executions",
-    ["SI_TELE_SETTINGS_OUTPUT_FAST_TRAVEL_TOOLTIP"] = "Informative chat messages about the initiated fast travels. Error messages are still displayed in the chat.",
-    ["SI_TELE_SETTINGS_OUTPUT_ADDITIONAL"] = "Supporting messages",
-    ["SI_TELE_SETTINGS_OUTPUT_ADDITIONAL_TOOLTIP"] = "Further helpful chat messages on various actions of the addon.",
-    ["SI_TELE_SETTINGS_OUTPUT_UNLOCK"] = "Automatic discovery results",
-    ["SI_TELE_SETTINGS_OUTPUT_UNLOCK_TOOLTIP"] = "Interim results (discovered wayshrines and XP) and supporting messages of the automatic wayshrine discovery.",
-    ["SI_TELE_SETTINGS_OUTPUT_DEBUG"] = "Debug messages",
-    ["SI_TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP"] = "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!",
+-----------------------------------------------------------------------------
+-- SETTINGS
+-----------------------------------------------------------------------------
+mkstr(SI.TELE_SETTINGS_TOGGLE_DISCOVERY, "Activar el descubrimiento del santuario en modo aleatorio"),
+mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN, "Abrir BeamMeUp cuando el mapa esta abierto")
+mkstr(SI.TELE_SETTINGS_SHOW_ON_MAP_OPEN_TOOLTIP, "Cuando abras el mapa, BeamMeUp automaticamente se abrira tambien, de otra manera veras un boton en la parte superior izquierda ademas de un boton de cambio en la ventada completa del mapa.")
+mkstr(SI.TELE_SETTINGS_ZONE_ONCE_ONLY, "Mostrar cada zona solo una vez")
+mkstr(SI.TELE_SETTINGS_ZONE_ONCE_ONLY_TOOLTIP, "Mostrar solo un listado para cada zona.")
+mkstr(SI.TELE_SETTINGS_AUTO_PORT_FREQ, "Frecuencia de desbloqueo de ermitas (ms)")
+mkstr(SI.TELE_SETTINGS_AUTO_PORT_FREQ_TOOLTIP, "Ajustar frecuencia de desbloqueo automatico de ermitas. Para computadoras lentas o prevenir posible expulsion del juego, un valor mas alto puede ayudar.")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH, "Actualizar & Resetear al abrir")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_TOOLTIP, "Actualizar resultado de lista cada vez que se abra BeamMeUp. Area de entrada seran despejadas.")
+mkstr(SI.TELE_SETTINGS_HEADER_BLACKLISTING, "Listar en lista negra")
+mkstr(SI.TELE_SETTINGS_HIDE_OTHERS, "Ocultar varias Zonas inaccesibles")
+mkstr(SI.TELE_SETTINGS_HIDE_OTHERS_TOOLTIP, "Ocultar Zonas como la Arena Maelstrom, Refugio de Foragidos u zonas en solitario.")
+mkstr(SI.TELE_SETTINGS_HIDE_PVP, "Ocultar Zonas JyJ")
+mkstr(SI.TELE_SETTINGS_HIDE_PVP_TOOLTIP, "Ocultar zonas como Cyrodiil, Ciudad Imperial y Campos de Batalla.")
+mkstr(SI.TELE_SETTINGS_HIDE_CLOSED_DUNGEONS, "Ocultar Mazmorras Grupales y Pruebas")
+mkstr(SI.TELE_SETTINGS_HIDE_CLOSED_DUNGEONS_TOOLTIP, "Ocultar todas las Mazmorras de grupos de 4 personas, Pruebas de 12 personas y Mazmorras grupales en Craglorn. Miembros grupales en estas zonas aun seran desplegados!")
+mkstr(SI.TELE_SETTINGS_HIDE_HOUSES, "Ocultar casas")
+mkstr(SI.TELE_SETTINGS_HIDE_HOUSES_TOOLTIP, "Ocultar todas las casas.")
+mkstr(SI.TELE_SETTINGS_WINDOW_STAY, "Mantener BeamMeUp abierto")
+mkstr(SI.TELE_SETTINGS_WINDOW_STAY_TOOLTIP, "Cuando usted abra BeamMeUp sin el mapa, se mantendra abierto incluso si usted abre o mueve otra ventana. Si utiliza esta opcion, se recomienda deshabilitar la opcion 'Cerrar BeamMeUp con mapa'.")
+mkstr(SI.TELE_SETTINGS_ONLY_MAPS, "Mostrar solo Regiones / Zonas terrestres")
+mkstr(SI.TELE_SETTINGS_ONLY_MAPS_TOOLTIP, "Mostrar solamente regiones principales como Deshaan o Estivalia.")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_FREQ, "Actualizar intervalos (s)")
+mkstr(SI.TELE_SETTINGS_AUTO_REFRESH_FREQ_TOOLTIP, "Cuando BeamMeUp esta abierto, una actualizacion automatica de la lista de resultados  es realizada cada x segundos. Configura el valor a 0 para desabilitar la actualizacion automatica.")
+mkstr(SI.TELE_SETTINGS_FOCUS_ON_MAP_OPEN, "Centrar el cuadro de búsqueda de zona")
+mkstr(SI.TELE_SETTINGS_FOCUS_ON_MAP_OPEN_TOOLTIP, "Enfoca el cuadro de búsqueda de zona cuando se abre BeamMeUp junto con el mapa.")
+mkstr(SI.TELE_SETTINGS_HIDE_DELVES, "Ocultar Cuevas")
+mkstr(SI.TELE_SETTINGS_HIDE_DELVES_TOOLTIP, "Ocultar todas las Cuevas.")
+mkstr(SI.TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS, "Ocultar Mazmorras Publicas")
+mkstr(SI.TELE_SETTINGS_HIDE_PUBLIC_DUNGEONS_TOOLTIP, "Ocultar todas las Mazmorras Publicas.")
+mkstr(SI.TELE_SETTINGS_FORMAT_ZONE_NAME, "Ocultar articulos de nombres de Zonas")
+mkstr(SI.TELE_SETTINGS_FORMAT_ZONE_NAME_TOOLTIP, "Ocultar todos los articulos de nombres de Zonas para asegurar una mejor clasificacion para acelerar busqueda de Zonas.")
+mkstr(SI.TELE_SETTINGS_NUMBER_LINES, "Numero de lineas / listado")
+mkstr(SI.TELE_SETTINGS_NUMBER_LINES_TOOLTIP, "Al configurar el numero de lineas visibles / listados podra controlar la total altura del complemento.")
+mkstr(SI.TELE_SETTINGS_HEADER_ADVANCED, "Caracteristicas Extras")
+mkstr(SI.TELE_SETTINGS_HEADER_UI, "General")
+mkstr(SI.TELE_SETTINGS_HEADER_RECORDS, "Listado")
+mkstr(SI.TELE_SETTINGS_CLOSE_ON_PORTING, "Cierre automatico de mapa y BeamMeUp")
+mkstr(SI.TELE_SETTINGS_CLOSE_ON_PORTING_TOOLTIP, "Cerrar mapa y BeamMeUp tras el proceso de transporte ha sido iniciado.")
+mkstr(SI.TELE_SETTINGS_SHOW_NUMBER_PLAYERS, "Mostrar numero de jugadores en el mapa")
+mkstr(SI.TELE_SETTINGS_SHOW_NUMBER_PLAYERS_TOOLTIP, "Mostrar numero de jugadores por mapa, a los cuales puedas transportar. Podras hacer click en el numero para ver a todos estos jugadores.")
+mkstr(SI.TELE_SETTINGS_CHAT_BUTTON_OFFSET, "Desplazamiento del botón en el cuadro de chat")
+mkstr(SI.TELE_SETTINGS_CHAT_BUTTON_OFFSET_TOOLTIP, "Aumente el desplazamiento horizontal del botón en el encabezado del cuadro de chat para evitar conflictos visuales con otros íconos de Complementos.")
+mkstr(SI.TELE_SETTINGS_SEARCH_CHARACTERNAMES, "Tambien busca nombres de personajes")
+mkstr(SI.TELE_SETTINGS_SEARCH_CHARACTERNAMES_TOOLTIP, "También busque nombres de personajes cuando busque jugadores..")
+mkstr(SI.TELE_SETTINGS_SORTING, "Clasificar")
+mkstr(SI.TELE_SETTINGS_SORTING_TOOLTIP, "Elija uno de los posibles tipos de lista.")
+mkstr(SI.TELE_SETTINGS_SECOND_SEARCH_LANGUAGE, "Segunda busqueda de Lenguaje")
+mkstr(SI.TELE_SETTINGS_SECOND_SEARCH_LANGUAGE_TOOLTIP, "Puede buscar por nombres de Zonas en el idioma de cliente y este segundo Lenguaje al mismo tiempo. La información sobre herramientas del nombre de la zona también muestra el nombre en el segundo idioma.")
+mkstr(SI.TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE, "Notificacion de Jugador Favorito en Linea")
+mkstr(SI.TELE_SETTINGS_NOTIFICATION_PLAYER_FAVORITE_ONLINE_TOOLTIP, "Recibira una notificacion (mensaje en pantalla central) cuando un jugador favotiro se conecte en Linea.")
+mkstr(SI.TELE_SETTINGS_HIDE_ON_MAP_CLOSE, "Cerrar BeamMeUp cuando el mapa este cerrado")
+mkstr(SI.TELE_SETTINGS_HIDE_ON_MAP_CLOSE_TOOLTIP, "Cuando usted cierra el mapa, BeamMeUp tambien se cerrara.")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL, "Desplazamiento de la posición del acoplamiento del mapa - Horizontal")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_HORIZONTAL_TOOLTIP, "Aquí puede personalizar el desplazamiento horizontal del acoplamiento en el mapa.")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL, "Desplazamiento de la posición del acoplamiento del mapa - Vertical")
+mkstr(SI.TELE_SETTINGS_MAP_DOCK_OFFSET_VERTICAL_TOOLTIP, "Aquí puede personalizar el desplazamiento vertical del acoplamiento en el mapa.")
+mkstr(SI.TELE_SETTINGS_RESET_ALL_COUNTERS, "Resetear contadores de Todas las Zonas")
+mkstr(SI.TELE_SETTINGS_RESET_ALL_COUNTERS_TOOLTIP, "Todos los contadores de Zonas han sido reseteados. Por ello, la clasificacion de mas utilizados ha sido reseteada.")
+mkstr(SI.TELE_SETTINGS_OFFLINE_NOTE, "Recordatorio de desconeccion")
+mkstr(SI.TELE_SETTINGS_OFFLINE_NOTE_TOOLTIP, "Si está desconectado por un tiempo y susurra o viaja con alguien, recibirá un mensaje de pantalla corto como recordatorio. Mientras esté desconectado, no podrá recibir ningún mensaje susurrado y nadie podrá viajar hasta usted (pero compartir es cuidar).")
+mkstr(SI.TELE_SETTINGS_SCALE, "UI ajuste")
+mkstr(SI.TELE_SETTINGS_SCALE_TOOLTIP, "Factor de ajuste para la interfaz de usuario/ventana completa de BeamMeUp. Es necesaria una recarga para aplicar los cambios..")
+mkstr(SI.TELE_SETTINGS_RESET_UI, "Resetear UI")
+mkstr(SI.TELE_SETTINGS_RESET_UI_TOOLTIP, "Resetear BeamMeUp UI configurando las siguientes opciones de nuevo a los valores predeterminados: ajustes, compensación de botones, compensaciones de base de mapa y posiciones de ventana. Se volverá a cargar la interfaz de usuario completa..")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION, "Notificación de mapa prospeccion ")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_TOOLTIP, "Si extrae un mapa de prospeccion y todavía hay algunos mapas idénticos (misma ubicación) en su inventario, una notificación (mensaje en la pantalla central) le informará.")
+mkstr(SI.TELE_SETTINGS_HEADER_PRIO, "Priorización")
+mkstr(SI.TELE_SETTINGS_HEADER_CHAT_COMMANDS, "Comandos de Chat")
+mkstr(SI.TELE_SETTINGS_PRIORITIZATION_DESCRIPTION, "Aqui podra definir cuales jugadores seran preferentemente utilizados para viaje rapido. Tras dejar o unirse a un Gremio, una recarga sera necesaria para desplazarse correctamente ahi.")
+mkstr(SI.TELE_SETTINGS_SHOW_BUTTON_ON_MAP, "Mostrar boton adicional en el mapa.")
+mkstr(SI.TELE_SETTINGS_SHOW_BUTTON_ON_MAP_TOOLTIP, "Desplegar un boton de texto en la esquina superior izquierda del mapa mundial para abrir BeamMeUp.")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND, "Reproducir sonido")
+mkstr(SI.TELE_SETTINGS_SURVEY_MAP_NOTIFICATION_SOUND_TOOLTIP, "Reproducir un sonido cuando muestra una notificacion.")
+mkstr(SI.TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL, "Confirmacion automatica de viaje a ermitas")
+mkstr(SI.TELE_SETTINGS_AUTO_CONFIRM_WAYSHRINE_TRAVEL_TOOLTIP, "Deshabilitar el dialogo de confirmacion cuando viaja a otras ermitas.")
+mkstr(SI.TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP, "Mostrar zona actual siempre en la parte superior")
+mkstr(SI.TELE_SETTINGS_CURRENT_ZONE_ALWAYS_TOP_TOOLTIP, "Mostrar zona actual siempre en la parte superior de la lista.")
+mkstr(SI.TELE_SETTINGS_HIDE_OWN_HOUSES, "Ocultar casas propias")
+mkstr(SI.TELE_SETTINGS_HIDE_OWN_HOUSES_TOOLTIP, "Ocultar casas propias  (transportar afuera) en la lista principal.")
+mkstr(SI.TELE_SETTINGS_HEADER_STATS, "Estadisticas")
+mkstr(SI.TELE_SETTINGS_MOST_PORTED_ZONES, "Zonas mas transportadas:")
+mkstr(SI.TELE_SETTINGS_INSTALLED_SCINCE, "Instalado desde:")
+mkstr(SI.TELE_SETTINGS_INFO_CHARACTER_DEPENDING, "Esta opcion esta  enlazada a tu personaje (no a todas las cuentas)!")
+mkstr(SI.TELE_SETTINGS_SHOW_TELEPORT_ANIMATION, "Animacion de teletransporte")
+mkstr(SI.TELE_SETTINGS_SHOW_TELEPORT_ANIMATION_TOOLTIP, "Mostrar una animación de teletransportación adicional al iniciar un viaje rápido a través de BeamMeUp. El objeto coleccionable 'Baratija de Finvir' debe estar desbloqueado.")
+mkstr(SI.TELE_SETTINGS_SHOW_CHAT_BUTTON, "Boton en la ventana del chat")
+mkstr(SI.TELE_SETTINGS_SHOW_CHAT_BUTTON_TOOLTIP, "Mostrar un botón en el encabezado de la ventana de chat para abrir BeamMeUp.")
+mkstr(SI.TELE_SETTINGS_USE_PAN_AND_ZOOM, "Panorámica y zoom")
+mkstr(SI.TELE_SETTINGS_USE_PAN_AND_ZOOM_TOOLTIP, "Panoramica y zoom al destino en el mapa al hacer clic en miembros del grupo o zonas específicas (mazmorras, casas, etc.).")
+mkstr(SI.TELE_SETTINGS_USE_RALLY_POINT, "Ping en mapa")
+mkstr(SI.TELE_SETTINGS_USE_RALLY_POINT_TOOLTIP, "Muestre un ping de mapa (punto de reunión) en el destino en el mapa cuando haga clic en miembros del grupo o zonas específicas (mazmorras, casas, etc.). La biblioteca LibMapPing debe estar instalada. Recuerde también: si usted es el líder del grupo, sus pings (puntos de reunión) son visibles para todos los miembros del grupo.")
+mkstr(SI.TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS, "Muesta zonas sin jugadores o casas")
+mkstr(SI.TELE_SETTINGS_SHOW_ZONES_WITHOUT_PLAYERS_TOOLTIP, "Desplegar zonas en la lista principal incluso sin jugadores ni casas a las cuales transportarse.  Usted aun tiene la opcion de transportarse con oro si ha descubierto al menos una Ermita en la zona.")
+mkstr(SI.TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP, "Mostrar zonas y subzonas siempre en la parte superior")
+mkstr(SI.TELE_SETTINGS_VIEWED_ZONE_ALWAYS_TOP_TOOLTIP, "Mostrar la zona actual y subzonas (mapa mundial abierto) siempre en la parte superior de la lista.")
+mkstr(SI.TELE_SETTINGS_DEFAULT_TAB, "Default list")
+mkstr(SI.TELE_SETTINGS_DEFAULT_TAB_TOOLTIP, "The list that is displayed by default when opening BeamMeUp.")
+mkstr(SI.TELE_SETTINGS_HEADER_CHAT_OUTPUT, "Chat Output")
+mkstr(SI.TELE_SETTINGS_OUTPUT_FAST_TRAVEL, "Fast travel executions")
+mkstr(SI.TELE_SETTINGS_OUTPUT_FAST_TRAVEL_TOOLTIP, "Informative chat messages about the initiated fast travels. Error messages are still displayed in the chat.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_ADDITIONAL, "Supporting messages")
+mkstr(SI.TELE_SETTINGS_OUTPUT_ADDITIONAL_TOOLTIP, "Further helpful chat messages on various actions of the addon.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_UNLOCK, "Automatic discovery results")
+mkstr(SI.TELE_SETTINGS_OUTPUT_UNLOCK_TOOLTIP, "Interim results (discovered wayshrines and XP) and supporting messages of the automatic wayshrine discovery.")
+mkstr(SI.TELE_SETTINGS_OUTPUT_DEBUG, "Debug messages")
+mkstr(SI.TELE_SETTINGS_OUTPUT_DEBUG_TOOLTIP, "Technical messages for troubleshooting. It will spam your chat. Please use only on request for short time!")
 
 
 -----------------------------------------------------------------------------
