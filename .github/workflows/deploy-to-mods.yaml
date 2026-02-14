@@ -46,7 +46,7 @@ jobs:
           echo "ZIP_FULL_NAME=${addon_name}-${version}.zip" >> $GITHUB_ENV
       - name: Create addon file
         run: |
-          cat ${{ github.workspace }}/${{ env.ORIG_NAME }}.addon.template | envsubst > ${{ github.workspace }}/${{ env.ORIG_NAME }}/${{ env.TEMP_NAME_OVERRIDE }}.addon
+          cat ${{ github.workspace }}/${{ env.TEMP_NAME_OVERRIDE }}.addon.template | envsubst > ${{ github.workspace }}/${{ env.TEMP_NAME_OVERRIDE }}/${{ env.TEMP_NAME_OVERRIDE }}.addon
           cat ${{ github.workspace }}/${{ env.ORIG_NAME }}/${{ env.TEMP_NAME_OVERRIDE }}.addon
       - name: Create ZIP archive
         run: |
