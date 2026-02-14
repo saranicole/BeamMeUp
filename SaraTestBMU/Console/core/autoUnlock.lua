@@ -403,7 +403,7 @@ end
 function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging)
   local BMU_createTable = BMU.createTable
   local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
-	if not zoneRecordList or #zoneRecordList == 0 then
+	if not zoneRecordList or (zoneRecordList and #zoneRecordList == 0) then
 		local overlandZoneIds = {}
 		local cleanZoneList = {}
 		-- add all overlandZoneIds to a new table
