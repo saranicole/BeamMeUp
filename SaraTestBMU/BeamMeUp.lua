@@ -744,7 +744,7 @@ local function OnAddOnLoaded(eventCode, addOnName)
     if (appName ~= addOnName) then return end
 	EM:UnregisterForEvent(appName, EVENT_ADD_ON_LOADED)
 
-	if not (GetDisplayName() == "@thisbeaurielle" or GetDisplayName() == "@thisbesaranicole" or GetDisplayName() == "@Saranicole1980") then
+	if not (GetDisplayName() == "@thisbeaurielle" or GetDisplayName() == "@thisbesaranicole" or GetDisplayName() == "@Saranicole1980" or GetDisplayName() == "@Nekron1138" or GetDisplayName() == "@Camnelius") then
 	  d("SaraTestBMU: This plugin is a testing ground only.  Please uninstall.")
 	  return
 	end
