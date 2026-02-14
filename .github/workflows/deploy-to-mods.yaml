@@ -79,5 +79,5 @@ jobs:
           BNET_PASSWORD: ${{ secrets.BNET_PASSWORD }}
           addon_id: ${{ vars.ADDON_ID }}
           version: ${{ env.ADDON_VERSION }}
-          zip_file: "${{ github.workspace }}/${{ env.ORIG_NAME }}/${{ env.ZIP_FULL_NAME }}"
+          zip_file: "${{ github.workspace }}/${{ env.ZIP_FULL_NAME }}"
           release_notes_file: latest_changes.md
