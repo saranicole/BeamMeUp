@@ -52,6 +52,8 @@ jobs:
         run: |
           REPO_FOLDER=${{ github.workspace }}/${{ env.TEMP_NAME_OVERRIDE }}
           TMP_FOLDER="/tmp/${{ env.TEMP_NAME_OVERRIDE }}"
+          ls -la $TMP_FOLDER
+          rm -rf "$TMP_FOLDER"
 
           # Define the path to the ignore pattern file
           ignore_file=".build-ignore"
