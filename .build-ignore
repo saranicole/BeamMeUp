@@ -1,2 +1,5 @@
 .git
 .git/*
+info
+info/*
+info/exclude
