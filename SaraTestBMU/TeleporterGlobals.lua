@@ -2294,7 +2294,7 @@ function BMU.maxGuildMembersOnline()
   for i = 1, GetNumGuilds() do
     local guildId = GetGuildId(i)
     local totalGuildMembers = BMU.getGuildMembersCached(guildId, i)
-    if max > #totalGuildMembers then
+    if #totalGuildMembers > max then
       max = #totalGuildMembers
     end
   end

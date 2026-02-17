@@ -29,7 +29,7 @@ BMU.uwData = BMU.uwData or {
 local BMU_uwData = BMU.uwData
 
 local guildByGuildType = "guildbyguild"
-local guildByGuildObj = {  numJumps = 0 }
+local guildByGuildObj = {  numJumps = 0, completedZones = {} }
 
 local zone_stories = ZONE_STORIES_KEYBOARD
 if BMU.IsNotKeyboard() then
@@ -248,20 +248,15 @@ function addon:ProceedAutoUnlock(nextPlayer)
 		-- Note: multiple wayshrine can be discovered at once
 		BMU_uwData.unlockedWayshrines = allUnlockedWayshrines - BMU_uwData.discoveredWayshrinesBefore
 
-		-- check if the zone is now complete
-		d("BMU_uwData.totalWayshrines")
-		d(BMU_uwData.totalWayshrines)
-		d("allUnlockedWayshrines")
-		d(allUnlockedWayshrines)
-		if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
-			-- just finish
-			provider.progress = var_AUTOUNLOCK_PROGRESS_COMPLETE
-			self:FinishedAutoUnlock("wayshrinesComplete")
-			return
-		end
-
 		-- get all travel options
 		if BMU_uwData.loopType ~= guildByGuildType then
+      -- check if the zone is now complete
+      if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
+        -- just finish
+        provider.progress = var_AUTOUNLOCK_PROGRESS_COMPLETE
+        self:FinishedAutoUnlock("wayshrinesComplete")
+        return
+      end
       local list = BMU_createTable({index=8, fZoneId=BMU_uwData.zoneId, dontDisplay=true})
 
       if #list ~= 0 or list[1].displayName ~= "" then
@@ -308,6 +303,9 @@ function addon:ProceedAutoUnlock(nextPlayer)
       -- finish, no open player found
       self:FinishedAutoUnlock("finished")
     else
+      if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
+        guildByGuildObj.completedZones[BMU_uwData.zoneId] = true
+      end
       zo_callLater(function()
         self:StartAutoUnlockLoopGuildByGuild()
       end, var_AUTOUNLOCK_COOLDOWN)
@@ -428,14 +426,18 @@ function addon:StartAutoUnlockLoopGuildByGuild()
     local guildIndex = guildByGuildObj.guildIndex or 1
     local guildId = GetGuildId(guildIndex)
     local members = BMU_getGuildMembersCached(guildId, guildIndex)
-    local maxMembers = guildByGuildObj.maxMembers or BMU_maxGuildMembersOnline()
+    local maxMembers = guildByGuildObj.maxMembers
+    if maxMembers == nil then
+     maxMembers = BMU_maxGuildMembersOnline()
+    end
     if memberIndex > maxMembers then
       memberIndex = 1
+      maxMembers = BMU_maxGuildMembersOnline()
     end
     local alreadyJumpedTo = guildByGuildObj.alreadyJumpedTo or {}
     for mIndex = memberIndex, #members do
       local e = members[mIndex]
-      if e.displayName ~= GetDisplayName() and alreadyJumpedTo[e.displayName] ~= e.zoneId then
+      if e.displayName ~= GetDisplayName() and alreadyJumpedTo[e.displayName] ~= e.zoneId and not guildByGuildObj.completedZones[e.zoneId] then
         -- do my own thing
         if validateTravel(e.zoneId) then
           d(GetGuildName(guildId).. ": "..e.displayName.." in "..e.zoneName)
@@ -459,9 +461,9 @@ function addon:StartAutoUnlockLoopGuildByGuild()
     if guildIndex > GetNumGuilds() then
       guildIndex = 1
     end
-    guildByGuildObj.maxMembers = memberIndex
+    guildByGuildObj.maxMembers = maxMembers
     guildByGuildObj.guildIndex = guildIndex
-    guildByGuildObj.memberIndex = memberIndex
+    guildByGuildObj.memberIndex = memberIndex + 1
     guildByGuildObj.alreadyJumpedTo = alreadyJumpedTo
     self:checkStalled()
   end
