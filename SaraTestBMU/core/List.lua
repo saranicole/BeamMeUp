@@ -305,7 +305,8 @@ function BMU.startAutoUnlock(zoneId, loopType, loopZoneList)
 			totalSteps = #list, -- store #list and update only if the new number is higher than before
 			loopType = loopType, -- can be nil
 			loopZoneList = loopZoneList, -- can be nil
-			gainedXP = 0
+			gainedXP = 0,
+      isChatLogging = isChatLogging or false,
 		}
 
 		-- unregiter existing event for furniture count
