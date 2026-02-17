@@ -87,41 +87,48 @@ local colorGreen 							= "green"
 local colorRed 								= "red"
 local fontPattern							= "%s|$(KB_%s)|%s"
 local textPattern 							= "%s: %d   %s: %d   %s: %d   %s: %d   %s: %d   %s: %d   %s: %d   %s: %d"
---Subtypes
-local subType_Clue 							= "clue"
-local subType_Treasure 						= "treasure"
---Survey type
-local subType_Surveys						= "Surveys"
-local subType_Alchemist 					= "alchemist"
-local subType_Enchanter 					= "enchanter"
-local subType_Woodworker 					= "woodworker"
-local subType_Blacksmith 					= "blacksmith"
-local subType_Clothier 						= "clothier"
-local subType_Jewelry 						= "jewelry"
-local surveyTypes 							= {subType_Alchemist, subType_Enchanter, subType_Woodworker, subType_Blacksmith, subType_Clothier, subType_Jewelry}
-local surveyTypeNames                		= {GetString(SI_ITEMTYPEDISPLAYCATEGORY14), GetString(SI_ITEMTYPEDISPLAYCATEGORY15), GetString(SI_ITEMTYPEDISPLAYCATEGORY12), GetString(SI_ITEMTYPEDISPLAYCATEGORY10), GetString(SI_ITEMTYPEDISPLAYCATEGORY11), GetString(SI_ITEMTYPEDISPLAYCATEGORY13)}
-local surveyTypeTextures					= { "surveyTypeAlchemy", "surveyTypeEnchanting", "surveyTypeWoodworker", "surveyTypeBlacksmith", "surveyTypeClothier", "surveyTypeJewelry" }
 local appendixCurrentOfMaxStrPattern 		= " (%d/%d)"
+
+local BMU_SOURCE_INDEX_ALL = BMU.SOURCE_INDEX_ALL
+
+--Subtypes
+local clueData = teleporterVars.clueData
+local subTypeClue                 = clueData.clueTypes[1] --"clue"
+--Treasure
+local treasureData = teleporterVars.treasureData
+local treasureTypes = treasureData.treasureTypes
+local treasureTypeTextures = treasureData.treasureTypeTextures
+local treaureType_Treasure = treasureTypes[1]
+local subType_Treasure 						= treaureType_Treasure
+--Survey type
+local surveyData = teleporterVars.surveyData
+local surveyTypes = surveyData.surveyTypes
+local surveyTypeNames = surveyData.surveyTypeNames
+local surveyTypeTextures = surveyData.surveyTypeTextures
+local surveyTypesHeader = surveyData.surveyTypesHeader
+local subType_Surveys						= surveyTypesHeader
+local subType_Alchemist 					= surveyTypes[1]
+local subType_Blacksmith 					= surveyTypes[2]
+local subType_Clothier 						= surveyTypes[3]
+local subType_Enchanter 					= surveyTypes[4]
+local subType_Jewelry 						= surveyTypes[5]
+local subType_Woodworker 					= surveyTypes[6]
 local maxSurveyTypes                 		= #surveyTypes --Currently 6: Alchemist, Enchanter, Woodworker, Blacksmith, Clothier, Jewelry. Add the new entries to table surveyTypes to increase this if new survey types get added (new crafting profession types that got surveys)
 --Lead types
-local subType_Leads 						= "leads"
-local leadType_scryable 					= "srcyable"
-local leadType_scried 						= "scried"
-local leadType_completed 					= "completed"
-local leadTypes 							= { leadType_scryable , leadType_scried,  leadType_completed }
-local leadTypeNames							= {GetString(SI_ANTIQUITY_SCRYABLE), GetString(SI_ANTIQUITY_SUBHEADING_IN_PROGRESS), GetString(SI_SCREEN_NARRATION_ACHIEVEMENT_EARNED_ICON_NARRATION) .. " (" .. GetString(SI_ANTIQUITY_LOG_BOOK) .. ")"}
-local leadTypeTextures						= { "leadTypeScryable", "leadTypeScried", "leadTypeCompleted" }
+local leadsData = teleporterVars.leadsData
+local leadTypes = leadsData.leadTypes
+local leadTypeNames = leadsData.leadTypeNames
+local leadTypeTextures = leadsData.leadTypeTextures
+local leadTypesHeader = leadsData.leadTypesHeader
+local subType_Leads 						= leadTypesHeader
 local maxAntiquityTypes						= #leadTypes --Currently 3: Scryable, In progress, Completed (Codex)
 --Dungeon types
-local subType_Dungeons						= "dungeons"
-local dungeonType_endlessDungeon			= "showEndlessDungeons"
-local dungeonType_soloArena					= "showArenas"
-local dungeonType_groupArena				= "showGroupArenas"
-local dungeonType_trial						= "showTrials"
-local dungeonType_groupDungeon				= "showDungeons"
-local dungeonTypes 							= { dungeonType_endlessDungeon , dungeonType_soloArena,  dungeonType_groupArena, dungeonType_trial, dungeonType_groupDungeon }
-local dungeonTypeNames						= { BMU_SI_Get(SI_TELE_UI_TOGGLE_ENDLESS_DUNGEONS), BMU_SI_Get(SI_TELE_UI_TOGGLE_ARENAS), BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_ARENAS), BMU_SI_Get(SI_TELE_UI_TOGGLE_TRIALS), BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_DUNGEONS)}
-local dungeonTypeTextures					= { "endlessDungeon" ,"arena", "groupArena", "trial", "groupDungeon" }
+local dungeonsData = teleporterVars.dungeonsData
+local dungeonTypes = dungeonsData.dungeonTypes
+local dungeonTypeNames = dungeonsData.dungeonTypeNames
+local dungeonTypeTextures = dungeonsData.dungeonTypeTextures
+local dungeonTypesHeader = dungeonsData.dungeonTypesHeader
+local subType_Dungeons						= dungeonTypesHeader
 local maxDungeonTypes						= #dungeonTypes --Currently 5: Endless dungeon, Solo Arena, Group Arena, Trial, Group dungeon
 
 --Lookup for the table to loop for checkboxes of the type
@@ -145,7 +152,7 @@ local BMU_chatButtonTex, teleporterWin_appTitle, teleporterWin_Main_Control, tel
 	teleporterWin_SearchBG_Player, teleporterWin_Searcher_Zone_Placeholder, teleporterWin_Searcher_Zone, teleporterWin_Main_Control_RefreshTexture,
 	teleporterWin_Main_Control_portalToAllTexture, teleporterWin_Main_Control_SettingsTexture, teleporterWin_Main_Control_PTFTexture,
 	teleporterWin_Main_Control_OwnHouseTexture, teleporterWin_Main_Control_QuestTexture, teleporterWin_Main_Control_ItemTexture, BMU_counterPanel,
-	teleporterWin_Main_Control_OnlyYourzoneTexture, teleporterWin_Main_Control_DelvesTexture, teleporterWin_Main_Control_DungeonTexture,
+	teleporterWin_Main_Control_OnlyYourzoneTexture, teleporterWin_Main_Control_DelvesTexture, teleporterWin_Main_Control_DungeonTexture
 
 -------functions (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateContextMenuEntrySurveyAll, BMU_updateContextMenuEntryAntiquityAll,
@@ -157,9 +164,9 @@ local BMU_getItemTypeIcon, BMU_getDataMapInfo, BMU_OpenTeleporter, BMU_updateCon
 
 --BMU functions
 local BMU_RefreshMainMenuPatternStr = "BMU_Refresh%sMainMenu"
-local refreshLeadsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Leads")
-local refreshSurveysMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Surveys")
-local refreshDungeonsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, "Dungeons")
+local refreshLeadsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, 		leadTypesHeader)
+local refreshSurveysMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, 	surveyTypesHeader)
+local refreshDungeonsMainMenuEventStr = string_format(BMU_RefreshMainMenuPatternStr, 	dungeonTypesHeader)
 
 local BMU_ThrottledUpdate = BMU.ThrottledUpdate
 
@@ -2097,13 +2104,6 @@ local function SetupUI()
   teleporterWin_Searcher_Zone:SetDimensions(105*scale,25*scale)
   teleporterWin_Searcher_Zone:SetResizeToFitDescendents(false)
   teleporterWin_Searcher_Zone:SetFont(BMU.font1)
-
-  teleporterWin.Searcher_Zone = CreateControlFromVirtual("Teleporter_Searcher_Player_EDITBOX1",  teleporterWin_Main_Control, "ZO_DefaultEditForBackdrop")
-  teleporterWin.Searcher_Zone:SetParent(teleporterWin_Main_Control)
-  teleporterWin.Searcher_Zone:SetSimpleAnchorParent(140*scale,-10*scale)
-  teleporterWin.Searcher_Zone:SetDimensions(105*scale,25*scale)
-  teleporterWin.Searcher_Zone:SetResizeToFitDescendents(false)
-  teleporterWin.Searcher_Zone:SetFont(BMU.font1)
   
   -- Placeholder
   teleporterWin_Searcher_Zone_Placeholder = wm:CreateControl("TTeleporter_Searcher_Player_EDITBOX1_Placeholder", teleporterWin_Searcher_Zone, CT_LABEL)
@@ -2264,6 +2264,7 @@ local function SetupUI()
 
   --------------------------------------------------------------------------------------------------------------------
   -- "Port to Friends House" Integration
+  --------------------------------------------------------------------------------------------------------------------
   teleporterWin_Main_Control_PTFTexture = wm:CreateControl(nil, teleporterWin_Main_Control, CT_TEXTURE)
   teleporterWin_Main_Control_PTFTexture = teleporterWin_Main_Control_PTFTexture
   teleporterWin_Main_Control_PTFTexture:SetDimensions(50*scale, 50*scale)
@@ -2293,10 +2294,10 @@ local function SetupUI()
 			teleporterWin_Main_Control_PTFTextureCtrl:SetTexture(BMU_textures.ptfHouseBtnOver)
 		end)
 
-		teleporterWin_Main_Control.PTFTexture:SetHandler("OnMouseExit", function(self)
-			BMU:tooltipTextEnter(teleporterWin_Main_Control.PTFTexture)
+		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseExit", function(teleporterWin_Main_Control_PTFTextureCtrl)
+			BMU_tooltipTextEnter(BMU, teleporterWin_Main_Control_PTFTextureCtrl)
 			if BMU.state ~= BMU.indexListPTFHouses then
-				teleporterWin_Main_Control.PTFTexture:SetTexture(BMU_textures.ptfHouseBtn)
+				teleporterWin_Main_Control_PTFTextureCtrl:SetTexture(BMU_textures.ptfHouseBtn)
 			end
 		end)
 	else
@@ -2311,9 +2312,9 @@ local function SetupUI()
 		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseEnter", function(teleporterWin_Main_Control_PTFTextureCtrl)
 			BMU_tooltipTextEnter(BMU, teleporterWin_Main_Control_PTFTextureCtrl, BMU_SI_Get(SI_TELE_UI_BTN_PTF_INTEGRATION))
 		end)
-		
-		teleporterWin_Main_Control.PTFTexture:SetHandler("OnMouseExit", function(self)
-			BMU:tooltipTextEnter(teleporterWin_Main_Control.PTFTexture)
+
+		teleporterWin_Main_Control_PTFTexture:SetHandler("OnMouseExit", function(teleporterWin_Main_Control_PTFTextureCtrl)
+			BMU_tooltipTextEnter(BMU, teleporterWin_Main_Control_PTFTextureCtrl)
 		end)
 	end
 	  
@@ -2437,8 +2438,7 @@ local function SetupUI()
   local allDungeonFiltersEnabled = true	--Variable to toggle the dungeon filters submenu checkboxes all on/off if the submenu openingControl is clicked
   --Default value is false so next click will change all survey checkboxes to ON
   -- -^- INS251229 Baertram END 1
-  teleporterWin_Main_Control.ItemTexture:SetHandler("OnMouseUp", function(self, button)
-      BMU_ItemTexture = BMU_ItemTexture or teleporterWin_Main_Control.ItemTexture               --INS251229 Baertram
+  teleporterWin_Main_Control_ItemTexture:SetHandler("OnMouseUp", function(ctrl, button)
       BMU_updateCheckboxSurveyMap = BMU_updateCheckboxSurveyMap or BMU.updateCheckboxSurveyMap  --INS251229 Baertram
 	  BMU_updateCheckboxLeadsMap = BMU_updateCheckboxLeadsMap or BMU.updateCheckboxLeadsMap  --INS251229 Baertram
 	  BMU_checkCheckboxesCurrentStatus = BMU_checkCheckboxesCurrentStatus or BMU.checkCheckboxesCurrentStatus --INS260202 Baertram
@@ -2454,8 +2454,9 @@ local function SetupUI()
 
 	  ClearCustomScrollableMenu()
 	  if button == MOUSE_BUTTON_INDEX_RIGHT then
-		  ClearCustomScrollableMenu()
 		  -- show filter menu
+		  local surveySVTab = typeToSVTableName[subType_Surveys] --displayMaps
+		  local leadsSVTab = typeToSVTableName[subType_Leads] --displayAntiquityLeads
 
 		  -- Add submenu for antiquity leads
 		  -- Add submenu dynamically for all lead types: Each lead type = 1 filter checkbox
@@ -2466,7 +2467,7 @@ local function SetupUI()
 				  label = leadTypeName,
 				  callback = function(comboBox, itemName, item, checked, data)
 					  BMU.savedVarsChar[leadsSVTab][leadType] = checked
-					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 250, refreshLeadsMainMenu, comboBox)
+					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 150, refreshLeadsMainMenu, comboBox)
 				  end,
 				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 				  checked = function() return BMU.savedVarsChar[leadsSVTab][leadType] end,
@@ -2484,45 +2485,17 @@ local function SetupUI()
 			    function(comboBox, itemName, item, selectionChanged, oldItem)
 				  --d("Clicked Leads submenu openingControl")
 					  allLeadFiltersEnabled = not allLeadFiltersEnabled
+					  --Check if the current subfilter checkboxes are all in the state "allLeadFiltersEnabled" -> Toggle it "again" then
+					  allLeadFiltersEnabled = BMU_checkCheckboxesCurrentStatus(subType_Leads, allLeadFiltersEnabled)
 					  -- check all subTypes (1) or uncheck all subtypes (2)
 					  BMU_updateCheckboxLeadsMap(allLeadFiltersEnabled and 1 or 2)
-					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 250, refreshLeadsMainMenu, comboBox)
+					  BMU_ThrottledUpdate(refreshLeadsMainMenuEventStr, 150, refreshLeadsMainMenu, comboBox)
 			    end,
 				{ --additionalData
 					tooltip = BMU_SI_Get(SI_CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
 					closeOnSelect = false, --Keep the dropdown opened even if entry get's clicked
 					icon = function() return BMU_checkIfContextMenuIconShouldShow("antiquity") end,
 				}
-		  )
-
-			--[[
-		  AddCustomScrollableSubMenuEntry(GetString(SI_GAMEPAD_VENDOR_ANTIQUITY_LEAD_GROUP_HEADER), --INS251229 Baertram
-				  {
-					  {
-						  label = GetString(SI_ANTIQUITY_SCRYABLE),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU_savedVarsChar.displayAntiquityLeads.srcyable = checked
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU_savedVarsChar.displayAntiquityLeads.srcyable end,
-					  },
-					  {
-						  label = GetString(SI_ANTIQUITY_SUBHEADING_IN_PROGRESS),
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU_savedVarsChar.displayAntiquityLeads.scried = checked
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU_savedVarsChar.displayAntiquityLeads.scried end,
-					  },
-					  {
-						  label = GetString(SI_SCREEN_NARRATION_ACHIEVEMENT_EARNED_ICON_NARRATION) .. " (" .. GetString(SI_ANTIQUITY_LOG_BOOK) .. ")",
-						  callback = function(comboBox, itemName, item, checked, data)
-							  BMU_savedVarsChar.displayAntiquityLeads.completed = checked
-							  BMU_CreateTable_IndexListItems() end,
-						  entryType = LSM_ENTRY_TYPE_CHECKBOX,
-						  checked = function() return BMU_savedVarsChar.displayAntiquityLeads.completed end,
-					  },
-				  }, nil, nil, nil, 5
 		  )
 
 		  -- Clues
@@ -2532,7 +2505,7 @@ local function SetupUI()
 
 		  -- Treasure Maps
 		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, GetString(SI_SPECIALIZEDITEMTYPE100), BMU.savedVarsChar[surveySVTab], subType_Treasure, 	function() BMU_CreateTable_IndexListItems() end, nil, {
-				icon = function() return BMU_checkIfContextMenuIconShouldShow("treasureMap") end,
+				icon = function() return BMU_checkIfContextMenuIconShouldShow(treasureTypeTextures[1]) end,
 		  })
 
 		  -- All Survey Maps
@@ -2544,7 +2517,7 @@ local function SetupUI()
 				  label = surveyTypeName,
 				  callback = function(comboBox, itemName, item, checked, data)
 					  BMU.savedVarsChar[surveySVTab][surveyType] = checked
-					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 250, refreshSurveyMapMainAndSubMenu, comboBox)
+					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 150, refreshSurveyMapMainAndSubMenu, comboBox)
 				  end,
 				  entryType = LSM_ENTRY_TYPE_CHECKBOX,
 				  checked = function() return BMU.savedVarsChar[surveySVTab][surveyType] end,
@@ -2557,13 +2530,16 @@ local function SetupUI()
 			  surveyTypesSubmenuEntries[#surveyTypesSubmenuEntries+1] = surveyTypeSubmenuEntry
 		  end
 
-		  BMU_getContextMenuEntrySurveyAllAppendix = BMU_getContextMenuEntrySurveyAllAppendix or BMU.getContextMenuEntrySurveyAllAppendix --INS251229 Baertram
-		  BMU_numOfSurveyTypesChecked = BMU_numOfSurveyTypesChecked or BMU.numOfSurveyTypesChecked 										  --INS251229 Baertram
-		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, function() return BMU_updateContextMenuEntrySurveyAll() end, nil, nil,
-				  function(comboBox, itemName, item, checked, data)
+		  AddCustomScrollableSubMenuEntry(function() return BMU_updateContextMenuEntrySurveyAll() end, --INS251229 Baertram Survey filters
+				surveyTypesSubmenuEntries,
+			    function(comboBox, itemName, item, selectionChanged, oldItem)
+				  --d("Clicked Survey submenu openingControl")
+					  allSurveyFiltersEnabled = not allSurveyFiltersEnabled
+					  --Check if the current subfilter checkboxes are all in the state "allSurveyFiltersEnabled" -> Toggle it "again" then
+					  allSurveyFiltersEnabled = BMU_checkCheckboxesCurrentStatus(subType_Surveys, allSurveyFiltersEnabled)
 					  -- check all subTypes (1) or uncheck all subtypes (2)
 					  BMU_updateCheckboxSurveyMap(allSurveyFiltersEnabled and 1 or 2)
-					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 250, refreshSurveyMapMainAndSubMenu, comboBox)
+					  BMU_ThrottledUpdate(refreshSurveysMainMenuEventStr, 150, refreshSurveyMapMainAndSubMenu, comboBox)
 			    end,
 				{ --additionalData
 					tooltip = BMU_SI_Get(SI_CONSTANT_LSM_CLICK_SUBMENU_TOGGLE_ALL),
@@ -2577,11 +2553,21 @@ local function SetupUI()
 
 		  -- include bank items
 		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, GetString(SI_CRAFTING_INCLUDE_BANKED), BMU.savedVarsChar, "scanBankForMaps", function() BMU_CreateTable_IndexListItems() end, nil, {
-			  icon = function() return BMU_checkIfContextMenuIconShouldShow("bank") end,
+			  icon = function()
+				  local bankIconPath = BMU_checkIfContextMenuIconShouldShow("bank")
+				  if bankIconPath == nil then return end
+				  local bankIconTextureData = {
+					iconTexture = bankIconPath,
+					height = 18,
+					width = 24,
+					--iconTint = ZO_ColorDef:New(FFFFFF)...
+				  }
+				  return bankIconTextureData
+			  end,
 		  })
 
 		  -- enable/disable counter panel
-		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, GetString(SI_ENDLESS_DUNGEON_BUFF_TRACKER_SWITCH_TO_SUMMARY_KEYBIND), BMU.savedVarsChar, "displayCounterPanel", nil, nil, nil)
+		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, GetString(SI_ENDLESS_DUNGEON_BUFF_TRACKER_SWITCH_TO_SUMMARY_KEYBIND), BMU.savedVarsChar, "displayCounterPanel", function() BMU_CreateTable_IndexListItems() end, nil, nil)
 
 		  -- divider
 		  AddCustomScrollableMenuDivider()
@@ -2589,85 +2575,13 @@ local function SetupUI()
 		  -- make default tab
 		  addDynamicLSMContextMenuEntry(LSM_ENTRY_TYPE_CHECKBOX, BMU_SI_Get(SI_TELE_SETTINGS_DEFAULT_TAB), BMU.savedVarsChar, "defaultTab", nil, BMU.indexListItems, nil)
 
-		  ShowCustomScrollableMenu()
+		  ShowCustomScrollableMenu(ctrl, LSM_itemFilterContextMenuOptions)
 	  else
 		  BMU_CreateTable_IndexListItems()
-		  BMU.showNotification(true)
+		  BMU_showNotification(true)
 	  end
   end)
-  -- -v- INS251229 Baertram BEGIN 2 - Variables for the submenu OnMouseUp click handler -> Clicking the submenu opening controls toggles all checkboxes in the submenu to checked/unchecked
-  --[[
-  --Called from ZO_Menu_OnHide callback
-  local function cleanUpzo_MenuItemsSubmenuSpecialCallbacks()
---d("[BMU]cleanUpzo_MenuItemsSubmenuSpecialCallbacks")
-      if zo_IsTableEmpty(submenuIndicesToAddCallbackTo) or zo_IsTableEmpty(zo_MenuSubmenuItemsHooked) then return end
-      submenuIndicesToAddCallbackTo = {}
-      zo_MenuSubmenuItemsHooked = {}
-  end
 
-  --Check if LibCustomMenuSubmenu is shown and if any enabled and shown checkboxes are in the submenu, then change the clicked state of them
-  --> Called from clicking the ZO_Menu entry which opens the submenu
-  local function checkIfLibCustomMenuSubmenuShownAndToggleCheckboxes(itemCtrl, mouseButton, upInside)
---d("[BMU]checkIfLibCustomMenuSubmenuShownAndToggleCheckboxes-mouseButton: " .. tostring(mouseButton) .. ", upInside: " ..tostring(upInside))
-      --LibCustomMenuSubmenu got entries?
-      if not upInside or mouseButton ~= MOUSE_BUTTON_INDEX_LEFT or not libCustomMenuSubmenu or zo_MenuSubmenuItemsHooked[itemCtrl] == nil then return end
-      --Get the current state of the submenu (if not set yet it is assumed to be "all unchecked")
-      local checkboxesAtSubmenuNewState = checkboxesAtSubmenuCurrentState[itemCtrl] or false
-      --and invert it (on -> off / off -> on)
-      checkboxesAtSubmenuNewState = not checkboxesAtSubmenuNewState
-
-      --Check all child controls of the submenu for any checkbox entry and set the new state and calling the toggle function of the checkbox
-      for childIndex=1, libCustomMenuSubmenu:GetNumChildren(), 1 do
-        local childCtrl = libCustomMenuSubmenu:GetChild(childIndex)
---d(">found childCtrl: " ..tostring(childCtrl:GetName()))
-          --Child is a subMenuItem?
-          if childCtrl ~= nil then
-            local checkBox = childCtrl.checkbox
-            if childCtrl.IsHidden and childCtrl.IsMouseEnabled and not childCtrl:IsHidden() and childCtrl:IsMouseEnabled()
-                  and checkBox and checkBox.toggleFunction and zo_CheckButton_IsEnabled(checkBox)
-                  and childCtrl.GetName and zoPlainStrFind(childCtrl:GetName(), LCM_SubmenuEntryNamePrefix) ~= nil then
---d(">>set new state to: " ..tostring(checkboxesAtSubmenuNewState))
-              zo_CheckButton_SetCheckState(checkBox, (checkboxesAtSubmenuNewState == false and BSTATE_NORMAL) or BSTATE_PRESSED)
-              checkBox:toggleFunction(checkboxesAtSubmenuNewState)
-            end
-          end
-      end
-  end
-
-  --Add the PreHook for handler OnMouseUp, on the submenu opening ZO_Menu item control row
-  local function AddToggleAllSubmenuCheckboxEntriesCallback(submenuIndex)
-      --d("[BMU]AddToggleAllSubmenuCheckboxEntriesCallback-index: " .. tostring(submenuIndex))
-      if not submenuIndex then return end
-      local submenuItem = zo_Menu.items[submenuIndex]
-      local itemCtrl = submenuItem and submenuItem.item or nil
-      --d(">found the itemCtrl: " .. tostring(itemCtrl))
-      --Found the zo_Menu submenu opening control?
-      if not itemCtrl then return end
-      --Add the OnEffectivelyShown handler to the submenu opening control of zo_Menu (if not already in it)
-      if zo_MenuSubmenuItemsHooked[itemCtrl] ~= nil then return end
-      zo_MenuSubmenuItemsHooked[itemCtrl] = true
-      ZO_PreHookHandler(itemCtrl, "OnMouseUp", checkIfLibCustomMenuSubmenuShownAndToggleCheckboxes)
-  end
-
-  --Add a prehook to the OnMouseUp handler of the relevant submenu opening ZO_Menu controls (saved into table submenuIndicesToAddCallbackTo)
-   ZO_PostHook("ShowMenu", function(owner, initialRefCount, menuType)
-      owner = owner or moc()
-      menuType = menuType or MENU_TYPE_DEFAULT
---d("[BMU]ShowMenu-owner: " .. tostring(owner) .. "/" .. tostring(BMU_ItemTexture) .. "; menuType: " ..tostring(menuType))
-      --Check if the menu is our at the BMU panel's itemTexture, if it got entries, if special submenu items have been defined -> Else abort
-      if menuType ~= MENU_TYPE_DEFAULT or (owner == nil or owner ~= BMU_ItemTexture) or zo_IsTableEmpty(submenuIndicesToAddCallbackTo)
-              or next(zo_Menu.items) == nil then return end
-      zo_MenuSubmenuItemsHooked = {}
-      --Add the OnMouseUp handler to the submenu's "opening control" so clicking them will enable/disable (toggle) all the checkboxes inside the submenu
-      for _, indexToAddTo in ipairs(submenuIndicesToAddCallbackTo) do
-          AddToggleAllSubmenuCheckboxEntriesCallback(indexToAddTo)
-      end
-      --Called at zo_Menu_OnHide, and cleaned automatically at ClearMenu()
-      SetMenuHiddenCallback(cleanUpzo_MenuItemsSubmenuSpecialCallbacks)
-  end)
-  ]]
-  -- -^- INS251229 Baertram - END 2
-  
   teleporterWin_Main_Control.ItemTexture:SetHandler("OnMouseEnter", function(self)
 	-- set tooltip accordingly to the selected filter
 	local tooltip = ""
@@ -3362,7 +3276,7 @@ BMU_clearInputFields = BMU.clearInputFields
 function BMU.changeState(index)
 
 	BMU.printToChat("Changed - state: " .. tostring(index), BMU.MSG_DB)
-    
+
 	local teleporterWin = BMU.win
 
 	-- first disable all MouseOver
@@ -3381,34 +3295,34 @@ function BMU.changeState(index)
 	end
 	-- hide counter panel for related items tab
 	BMU_counterPanel:SetHidden(true)
-	
+
 	teleporterWin_Searcher_Player:SetHidden(false)
 
 	-- check new state
 	if index == BMU.indexListItems then
 		-- related Items
-		teleporterWin_Main_Control.ItemTexture:SetTexture(BMU_textures.relatedItemsBtnOver)
+		teleporterWin_Main_Control_ItemTexture:SetTexture(BMU_textures.relatedItemsBtnOver)
 		if BMU.savedVarsChar.displayCounterPanel then
 			BMU_counterPanel:SetHidden(false)
 		end
 	elseif index == BMU.indexListCurrentZone then
 		-- current zone
-		teleporterWin_Main_Control.OnlyYourzoneTexture:SetTexture(BMU_textures.currentZoneBtnOver)
+		teleporterWin_Main_Control_OnlyYourzoneTexture:SetTexture(BMU_textures.currentZoneBtnOver)
 	elseif index == BMU.indexListDelves then
 		-- current zone delves
-		teleporterWin_Main_Control.DelvesTexture:SetTexture(BMU_textures.delvesBtnOver)
+		teleporterWin_Main_Control_DelvesTexture:SetTexture(BMU_textures.delvesBtnOver)
 	elseif index == BMU.indexListSearchPlayer or index == BMU.indexListSearchZone then
 		-- serach by player name or zone name
-		teleporterWin.SearchTexture:SetTexture(BMU_textures.searchBtnOver)
+		teleporterWin_SearchTexture:SetTexture(BMU_textures.searchBtnOver)
 	elseif index == BMU.indexListQuests then
 		-- related quests
-		teleporterWin_Main_Control.QuestTexture:SetTexture(BMU_textures.questBtnOver)
+		teleporterWin_Main_Control_QuestTexture:SetTexture(BMU_textures.questBtnOver)
 	elseif index == BMU.indexListOwnHouses then
 		-- own houses
-		teleporterWin_Main_Control.OwnHouseTexture:SetTexture(BMU_textures.houseBtnOver)
+		teleporterWin_Main_Control_OwnHouseTexture:SetTexture(BMU_textures.houseBtnOver)
 	elseif index == BMU.indexListPTFHouses then
 		-- PTF houses
-		teleporterWin_Main_Control.PTFTexture:SetTexture(BMU_textures.ptfHouseBtnOver)
+		teleporterWin_Main_Control_PTFTexture:SetTexture(BMU_textures.ptfHouseBtnOver)
 	elseif index == BMU.indexListGuilds then
 		-- guilds
 		if teleporterWin_guildTexture then
@@ -3419,7 +3333,7 @@ function BMU.changeState(index)
 		teleporterWin_Main_Control_DungeonTexture:SetTexture(BMU_textures.soloArenaBtnOver)
 		teleporterWin_Searcher_Player:SetHidden(true)
 	end
-	
+
 	BMU.state = index
 end
 

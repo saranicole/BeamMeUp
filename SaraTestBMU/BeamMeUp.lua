@@ -27,8 +27,7 @@ if BMU_IsNotKeyboard() then
   worldMapZoneStoryFragment = WORLD_MAP_ZONE_STORY_GAMEPAD_FRAGMENT
 end
 
-local ClearCustomScrollableMenu 							= ClearCustomScrollableMenu
-
+local ClearCustomScrollableMenu 			= ClearCustomScrollableMenu --LSM
 --Other addon variables
 local BMU_LibZone = BMU.LibZone
 --BMU variables
@@ -43,8 +42,28 @@ local BMU_ZONE_CATEGORY_GRPARENA = BMU.ZONE_CATEGORY_GRPARENA
 local BMU_ZONE_CATEGORY_SOLOARENA = BMU.ZONE_CATEGORY_SOLOARENA
 local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
 
-----functions
---ZOs functions
+--Subtypes
+local clueData = teleporterVars.clueData
+local subTypeClue                 = clueData.clueTypes[1] --"clue"
+--Treasure
+local treasureData = teleporterVars.treasureData
+local treasureTypes = treasureData.treasureTypes
+local treaureType_Treasure = treasureTypes[1]
+--Survey type
+local surveyData = teleporterVars.surveyData
+local surveyTypes = surveyData.surveyTypes
+local subType_Alchemist 					= surveyTypes[1]
+local subType_Blacksmith 					= surveyTypes[2]
+local subType_Clothier 						= surveyTypes[3]
+local subType_Enchanter 					= surveyTypes[4]
+local subType_Jewelry 						= surveyTypes[5]
+local subType_Woodworker 					= surveyTypes[6]
+--Lead types
+local leadsData = teleporterVars.leadsData
+local leadTypes = leadsData.leadTypes
+local leadType_scryable 					= leadTypes[1]
+local leadType_scried 						= leadTypes[2]
+local leadType_completed 					= leadTypes[3]
 --BMU functions
 local BMU_SI_Get 							= SI.get
 local BMU_updatePosition					= BMU.updatePosition

@@ -24,6 +24,33 @@ local BMU_SI_Get = SI.get
 -- -^- INS251229 Baertram BEGIN 0
 
 
+-- constant values for the source
+local BMU_SOURCE_INDEX_ALL = 0
+BMU.SOURCE_INDEX_ALL = BMU_SOURCE_INDEX_ALL
+BMU.SOURCE_INDEX_GROUP = 1
+BMU.SOURCE_INDEX_FRIEND = 2
+BMU.SOURCE_INDEX_GUILD = {
+	[1] = 3,
+	[2] = 4,
+	[3] = 5,
+	[4] = 6,
+	[5] = 7,
+}
+BMU.SOURCE_INDEX_OWNHOUSES = 8 --INS Baertram 260206
+
+-- constant values for zone categorization
+BMU.ZONE_CATEGORY_UNKNOWN = 0
+BMU.ZONE_CATEGORY_DELVE = 1
+BMU.ZONE_CATEGORY_PUBDUNGEON = 2
+BMU.ZONE_CATEGORY_HOUSE = 3
+BMU.ZONE_CATEGORY_GRPDUNGEON = 4
+BMU.ZONE_CATEGORY_TRAIL = 5
+BMU.ZONE_CATEGORY_ENDLESSD = 6
+BMU.ZONE_CATEGORY_GRPZONES = 7
+BMU.ZONE_CATEGORY_GRPARENA = 8
+BMU.ZONE_CATEGORY_SOLOARENA = 9
+BMU.ZONE_CATEGORY_OVERLAND = 100
+
 BMU.win =   {
       Main_Control = {},
 }
@@ -40,6 +67,7 @@ BMU.var = {
   savedVariablesName	 = "BeamMeUp_SV",
   -------------------------------------
   allowedLanguages		= {de=true,en=true,fr=true,ru=true,es=true,pl=true,it=true,jp=true,br=true,kr=true,zh=true,}, --INS251229 Baertram
+  allowedLanguagesIndex = {[1]="None",[2]="en",[3]="de",[4]="fr",[5]="ru",[6]="jp",[7]="pl",[8]="es",[9]="it",[10]="br",[11]="kr",[12]="zh"}, --INS251229 Baertram
   fallbackLang			= "en",																		--INS251229 Baertram
   -------------------------------------
   controls              = {},
@@ -95,34 +123,136 @@ BMU.var = {
 -- -v- INS251229 Baertram BEGIN 1
 --Local reference variables of BMU - Performance improvement
 local teleporterVars = BMU.var
+--local allowedLanguages = teleporterVars.allowedLanguages
+local allowedLanguagesIndex = teleporterVars.allowedLanguagesIndex
+
+--Clues
+local clueTypesHeader = "clues"
+local subTypeClue                 = "clue"
+teleporterVars.clueData = {
+    clueTypes = {
+		subTypeClue,
+	},
+	clueTypesHeader = clueTypesHeader,
+	clueTypeNames = {},
+	clueTypeTextures = { "clue", },
+}
+--Survey data
+---Do not change the local strings: These are the relevant SavedVariable entry names!
+local surveyTypesHeader = "surveys"
+local subType_Alchemist 					= "alchemist"
+local subType_Blacksmith 					= "blacksmith"
+local subType_Clothier 						= "clothier"
+local subType_Enchanter 					= "enchanter"
+local subType_Jewelry 						= "jewelry"
+local subType_Woodworker 					= "woodworker"
+teleporterVars.surveyData = {
+    surveyTypes = {
+		subType_Alchemist,
+		subType_Blacksmith,
+		subType_Clothier,
+		subType_Enchanter,
+		subType_Jewelry,
+		subType_Woodworker,
+	},
+	surveyTypesHeader = surveyTypesHeader,
+	surveyTypeContainers = {
+		--ItemIds of survey containers
+		[subType_Alchemist] = 	{ 219853 },
+		[subType_Blacksmith] = 	{ 219849 },
+		[subType_Clothier] = 	{ 219850 },
+		[subType_Enchanter] = 	{ 219852 },
+		[subType_Jewelry] = 	{ 219854 },
+		[subType_Woodworker] = 	{ 219851 },
+	},
+	surveyTypeNames = {GetString(SI_ITEMTYPEDISPLAYCATEGORY14), GetString(SI_ITEMTYPEDISPLAYCATEGORY10), GetString(SI_ITEMTYPEDISPLAYCATEGORY11), GetString(SI_ITEMTYPEDISPLAYCATEGORY15), GetString(SI_ITEMTYPEDISPLAYCATEGORY13), GetString(SI_ITEMTYPEDISPLAYCATEGORY12)},
+	surveyTypeTextures = { "surveyTypeAlchemy", "surveyTypeBlacksmith", "surveyTypeClothier", "surveyTypeEnchanting", "surveyTypeJewelry", "surveyTypeWoodworker" },
+}
+--Leads
+---Do not change the local strings: These are the relevant SavedVariable entry names!
+local leadTypesHeader = "leads"
+local leadType_scryable 					= "srcyable"
+local leadType_scried 						= "scried"
+local leadType_completed 					= "completed"
+teleporterVars.leadsData = {
+	leadTypes = {
+		leadType_scryable,
+		leadType_scried,
+		leadType_completed,
+	},
+	leadTypesHeader = leadTypesHeader,
+	leadTypeNames = {GetString(SI_ANTIQUITY_SCRYABLE), GetString(SI_ANTIQUITY_SUBHEADING_IN_PROGRESS), GetString(SI_SCREEN_NARRATION_ACHIEVEMENT_EARNED_ICON_NARRATION) .. " (" .. GetString(SI_ANTIQUITY_LOG_BOOK) .. ")"},
+	leadTypeTextures = { "leadTypeScryable", "leadTypeScried", "leadTypeCompleted" },
+}
+--Dungeons
+---Do not change the local strings: These are the relevant SavedVariable entry names!
+local dungeonTypesHeader = "dungeons"
+local dungeonType_endlessDungeon			= "showEndlessDungeons"
+local dungeonType_soloArena					= "showArenas"
+local dungeonType_groupArena				= "showGroupArenas"
+local dungeonType_trial						= "showTrials"
+local dungeonType_groupDungeon				= "showDungeons"
+teleporterVars.dungeonsData = {
+	dungeonTypes = {
+		dungeonType_endlessDungeon,
+		dungeonType_soloArena,
+		dungeonType_groupArena,
+		dungeonType_trial,
+		dungeonType_groupDungeon,
+	},
+	dungeonTypesHeader = dungeonTypesHeader,
+	dungeonTypeNames = { BMU_SI_Get(SI_TELE_UI_TOGGLE_ENDLESS_DUNGEONS), BMU_SI_Get(SI_TELE_UI_TOGGLE_ARENAS), BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_ARENAS), BMU_SI_Get(SI_TELE_UI_TOGGLE_TRIALS), BMU_SI_Get(SI_TELE_UI_TOGGLE_GROUP_DUNGEONS)},
+	dungeonTypeTextures	= { "endlessDungeon" ,"arena", "groupArena", "trial", "groupDungeon" },
+}
+--Treasure maps
+local treaureType_Treasure = "treasure"
+local treasureTypesHeader = treaureType_Treasure
+teleporterVars.treasureData = {
+	treasureTypes = {
+		treaureType_Treasure,
+	},
+	treasureTypesHeader = treasureTypesHeader,
+	treasureTypeContainers = {
+		[treaureType_Treasure] = { 224681 }
+	},
+	treasureTypeTextures = { "treasureMap" }
+}
+
+
 local appNameAbbr = teleporterVars.appNameAbbr
 local BMU_colors = teleporterVars.color
+local BMU_colorNames = teleporterVars.colorNames
 local colorStrToColorCodes = {
-	["gray"] = BMU_colors.colTrash,
-	["yellow"] = BMU_colors.colYellow,
-	["blue"] = BMU_colors.colArcane,
-	["white"] = BMU_colors.colWhite,
-	["red"] = BMU_colors.colRed,
-	["gold"] = BMU_colors.colLegendary,
-	["green"] = BMU_colors.colGreen,
-	["orange"] = BMU_colors.colOrange,
-	["teal"] = BMU_colors.colBlue,
-	["dred"] = BMU_colors.colDarkRed,
-	["lgray"] = BMU_colors.colGray,
+	[BMU_colorNames[8]] = BMU_colors.colTrash,
+	[BMU_colorNames[11]] = BMU_colors.colYellow,
+	[BMU_colorNames[6]] = BMU_colors.colArcane,
+	[BMU_colorNames[2]] = BMU_colors.colWhite,
+	[BMU_colorNames[7]] = BMU_colors.colRed,
+	[BMU_colorNames[4]] = BMU_colors.colLegendary,
+	[BMU_colorNames[5]] = BMU_colors.colGreen,
+	[BMU_colorNames[1]] = BMU_colors.colOrange,
+	[BMU_colorNames[3]] = BMU_colors.colBlue,
+	[BMU_colorNames[10]] = BMU_colors.colDarkRed,
+	[BMU_colorNames[9]] = BMU_colors.colGray,
 }
 -- -^- INS251229 Baertram BEGIN 1
 
+--v- INS260127 Baertram
+local function getLibraries()
+	-- necessary libraries - Will be updated at EVENT_ADD_ON_LOADED again
+	BMU.LibZone = LibZone
+	BMU.LAM = LibAddonMenu2
+	BMU.LSM = LibScrollableMenu
 
--- necessary libraries
-BMU.LibZone = LibZone
-BMU.LAM = LibAddonMenu2
-
--- optional libraries
-BMU.LSC = LibSlashCommander
-BMU.LibSets = LibSets
-BMU.LibMapPing = LibMapPing2
-BMU.LCMB = LibChatMenuButton
-
+	-- optional libraries
+	BMU.LSC = LibSlashCommander
+	BMU.LibSets = LibSets
+	BMU.LibMapPing = LibMapPing2
+	BMU.LCMB = LibChatMenuButton
+	BMU.LCM = LibCustomMenu
+end
+BMU.GetLibraries = getLibraries
+getLibraries()
 
 --v- INS260127 Baertram
 --LibScrollableMenu options for contextMenus
@@ -211,6 +341,11 @@ BMU.MSG_FT = 1
 BMU.MSG_AD = 2
 BMU.MSG_UL = 3
 BMU.MSG_DB = 4
+
+-- Textures
+local textureStrPattern32 = "|t32:32:%s|t"
+local textureStrPattern24 = "|t24:24:%s|t"
+local textureStrPattern20 = "|t20:20:%s|t"
 
 -- Textures
 local BMU_textures = {

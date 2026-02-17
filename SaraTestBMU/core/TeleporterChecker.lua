@@ -19,7 +19,41 @@ local numberType = "number"
 local stringType = "string"
 local tableType = "table"
 --Other addon variables
+local BMU_LibZone = BMU.LibZone
 --BMU variables
+local BMU_indexListMain 					= BMU.indexListMain
+local BMU_indexListCurrentZone 				= BMU.indexListCurrentZone
+local BMU_indexListSearchPlayer 			= BMU.indexListSearchPlayer
+local BMU_indexListSearchZone 				= BMU.indexListSearchZone
+local BMU_indexListItems					= BMU.indexListItems
+local BMU_indexListDelves 					= BMU.indexListDelves
+local BMU_indexListZoneHidden				= BMU.indexListZoneHidden
+local BMU_indexListSource 					= BMU.indexListSource
+local BMU_indexListZone						= BMU.indexListZone
+local BMU_indexListQuests 					= BMU.indexListQuests
+local BMU_indexListOwnHouses				= BMU.indexListOwnHouses
+local BMU_indexListPTFHouses 				= BMU.indexListPTFHouses
+local BMU_indexListGuilds 					= BMU.indexListGuilds
+local BMU_indexListDungeons					= BMU.indexListDungeons
+
+local BMU_SOURCE_INDEX_FRIEND 				= BMU.SOURCE_INDEX_FRIEND
+local BMU_SOURCE_INDEX_GROUP   				= BMU.SOURCE_INDEX_GROUP
+local BMU_SOURCE_INDEX_GUILD     			= BMU.SOURCE_INDEX_GUILD
+local BMU_SOURCE_INDEX_OWNHOUSES 			= BMU.SOURCE_INDEX_OWNHOUSES
+
+local BMU_ZONE_CATEGORY_UNKNOWN = BMU.ZONE_CATEGORY_UNKNOWN
+local BMU_ZONE_CATEGORY_DELVE = BMU.ZONE_CATEGORY_DELVE
+local BMU_ZONE_CATEGORY_PUBDUNGEON = BMU.ZONE_CATEGORY_PUBDUNGEON
+local BMU_ZONE_CATEGORY_HOUSE = BMU.ZONE_CATEGORY_HOUSE
+local BMU_ZONE_CATEGORY_GRPDUNGEON = BMU.ZONE_CATEGORY_GRPDUNGEON
+local BMU_ZONE_CATEGORY_TRAIL = BMU.ZONE_CATEGORY_TRAIL
+local BMU_ZONE_CATEGORY_ENDLESSD = BMU.ZONE_CATEGORY_ENDLESSD
+local BMU_ZONE_CATEGORY_GRPZONES = BMU.ZONE_CATEGORY_GRPZONES
+local BMU_ZONE_CATEGORY_GRPARENA = BMU.ZONE_CATEGORY_GRPARENA
+local BMU_ZONE_CATEGORY_SOLOARENA = BMU.ZONE_CATEGORY_SOLOARENA
+local BMU_ZONE_CATEGORY_OVERLAND = BMU.ZONE_CATEGORY_OVERLAND
+
+
 local BMU_textures                          = BMU.textures
 local textureAcceptGreen = BMU_textures.acceptGreenStr
 local textureDeclineRed = BMU_textures.declineRedStr
@@ -42,6 +76,7 @@ local string = string
 local string_sub = string.sub
 local string_match = string.match
 local string_lower = string.lower
+local string_upper = string.upper
 local string_gsub = string.gsub
 local string_find = string.find
 local string_format = string.format
@@ -62,8 +97,10 @@ local BMU_colorizeText 						= BMU.colorizeText
 local BMU_changeState 						= BMU.changeState
 local BMU_isFavoriteZone 					= BMU.isFavoriteZone
 local BMU_isFavoritePlayer 					= BMU.isFavoritePlayer
+local BMU_updateRelatedItemsCounterPanel 	= BMU.updateRelatedItemsCounterPanel
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
+local BMU_LibZoneGivenZoneData
 --BMU functions
 local BMU_getParentZoneId, BMU_getMapIndex, BMU_categorizeZone, BMU_getCurrentZoneId, BMU_isBlacklisted, BMU_checkOnceOnly,
 	  BMU_has_value, BMU_has_value_special, BMU_getExistingEntry, BMU_removeExistingEntry, BMU_addInfo_1, BMU_addInfo_2,
@@ -392,7 +429,7 @@ function BMU.createTable(args)
 				-- save displayName
 				consideredPlayers[e.displayName] = true
 				-- do some formating stuff
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU.SOURCE_INDEX_GUILD[i])
+				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
 
 				-- second big filter level
 				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
@@ -1036,9 +1073,9 @@ function BMU.getColorizedPublicDungeonAchievementText(overlandZoneId, publicDung
 		-- local name, _, _, _, completed, _, _ = GetAchievementInfo(achievmentId)
 		local completed = IsAchievementComplete(achievmentId)
 		if completed then
-			return BMU.textures.acceptGreen .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
+			return textureAcceptGreen .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
 		else
-			return BMU.textures.declineRed .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
+			return textureDeclineRed .. "  " .. BMU_formatName(GetZoneNameById(publicDungeonZoneId))
 		end
 	end
 end
@@ -1055,15 +1092,15 @@ function BMU.createPublicDungeonAchiementInfo(overlandZoneId, onlyPublicDungeonZ
 				table_insert(info, publicDungeonAchvText)
 			end
 
--- add alternative zone name (second language) if feature active (see translation array)
-function BMU.getZoneNameSecondLanguage(zoneId)
-	-- check if enabled
-	if BMU.savedVarsAcc.secondLanguage ~= 1 then
-		local language = BMU.dropdownSecLangChoices[BMU.savedVarsAcc.secondLanguage]
-		local localizedZoneIdData = BMU.LibZoneGivenZoneData[language]
-		if localizedZoneIdData == nil then return nil end
-		local localizedZoneName = localizedZoneIdData[zoneId]
-		if localizedZoneName == nil or type(localizedZoneName) ~= stringType then return nil end
+		-- for all public dungeons of the zone
+		else
+			for publicDungeonZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons[overlandZoneId].publicDungeonsAchievements) do
+				local publicDungeonAchvText = BMU_getColorizedPublicDungeonAchievementText(overlandZoneId, publicDungeonZoneId)
+				if publicDungeonAchvText then
+					table_insert(info, publicDungeonAchvText)
+				end
+			end
+		end
 
 		-- add header and return info
 		if #info > 0 then
@@ -2221,9 +2258,9 @@ function BMU.createTableHouses()
 
 	BMU_changeState(BMU_indexListOwnHouses)
 	local resultList = {}
-
 	local ownedHouses = {}
-	if BMU_IsNotKeyboard() then
+
+  if BMU_IsNotKeyboard() then
     ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
   else
     ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
@@ -2231,13 +2268,9 @@ function BMU.createTableHouses()
 
 	for _, house in pairs(ownedHouses) do
 		local houseEntry   = BMU_createBlankRecord()
-		if BMU_IsNotKeyboard() then
-		  houseId = house:GetReferenceId()
-    else
-      houseId = house.houseId
-		end
+		houseId = house.houseId or house:GetReferenceId()
 		houseEntry.houseId = houseId
-		if IsPrimaryHouse(houseId) then
+		if IsPrimaryHouse(house.houseId) then
 			houseEntry.prio              = 1
 			houseEntry.textColorZoneName = colorGold
 		else
@@ -2258,15 +2291,15 @@ function BMU.createTableHouses()
 		houseEntry.nickName             = BMU_formatName(GetCollectibleNickname(houseEntry.collectibleId))
 		houseEntry.zoneName             = BMU_formatName(houseEntry.zoneNameUnformatted, BMU.savedVarsAcc.formatZoneName)
 
-		_, _, entry.houseIcon = GetCollectibleInfo(entry.collectibleId)
-		entry.houseBackgroundImage = GetHousePreviewBackgroundImage(entry.houseId)
-		entry.houseTooltip = {entry.zoneName, "\"" .. entry.nickName .. "\"", entry.parentZoneName, "", "", "|t75:75:" .. entry.houseIcon .. "|t", "", "", entry.houseCategoryType}
+		_, _, houseEntry.houseIcon      = GetCollectibleInfo(houseEntry.collectibleId)
+		houseEntry.houseBackgroundImage = GetHousePreviewBackgroundImage(houseEntry.houseId)
+		houseEntry.houseTooltip         = { houseEntry.zoneName, "\"" .. houseEntry.nickName .. "\"", houseEntry.parentZoneName, "", "", "|t75:75:" .. houseEntry.houseIcon .. "|t", "", "", houseEntry.houseCategoryType}
 
 		-- add house furniture count to tooltip
 		local currentFurnitureCount_LII = savedVarsServ.houseFurnitureCount_LII[houseEntry.houseId]
 		if currentFurnitureCount_LII ~= nil then
-			local tooltipFurnitureCount = GetString(SI_HOUSINGFURNISHINGLIMITTYPE0) .. ": " .. currentFurnitureCount_LII .. "/" .. GetHouseFurnishingPlacementLimit(entry.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
-			table_insert(entry.houseTooltip, tooltipFurnitureCount)
+			local tooltipFurnitureCount = housingFurnishingLimit0Str .. ": " .. currentFurnitureCount_LII .. "/" .. GetHouseFurnishingPlacementLimit(houseEntry.houseId, HOUSING_FURNISHING_LIMIT_TYPE_LOW_IMPACT_ITEM)
+			table_insert(houseEntry.houseTooltip, tooltipFurnitureCount)
 		end
 
 		if BMU.savedVarsChar.houseNickNames then
@@ -2276,10 +2309,11 @@ function BMU.createTableHouses()
 			--houseEntry.zoneName = string_format(houseWithNicknameStrPattern, houseEntry.nickName, houseEntry.zoneName)  --For future feature INS BAERTRAM20260124
 		end
 
-		table_insert(resultList, entry)
+		table_insert(resultList, houseEntry)
 	end
 
 	-- sort
+	local houseCustomSorting = savedVarsServ.houseCustomSorting 							--INS251229 Baertram
 	table_sort(resultList, function(a, b)
 		-- prio
 		if a.prio ~= b.prio then

@@ -17,6 +17,13 @@ localization/$(language).lua
 
 ## Libraries - temp?
 ## "find -L lib -type f" is your friend
+lib/LibZone/LibZone_Constants.lua
+lib/LibZone/LibZone_Data.lua
+lib/LibZone/LibZone_AutoCompletion.lua
+lib/LibZone/LibZone_GeoData.lua
+lib/LibZone/LibZone.lua
+lib/LibZone/LibZone_Maps.xlsx
+lib/LibZone/LibZone.txt
 lib/LibScrollableMenu/LSM_API.lua
 lib/LibScrollableMenu/classes/buttonGroup_class.lua
 lib/LibScrollableMenu/classes/contextMenu_class.lua
@@ -34,13 +41,6 @@ lib/LibScrollableMenu/lang/ru.lua
 lib/LibScrollableMenu/lang/fr.lua
 lib/LibScrollableMenu/lang/es.lua
 lib/LibScrollableMenu/lang/de.lua
-lib/LibZone/LibZone_Constants.lua
-lib/LibZone/LibZone_Data.lua
-lib/LibZone/LibZone_AutoCompletion.lua
-lib/LibZone/LibZone_GeoData.lua
-lib/LibZone/LibZone.lua
-lib/LibZone/LibZone_Maps.xlsx
-lib/LibZone/LibZone.txt
 
 ## Globals / data sets
 GuildData.lua

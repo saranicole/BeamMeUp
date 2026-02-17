@@ -1,5 +1,16 @@
 local BMU = BMU --INS251229 Baertram Performancee gain, not searching _G for BMU each time again!
 
+local SI = BMU.SI
+local teleporterVars = BMU.var
+local appName = teleporterVars.appName
+local SVTabName = teleporterVars.savedVariablesName
+
+-- -v- INS251229 Baertram BEGIN 0
+--Performance reference
+----variables (defined now, as they were loaded before this file -> see manifest .txt)
+--ZOs variables
+local CM = CALLBACK_MANAGER
+local EM = EVENT_MANAGER
 local wm = WINDOW_MANAGER
 local SM = SCENE_MANAGER
 local worldMapManager = WORLD_MAP_MANAGER
@@ -1037,12 +1048,12 @@ local function _create_listview_row(listView, i)
     if message ~= nil then
 		-- RGB color code for mouse over feedback
 		local bmuGoldColorRGB = colorLegendary
-
-		list.ColumnNumberPlayers = wm:CreateControl(name .. "_NumberPlayers", list, CT_LABEL)
-		list.ColumnNumberPlayers:SetDimensions(35*scale, 20*scale)
-		list.ColumnNumberPlayers:SetFont(BMU.font1)
-		list.ColumnNumberPlayers:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
-		list.ColumnNumberPlayers:SetAnchor(0, list, 0, LEFT -40*scale, 50*scale)
+		local rowControlOfList_ColumnNumberPlayers = wm:CreateControl(name .. "_NumberPlayers", rowControlOfList, CT_LABEL)
+		rowControlOfList.ColumnNumberPlayers = rowControlOfList_ColumnNumberPlayers
+		rowControlOfList_ColumnNumberPlayers:SetDimensions(35*scale, 20*scale)
+		rowControlOfList_ColumnNumberPlayers:SetFont(BMU.font1)
+		rowControlOfList_ColumnNumberPlayers:SetHorizontalAlignment(TEXT_ALIGN_CENTER)
+		rowControlOfList_ColumnNumberPlayers:SetAnchor(0, rowControlOfList, 0, LEFT -40*scale, 50*scale)
 
 		--Create another control (Texture) for MouseOver interactions
 		local rowControlOfList_ColumnNumberPlayersTex = WINDOW_MANAGER:CreateControl(name .. "_NumberPlayersOver", rowControlOfList_ColumnNumberPlayers, CT_TEXTURE)
@@ -1053,7 +1064,6 @@ local function _create_listview_row(listView, i)
 		-- set rgb color instead of texture
 		rowControlOfList_ColumnNumberPlayersTex:SetColor(bmuGoldColorRGB:UnpackRGBA())
 		rowControlOfList_ColumnNumberPlayersTex:SetAlpha(0)
-
 
 
 		-- COLUMN PLAYER NAME
@@ -1085,10 +1095,11 @@ local function _create_listview_row(listView, i)
 
 
 		-- COLUMN ZONE NAME
-		list.ColumnZoneName = wm:CreateControl(name .. "_Zone", list, CT_LABEL)
-		list.ColumnZoneName:SetDimensions(240*scale, 25*scale)
-		list.ColumnZoneName:SetFont(BMU.font1)
-		list.ColumnZoneName:SetAnchor(0, list, 0, LEFT + 165*scale, 50*scale)
+		local rowControlOfList_ColumnZoneName = wm:CreateControl(name .. "_Zone", rowControlOfList, CT_LABEL)
+		rowControlOfList.ColumnZoneName = rowControlOfList_ColumnZoneName
+		rowControlOfList_ColumnZoneName:SetDimensions(240*scale, 25*scale)
+		rowControlOfList_ColumnZoneName:SetFont(BMU.font1)
+		rowControlOfList_ColumnZoneName:SetAnchor(0, rowControlOfList, 0, LEFT + 165*scale, 50*scale)
 
 		-- Create another control (Texture) for Mouse interaction
 		local rowControlOfList_ColumnZoneNameTex = WINDOW_MANAGER:CreateControl(name .. "_ZoneOver", rowControlOfList_ColumnZoneName, CT_TEXTURE)
@@ -1107,13 +1118,7 @@ local function _create_listview_row(listView, i)
 		rowControlOfList_portalToPlayerTex:SetMouseEnabled(true)
 		rowControlOfList_portalToPlayerTex:SetDrawLayer(2)
 
-		list.portalToPlayerTex = WINDOW_MANAGER:CreateControl(name .. "_TeleTex", list, CT_TEXTURE)
-		list.portalToPlayerTex:SetDimensions(45*scale, 45*scale)
-		list.portalToPlayerTex:SetAnchor(0, list, 0, LEFT + 400*scale, 41*scale) --490 ... 15
-		list.portalToPlayerTex:SetMouseEnabled(true)
-		list.portalToPlayerTex:SetDrawLayer(2)
-
-        return list
+        return rowControlOfList
     end
 end
 
@@ -1153,21 +1158,22 @@ local function _on_resize(listView)
 		viewable_lines_pct = BMU_round(listView.num_visible_lines / #listView.lines, 1) or 1
 	end
 
+	local slider = BMU_control_global_2.slider
     -- Can we see all the lines?
     if viewable_lines_pct >= 1.0 then
         slider:SetHidden(true)
     else
         -- If not, make sure the slider is showing.
-        BMU.control_global_2.slider:SetHidden(false)
-        self.control.slider:SetMinMax(0, self.num_hidden_lines)
+        slider:SetHidden(false)
+        slider:SetMinMax(0, listView.num_hidden_lines)
 
-		local totalListHeight = BMU.calculateListHeight()
+		local totalListHeight = BMU_calculateListHeight()
 		-- slider height = totalListHeight  *  percentage of visible lines
 		local sliderHeight = totalListHeight*viewable_lines_pct
 		-- while the list control is heigher than the visible space (because of the leaking backgroundin the bottom), we just cut a percentage
 		local listHeightForSlider = (0.82*totalListHeight) -- no need of scaling because totalListHeight is already scaled
 
-		BMU.control_global_2.slider:SetHeight(listHeightForSlider)
+		slider:SetHeight(listHeightForSlider)
         -- The more lines we can see, the bigger the slider should be.
         local tex = listView.slider_texture
         slider:SetThumbTexture(tex, tex, tex, SLIDER_WIDTH*BMU.savedVarsAcc.Scale, sliderHeight, 0, 0, 1, 1)
@@ -1187,10 +1193,7 @@ end
 
 
 local function _initialize_listview(self_listview, width, height, left, top)
-	BMU.control_global = self_listview.control
-	BMU_tooltipTextEnter = BMU_tooltipTextEnter or BMU.tooltipTextEnter
-    --local control = self_listview.control
-    local name = BMU.control_global:GetName()
+	BMU_formatGold = BMU_formatGold or BMU.formatGold
 
 	BMU.control_global = self_listview.control
 	local BMU_control_global = BMU.control_global
@@ -1200,55 +1203,62 @@ local function _initialize_listview(self_listview, width, height, left, top)
 
 	local BMU_SVAcc = BMU.savedVarsAcc
 	local scale = BMU_SVAcc.Scale
-	
+
 	local BMU_font2 = BMU.font2
 
     -- main control
-    BMU.control_global:SetDimensions(width, height)
-    BMU.control_global:SetHidden(true)
-    BMU.control_global:SetMouseEnabled(true)
-    BMU.control_global:SetClampedToScreen(true)
-	--BMU.control_global:SetResizeHandleSize(MOUSE_CURSOR_RESIZE_NS)
+    BMU_control_global:SetDimensions(width, height)
+    BMU_control_global:SetHidden(true)
+    BMU_control_global:SetMouseEnabled(true)
+    BMU_control_global:SetClampedToScreen(true)
+	--BMU_control_global:SetResizeHandleSize(MOUSE_CURSOR_RESIZE_NS)
 
 
 	-- create Backdrop / BackGround
-	BMU.control_global.bd = WINDOW_MANAGER:CreateControl(nil, BMU.control_global, CT_TEXTURE)
-	BMU.control_global.bd:SetMouseEnabled(true)
+	local BMU_control_global_bd = WINDOW_MANAGER:CreateControl(nil, BMU_control_global, CT_TEXTURE)
+	BMU_control_global.bd = BMU_control_global_bd
+	BMU_control_global_bd:SetMouseEnabled(true)
 	-- Users with Full-HD resolution run into problems because of the space!!
-	--BMU.control_global.bd:SetClampedToScreen(true)
+	--BMU_control_global_bd:SetClampedToScreen(true)
 
 	-- set position
-	BMU.control_global.bd:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, LEFT + BMU.savedVarsAcc.pos_x, BMU.savedVarsAcc.pos_y)
+	BMU_control_global_bd:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, LEFT + BMU_SVAcc.pos_x, BMU_SVAcc.pos_y)
 	-- set dimensions
-	BMU.control_global.bd:SetDimensions(BMU.control_global:GetWidth() + 110*scale, BMU.control_global:GetHeight() + 300*scale)
+	BMU_control_global_bd:SetDimensions(BMU_control_global:GetWidth() + 110*scale, BMU_control_global:GetHeight() + 300*scale)
 	-- set texture
-	BMU.control_global.bd:SetTexture("/esoui/art/miscellaneous/centerscreen_left.dds")
+	BMU_control_global_bd:SetTexture("/esoui/art/miscellaneous/centerscreen_left.dds")
 
 	-- !! anchor & place main control on backdrop !!
-	BMU.control_global:SetAnchor(CENTER, BMU.control_global.bd, nil, 15*scale)
+	BMU_control_global:SetAnchor(CENTER, BMU_control_global_bd, nil, 15*scale)
 	-- set moveable
-	BMU.control_global.bd:SetMovable(not BMU.savedVarsAcc.fixedWindow)
+	BMU_control_global_bd:SetMovable(not BMU_SVAcc.fixedWindow)
 	-- bring BMU window from draw layer 1 (default) to draw layer 2, to make sure that other addons and map scene are not in front of BMU window
-	BMU.control_global:SetDrawLayer(2)
+	--> Hint Baertram 260209: You should not change the drawLayer here and you should use the constants defined in the game not any fixed values like 1 or 2!
+	--> UI elements should stay on normal layer DL_CONTROL, unless they are context menus and other special UI elements.
+	--> 2 (DL_TEXT) means it is text and should draw above controls. So your addon is making other addon or vanilla text maybe draw wrong then if they overlay each other...
+	---> Rather use DrawLayer DL_CONTROLS and DrawLevel "a high value" to make the UI of BMU show above others on the same DrawLayer but still make text and other DL* > 1 draw above your UI as intended.
+	BMU_control_global:SetDrawLayer(DL_TEXT) --2
 
 
 	------------------------------------------------------------------------------------------------------------------------
     --------------------------------------------------------------------------------------------------------------------
 	-- Total & Statistics
+	local BMU_control_global_statisticGold = wm:CreateControl(name .. "_StatisticGold", BMU_control_global, CT_LABEL)
+	BMU_control_global.statisticGold = BMU_control_global_statisticGold
+	BMU_control_global_statisticGold:SetFont(BMU_font2)
+    BMU_control_global_statisticGold:SetAnchor(TOPLEFT, BMU_control_global, TOPLEFT, TOPLEFT-35*scale, 25*scale)
+	BMU_control_global_statisticGold:SetText(BMU_SI_Get(SI_TELE_UI_GOLD) .. " " .. BMU_formatGold(BMU_SVAcc.savedGold))
 
-	BMU.control_global.statisticGold = wm:CreateControl(name .. "_StatisticGold", BMU.control_global, CT_LABEL)
-	BMU.control_global.statisticGold:SetFont(BMU.font2)
-    BMU.control_global.statisticGold:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 25*scale)
-	BMU.control_global.statisticGold:SetText(BMU_SI_Get(SI_TELE_UI_GOLD) .. " " .. BMU.formatGold(BMU.savedVarsAcc.savedGold))
+	local BMU_control_global_statisticTotal = wm:CreateControl(name .. "_StatisticTotal", BMU_control_global, CT_LABEL)
+	BMU_control_global.statisticTotal = BMU_control_global_statisticTotal
+	BMU_control_global_statisticTotal:SetFont(BMU_font2)
+    BMU_control_global_statisticTotal:SetAnchor(TOPLEFT, BMU_control_global, TOPLEFT, TOPLEFT-35*scale, 45*scale)
+	BMU_control_global_statisticTotal:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL_PORTS) .. " " .. BMU_formatGold(BMU_SVAcc.totalPortCounter))
 
-	BMU.control_global.statisticTotal = wm:CreateControl(name .. "_StatisticTotal", BMU.control_global, CT_LABEL)
-	BMU.control_global.statisticTotal:SetFont(BMU.font2)
-    BMU.control_global.statisticTotal:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 45*scale)
-	BMU.control_global.statisticTotal:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL_PORTS) .. " " .. BMU.formatGold(BMU.savedVarsAcc.totalPortCounter))
-
-	BMU.control_global.total = wm:CreateControl(name .. "_Total", BMU.control_global, CT_LABEL)
-    BMU.control_global.total:SetFont(BMU.font2)
-    BMU.control_global.total:SetAnchor(TOPLEFT, BMU.control_global, TOPLEFT, TOPLEFT-35*scale, 65*scale)
+	local BMU_control_global_total = wm:CreateControl(name .. "_Total", BMU_control_global, CT_LABEL)
+	BMU_control_global.total = BMU_control_global_total
+    BMU_control_global_total:SetFont(BMU_font2)
+    BMU_control_global_total:SetAnchor(TOPLEFT, BMU_control_global, TOPLEFT, TOPLEFT-35*scale, 65*scale)
 
     -- slider
     --local tex = self_listview.slider_texture
@@ -1268,7 +1278,7 @@ local function _initialize_listview(self_listview, width, height, left, top)
     -- event: mwheel / scrolling
     BMU_control_global:SetHandler("OnMouseWheel", function(listView, delta)
         local new_value = clamp(self_listview.offset - delta, 0, self_listview.num_hidden_lines)
-		self.slider:SetValue(new_value)
+		listView.slider:SetValue(new_value)
 
 		-- if the mouse hovers over the list, we need to update the current tooltip
 		-- because the control under the mouse changed by scrolling
@@ -1278,8 +1288,9 @@ local function _initialize_listview(self_listview, width, height, left, top)
 		-- get control where the mouse is currently over
 		local control = moc()
 		-- show new tooltip
-		if control.tooltipText then
-			BMU_tooltipTextEnter(BMU, control, control.tooltipText)
+		local tooltipText = control.tooltipText
+		if tooltipText then
+			BMU_tooltipTextEnter(BMU, control, tooltipText)
 		end
     end)
 
@@ -1367,6 +1378,17 @@ function ListView:update()
 	BMU_createTable = BMU_createTable or BMU.createTable
 	BMU_clickOnTeleportToOwnHouseButton = BMU_clickOnTeleportToOwnHouseButton or BMU_clickOnTeleportToOwnHouseButton
 	BMU_tooltipTextEnter = BMU_tooltipTextEnter or BMU.tooltipTextEnter
+	BMU_clickOnOpenGuild = BMU_clickOnOpenGuild or BMU.clickOnOpenGuild
+	BMU_clickOnTeleportToPTFHouseButton = BMU_clickOnTeleportToPTFHouseButton or BMU.clickOnTeleportToPTFHouseButton
+	BMU_clickOnTeleportToPlayerButton = BMU_clickOnTeleportToPlayerButton or BMU.clickOnTeleportToPlayerButton
+	BMU_clickOnTeleportToDungeonButton = BMU_clickOnTeleportToDungeonButton or BMU.clickOnTeleportToDungeonButton
+	BMU_clickOnPlayerName = BMU_clickOnPlayerName or BMU.clickOnPlayerName
+	BMU_clickOnHouseName = BMU_clickOnHouseName or BMU.clickOnHouseName
+	BMU_clickOnEmptyZoneName = BMU_clickOnEmptyZoneName or BMU.clickOnEmptyZoneName
+	BMU_throttle = BMU_throttle or BMU.throttle
+	BMU_isFavoritePlayer = BMU_isFavoritePlayer or BMU.isFavoritePlayer
+	BMU_getHouseNameByHouseId = BMU_getHouseNameByHouseId or BMU.getHouseNameByHouseId
+	BMU_formatName = BMU_formatName or BMU.formatName
 
 	local tooltipDividerStr = BMU_textures.tooltipSeperatorStr
 
@@ -1374,13 +1396,13 @@ function ListView:update()
 	local showHouseNickNames = BMU.savedVarsChar.houseNickNames
 
 	local listControl = self.control
-	
+
 	-- suggestion by otac0n (Discord, 2022_10)
 	-- To make it robust, you may want to create a unique ID per ListView.  This assumes a singleton.
-	EM:UnregisterForUpdate("TeleportList_Update")
+	EM:UnregisterForUpdate(BMU_TeleporterListUpdateEventName)
 
-	local throttle_time = self.currently_resizing and 0.02 or 0.1
-    if BMU.throttle(self, 0.05) then
+	--local throttle_time = (isResizing and 0.02) or 0.1
+    if BMU_throttle(self, 0.05) then
 		-- suggestion by otac0n (Discord, 2022_10)
 		EM:RegisterForUpdate(BMU_TeleporterListUpdateEventName, 100, function() self:update() end)
         return
@@ -1391,6 +1413,7 @@ function ListView:update()
     if isResizing then
         _on_resize(self)
     end
+
 
     -- Clean the list !!!
 	local listLines = listControl.lines
@@ -1403,32 +1426,38 @@ function ListView:update()
 	local listLineBeforeTotalPortals = self.lines[totalPortals-1]
 	if firstRecord.displayName == "" and firstRecord.zoneNameClickable ~= true then
 		-- no entries, only no matches info
-		self.control.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. "0")
-	elseif #self.lines > 1 and self.lines[totalPortals-1].displayName == "" and self.lines[totalPortals-1].zoneNameClickable ~= true then
+		listControl.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. "0")
+	elseif #self.lines > 1 and listLineBeforeTotalPortals.displayName == "" and listLineBeforeTotalPortals.zoneNameClickable ~= true then
 		-- last entry is "maps in other zones"
-		self.control.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. totalPortals - 1)
+		listControl.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. totalPortals - 1)
 	else
 		-- normal
-		self.control.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. totalPortals)
+		listControl.total:SetText(BMU_SI_Get(SI_TELE_UI_TOTAL) .. " " .. totalPortals)
 	end
 
-
-    for i, list in pairs(self.control.lines) do
+    for i, rowControlOfList in pairs(listLines) do
         local message = self.lines[i + self.offset] -- self.offset = how much we've scrolled down
 		local tooltipTextPlayer = {}
 		local tooltipTextZone = {}
 		local tooltipTextLevel = ""
+		local isHouseEntry = false
 
         -- Only show messages that will be displayed within the control
-        if message ~= nil and i <= self.num_visible_lines then
-            if i >= self.num_visible_lines + 1 then return end;
-            if message == nil then return end;
+		local numVisibleLines = self.num_visible_lines
+        if message ~= nil and i <= numVisibleLines then
+            if i >= numVisibleLines + 1 then return end
 
-			if message.zoneName == nil then return end;
+			local messageZoneName = message.zoneName
+			if messageZoneName == nil then return end
+
+			local messageZoneNameClickable = message.zoneNameClickable
+			local messageZoneNameSecondLanguage = message.zoneNameSecondLanguage
+			local displayNameOfMessage = message.displayName
 
 			--------- player tooltip ---------
-			if message.displayName ~= "" and message.championRank then
-				list.ColumnPlayerNameTex:SetHidden(false)
+			local championRank = message.championRank
+			if displayNameOfMessage ~= "" and championRank then
+				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
 
 				-- set level text for player tooltip
 				if championRank >= 1 then
@@ -1449,8 +1478,8 @@ function ListView:update()
 				-- add favorite player text
 				local favSlot = BMU_isFavoritePlayer(displayNameOfMessage)
 				if favSlot then
-					table_insert(tooltipTextPlayer, BMU_textures.tooltipSeperatorStr)
-					table_insert(tooltipTextPlayer, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_FAVORITE_PLAYER) .. " " .. tos(favSlot), "gold"))
+					table_insert(tooltipTextPlayer, tooltipDividerStr)
+					table_insert(tooltipTextPlayer, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_FAVORITE_PLAYER) .. " " .. tos(favSlot), colorGold))
 				end
 
 				if 	#tooltipTextPlayer > 0 then
@@ -1462,17 +1491,33 @@ function ListView:update()
 						if message.playerNameClickable then
 							rowControlOfList.ColumnPlayerNameTex:SetAlpha(0.3)
 						end
-						BMU_tooltipTextEnter(BMU, list.ColumnPlayerNameTex, tooltipTextPlayer)
+						BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnPlayerNameTex, tooltipTextPlayer)
 						BMU.pauseAutoRefresh = true
 					end)
 					-- hide tooltip handler
-					list.ColumnPlayerNameTex:SetHandler("OnMouseExit", function(self) list.ColumnPlayerNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, list.ColumnPlayerNameTex) BMU.pauseAutoRefresh = false end)
+					rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseExit", function(self) rowControlOfList.ColumnPlayerNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnPlayerNameTex) BMU.pauseAutoRefresh = false end)
 					-- link tooltip text to control (for update on scroll / mouse wheel)
 					rowControlOfList.ColumnPlayerNameTex.tooltipText = tooltipTextPlayer
 				end
 
-				-- set handler for making favorite
-				list.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnPlayerName(button, message) end)
+				-- set handler for Player context menu
+				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", nil)
+				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnPlayerName(button, message) end)
+
+
+			--House right click menu
+			elseif message.houseId ~= nil then
+				isHouseEntry = true
+				--Clear the tooltip
+				disableTooltipAndResetOnMouseUp(rowControlOfList)
+				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnHouseName(button, message) end)
+				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
+			--Empty zone right click menu (no player in the zone)
+			elseif message.zoneId ~= nil then
+				--Clear the tooltip
+				disableTooltipAndResetOnMouseUp(rowControlOfList)
+				rowControlOfList.ColumnPlayerNameTex:SetHandler("OnMouseUp", function(self, button) BMU_clickOnEmptyZoneName(button, message) end)
+				rowControlOfList.ColumnPlayerNameTex:SetHidden(false)
 			else
 				-- make tooltip invisible (no DisplayName of Player -> no Tooltip)
 				disableTooltipAndResetOnMouseUp(rowControlOfList)
@@ -1591,7 +1636,6 @@ function ListView:update()
 							messageZoneName = messageZoneName .. BMU_getItemTypeIcon(itemType, BMU_round(16*scale, 0))
 						end
 					end
-
 					message.addedTotalItems = true
 				end
 
@@ -1632,9 +1676,9 @@ function ListView:update()
 				end
 				-- add instance info
 				if message.groupMemberSameInstance == true then
-					table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_SAME_INSTANCE), "green"))
+					table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_SAME_INSTANCE), colorGreen))
 				else
-					table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_DIFFERENT_INSTANCE), "red"))
+					table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_DIFFERENT_INSTANCE), colorRed))
 				end
 			end
 			------------------
@@ -1642,8 +1686,8 @@ function ListView:update()
 			-- Info if zone is favorite
 			local favSlot = BMU.isFavoriteZone(message.zoneId)
 			if favSlot then
-				table_insert(tooltipTextZone, BMU_textures.tooltipSeperatorStr)
-				table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_FAVORITE_ZONE) .. " " .. tos(favSlot), "gold"))
+				table_insert(tooltipTextZone, tooltipDividerStr)
+				table_insert(tooltipTextZone, BMU_colorizeText(BMU_SI_Get(SI_TELE_UI_FAVORITE_ZONE) .. " " .. tos(favSlot), colorGold))
 			end
 			------------------
 
@@ -1659,10 +1703,10 @@ function ListView:update()
 			-- Zone Name Column Tooltip & Button Controls
 			if messageZoneNameClickable or #tooltipTextZone > 0 then
 				-- set handler for map opening
-				list.ColumnZoneNameTex:SetHidden(false)
-				list.ColumnZoneNameTex:SetHandler("OnMouseEnter", function(self) list.ColumnZoneNameTex:SetAlpha(0.3) BMU_tooltipTextEnter(BMU, list.ColumnZoneNameTex, tooltipTextZone) BMU.pauseAutoRefresh = true end)
-				list.ColumnZoneNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnZoneName(button, message) end)
-				list.ColumnZoneNameTex:SetHandler("OnMouseExit", function(self) list.ColumnZoneNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, list.ColumnZoneNameTex) BMU.pauseAutoRefresh = false end)
+				rowControlOfList.ColumnZoneNameTex:SetHidden(false)
+				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseEnter", function(self) rowControlOfList.ColumnZoneNameTex:SetAlpha(0.3) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnZoneNameTex, tooltipTextZone) BMU.pauseAutoRefresh = true end)
+				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnZoneName(button, message) end)
+				rowControlOfList.ColumnZoneNameTex:SetHandler("OnMouseExit", function(self) rowControlOfList.ColumnZoneNameTex:SetAlpha(0) BMU_tooltipTextEnter(BMU, rowControlOfList.ColumnZoneNameTex) BMU.pauseAutoRefresh = false end)
 				-- link tooltip text to control (for update on scroll / mouse wheel)
 				rowControlOfList.ColumnZoneNameTex.tooltipText = tooltipTextZone
 			else
@@ -1684,9 +1728,16 @@ function ListView:update()
 			end
 			------------------
 
-			-- set text and color
-			list.ColumnPlayerName:SetText(BMU_colorizeText(message.displayName, message.textColorDisplayName))
-			list.ColumnZoneName:SetText(BMU_colorizeText(message.zoneName, message.textColorZoneName))
+			-- set text and color of the player name (or house)
+			if isHouseEntry then
+				--respect nicknames of houses
+				local houseName = BMU_getHouseNameByHouseId(message.houseId)
+				local houseNickName = (showHouseNickNames == true and BMU_formatName(GetCollectibleNickname(GetCollectibleIdForHouse((message.houseId))))) or ""
+				rowControlOfList.ColumnPlayerName:SetText(BMU_colorizeText((houseNickName ~= "" and houseNickName) or zo_strformat(formatStringFirstUppercase, houseName), "lime"))
+			else
+				rowControlOfList.ColumnPlayerName:SetText(BMU_colorizeText(displayNameOfMessage, message.textColorDisplayName))
+			end
+			rowControlOfList.ColumnZoneName:SetText(BMU_colorizeText(messageZoneName, message.textColorZoneName))
 
 			-- number of players
 			if message.numberPlayers then
@@ -1766,11 +1817,11 @@ function ListView:update()
 
 			if message.isOwnHouse and CanJumpToHouseFromCurrentLocation() and CanLeaveCurrentLocationViaTeleport() then
 				-- own house
-				list.portalToPlayerTex:SetHidden(false)
-				list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn)
-				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtnOver) BMU.pauseAutoRefresh = true end)
-				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(BMU_textures.houseBtn) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToOwnHouseButton(list.portalToPlayerTex, button, message) end)
+				rowControlOfList.portalToPlayerTex:SetHidden(false)
+				rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtn)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtnOver) BMU.pauseAutoRefresh = true end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(BMU_textures.houseBtn) BMU.pauseAutoRefresh = false end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToOwnHouseButton(rowControlOfList.portalToPlayerTex, button, message) end)
 
 			elseif message.isPTFHouse and CanJumpToHouseFromCurrentLocation() and CanLeaveCurrentLocationViaTeleport() then
 				-- "Port to Freind's House" integration
@@ -1794,27 +1845,19 @@ function ListView:update()
 
 			elseif message.isDungeon and CanLeaveCurrentLocationViaTeleport() and (CanJumpToPlayerInZone(message.zoneId) or select(2, CanJumpToPlayerInZone(message.zoneId)) == JUMP_TO_PLAYER_RESULT_SOLO_ZONE) then -- CanJumpToPlayerInZone is false for solo arenas -> check reason value
 				-- Dungeon Finder -> use nodeIndecies instead of travel to zoneId
-				list.portalToPlayerTex:SetHidden(false)
-				list.portalToPlayerTex:SetTexture(texture_normal)
-				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
-					list.portalToPlayerTex:SetTexture(texture_over)
-					if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
-						-- show tooltip with costs only if player is not at a wayshrine
-						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, message.difficultyText .. "\n" .. BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), "red"))
-					else
-						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, message.difficultyText)
-					end
-					BMU.pauseAutoRefresh = true end)
-				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, list.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToDungeonButton(list.portalToPlayerTex, button, message) end)
-
-			elseif message.displayName ~= "" and CanJumpToPlayerInZone(message.zoneId) and CanLeaveCurrentLocationViaTeleport() then
-				-- player
-				list.portalToPlayerTex:SetHidden(false)
-				list.portalToPlayerTex:SetTexture(texture_normal)
-				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self) list.portalToPlayerTex:SetTexture(texture_over) BMU.pauseAutoRefresh = true end)
-				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToPlayerButton(list.portalToPlayerTex, button, message) end)
+				rowControlOfList.portalToPlayerTex:SetHidden(false)
+				rowControlOfList.portalToPlayerTex:SetTexture(texture_normal)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
+				rowControlOfList.portalToPlayerTex:SetTexture(texture_over)
+				if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
+					-- show tooltip with costs only if player is not at a wayshrine
+					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, message.difficultyText .. "\n" .. BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), colorRed))
+				else
+					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, message.difficultyText)
+				end
+				BMU.pauseAutoRefresh = true end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToDungeonButton(rowControlOfList.portalToPlayerTex, button, message) end)
 
 			elseif displayNameOfMessage ~= "" and CanJumpToPlayerInZone(message.zoneId) and CanLeaveCurrentLocationViaTeleport() then
 				-- player
@@ -1826,25 +1869,25 @@ function ListView:update()
 
 			elseif BMU.savedVarsAcc.showZonesWithoutPlayers2 and displayNameOfMessage == "" and message.zoneWithoutPlayer and CanLeaveCurrentLocationViaTeleport() and message.zoneWayshrineDiscovered and message.zoneWayshrineDiscovered > 0 then
 				-- zones without players (fast travel for gold)
-				list.portalToPlayerTex:SetHidden(false)
-				list.portalToPlayerTex:SetTexture(texture_normal)
-				list.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
-					list.portalToPlayerTex:SetTexture(texture_over)
-					if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
-						-- show tooltip with costs only if player is not at a wayshrine
-						BMU_tooltipTextEnter(BMU, list.portalToPlayerTex, BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), "red"))
-					end
-					BMU.pauseAutoRefresh = true end)
-				list.portalToPlayerTex:SetHandler("OnMouseExit", function(self) list.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, list.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
-				list.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) BMU.clickOnTeleportToPlayerButton(list.portalToPlayerTex, button, message) end)
+				rowControlOfList.portalToPlayerTex:SetHidden(false)
+				rowControlOfList.portalToPlayerTex:SetTexture(texture_normal)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseEnter", function(self)
+				rowControlOfList.portalToPlayerTex:SetTexture(texture_over)
+				if GetInteractionType() ~= INTERACTION_FAST_TRAVEL then
+					-- show tooltip with costs only if player is not at a wayshrine
+					BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex, BMU_colorizeText(string_format(GetString(SI_TOOLTIP_RECALL_COST) .. "%d", GetRecallCost()), colorRed))
+				end
+				BMU.pauseAutoRefresh = true end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseExit", function(self) rowControlOfList.portalToPlayerTex:SetTexture(texture_normal) BMU_tooltipTextEnter(BMU, rowControlOfList.portalToPlayerTex) BMU.pauseAutoRefresh = false end)
+				rowControlOfList.portalToPlayerTex:SetHandler("OnMouseUp", function(self, button) if button ~= MOUSE_BUTTON_INDEX_LEFT then return end BMU_clickOnTeleportToPlayerButton(rowControlOfList.portalToPlayerTex, button, message) end)
 			else
 				-- no DisplayName -> no teleport possibility
 				rowControlOfList.portalToPlayerTex:SetHidden(true)
 			end
 
-            list:SetHidden(false)
-        else
-            list:SetHidden(true)
+				rowControlOfList:SetHidden(false)
+		else
+            rowControlOfList:SetHidden(true)
 		end
     end
 end
