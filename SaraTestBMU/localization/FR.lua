@@ -218,6 +218,7 @@ mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Commencer le déverrouillage automatique des oratoires ?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Après confirmation, BeamMeUp commencera à voyager vers tous les joueurs disponibles dans la zone courante. De cette façon, vous sauterez automatiquement d'oratoire en oratoire pour en déverrouiller autant que possible.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Parcours des zones ...",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "Guilde par guilde",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "Ordre aléatoire",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "Par taux d'oratoires inconnus",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "Par nombre de joueurs",

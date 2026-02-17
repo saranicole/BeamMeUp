@@ -218,6 +218,7 @@ mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Zacząć automatyczne odblokowanie kapliczek?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Użycie sprawia, że BeamMeUp rozpocznie serię szybkich podróży do wszystkich dostępnych graczy w aktualnej strefie. W ten sposób będziesz automatycznie skakać z jednej kapliczki do następnej by odblokować tak wiele jak to możliwe.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Zapętlone odblokowywanie map...",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "Gildia po gildii",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "losowo",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "wg. ilości nieodkrytych kapliczek",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "wg. ilości graczy",

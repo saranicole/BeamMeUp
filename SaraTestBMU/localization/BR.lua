@@ -222,6 +222,7 @@ mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
 ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Iniciar o desbloqueio automático de Santuários?",
 ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Ao confirmar, o BeamMeUp começará a viajar para todos os jogadores disponíveis na zona atual. Dessa forma, automaticamente você irá de um santuário para outro para desbloquear o máximo possível.",
 ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Percorrendo zonas...",
+["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "Guilda por guilda",
 ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "Percorrer aleatoriamente",
 ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "por Santuários Desconhecidos",
 ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "por número de jogadores",

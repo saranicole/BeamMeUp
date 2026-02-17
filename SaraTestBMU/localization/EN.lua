@@ -235,6 +235,7 @@ local stringsEN = {
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Start automatic wayshrine discovery?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "By confirming, BeamMeUp will start traveling to all available players in the current zone. This way you will automatically jump from wayshrine to wayshrine to discover as much as possible.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Looping over zones ...",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "guild by guild",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "shuffle randomly",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "by ratio of undiscovered wayshrines",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "by number of players",

@@ -218,6 +218,7 @@ mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "旅の祠の解除を自動で始めますか？",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "実行すると、BeamMeUpは現在のゾーンにいる全ての利用可能なプレーヤーのもとへ移動を開始します。旅の祠から旅の祠へ自動的にジャンプすることで、多くのロックを解除することができます。",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "ゾーンを巡回する…",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "ギルドごとに",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "ランダムシャッフル",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "旅の祠の未発見率",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "プレイヤー数",

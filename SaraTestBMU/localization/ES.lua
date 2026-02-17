@@ -218,6 +218,7 @@ mkstr(SI.TELE_KEYBINDING_WAYSHRINE_FAVORITE, "Wayshrine Favorite")
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Iniciar desbloqueo automatico de ermitas?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Al confirmar, BeamMeUp iniciara viaje a todos los jugadores disponibles en la zona. De esta manera automaticamente saltara usted de una ermita a otra ermita para desbloquear tantas como sean posibles.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Recorriendo zonas ...",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "Gremio por gremio",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "mezclar aleatoriamente",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "por proporción de Ermitas sin descubrir",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "por numero de Jugadores",

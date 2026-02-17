@@ -495,7 +495,7 @@ function BMU.createTable(args)
 					return a.prio < b.prio
 				end
 				-- category
-				if BMU.sortingByCategory[a.category] ~= BMU.sortingByCategory[b.category] then
+				if a.category and b.category and BMU.sortingByCategory[a.category] ~= BMU.sortingByCategory[b.category] then
 					return BMU.sortingByCategory[a.category] < BMU.sortingByCategory[b.category]
 				end
 				-- zoneName

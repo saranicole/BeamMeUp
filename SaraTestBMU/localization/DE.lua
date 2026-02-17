@@ -223,6 +223,7 @@ local strings = {
     [SI.TELE_DIALOG_AUTO_UNLOCK_TITLE] = "Automatische Wegschrein-Freischaltung starten?",
     [SI.TELE_DIALOG_AUTO_UNLOCK_BODY] = "Durch Bestätigen startet BeamMeUp die Schnellreise zu allen verfügbaren Spielern in der aktuellen Zone. Auf diese Weise springst du automatisch von Wegschrein zu Wegschrein, um so viele wie möglich zu entdecken.",
     [SI.TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION] = "Dauerschleife über die Zonen ...",
+    [SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0] = "Gilde für Gilde",
     [SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1] = "zufällig",
     [SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2] = "nach Verhältnis der unentdeckten Wegschreine",
     [SI.TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3] = "nach Anzahl der Spieler",

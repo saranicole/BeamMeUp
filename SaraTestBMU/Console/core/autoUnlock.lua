@@ -440,7 +440,6 @@ function addon:StartAutoUnlockLoopGuildByGuild()
       if e.displayName ~= GetDisplayName() and alreadyJumpedTo[e.displayName] ~= e.zoneId and not guildByGuildObj.completedZones[e.zoneId] then
         -- do my own thing
         if validateTravel(e.zoneId) then
-          d(GetGuildName(guildId).. ": "..e.displayName.." in "..e.zoneName)
           JumpToGuildMember(e.displayName)
           guildByGuildObj.numJumps = guildByGuildObj.numJumps + 1
           BMU_uwData.zoneId = e.zoneId
