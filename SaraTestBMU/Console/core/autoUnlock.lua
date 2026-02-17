@@ -2,8 +2,39 @@ local addon = IJA_BMU_GAMEPAD_PLUGIN
 
 local em = EVENT_MANAGER
 
-BMU.IsWayshrineDiscoveryActive = false
+local BMU_getGuildMembersCached = BMU.getGuildMembersCached
+local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
+local BMU_maxGuildMembersOnline = BMU.maxGuildMembersOnline
+local zoneId = GetZoneId(GetUnitZoneIndex("player"))
+local numWayshrines, numWayshrinesDiscovered = 0
+if zoneId then
+  numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+end
+BMU.uwData = BMU.uwData or {
+			isStarted = false,
+			dialogName = "BMU_AutoUnlockInProgress",
+			zoneId = zoneId,
+			fZoneName = formattedZoneName,
+			unlockedWayshrines = 0,
+			displayNameList = {},
+			totalWayshrines = numWayshrines,
+			discoveredWayshrinesBefore = numWayshrinesDiscovered,
+			totalSteps = {}, -- store #list and update only if the new number is higher than before
+			loopType = loopType, -- can be nil
+			loopZoneList = loopZoneList, -- can be nil
+			gainedXP = 0,
+			isChatLogging = isChatLogging or false,
+		}
 
+local BMU_uwData = BMU.uwData
+
+local guildByGuildType = "guildbyguild"
+local guildByGuildObj = {  numJumps = 0 }
+
+local zone_stories = ZONE_STORIES_KEYBOARD
+if BMU.IsNotKeyboard() then
+  zone_stories = ZONE_STORIES_GAMEPAD
+end
 
 local var_AUTOUNLOCK_PROGRESS_NONE = 0
 local var_AUTOUNLOCK_PROGRESS_ACTIVE = 1
@@ -26,9 +57,8 @@ mkstr(SI.TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY, "No more zones found to be di
 ]]
 local setup_function_map = {
 	[var_AUTOUNLOCK_PROGRESS_ACTIVE] = function(self)
-	  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 		local zoneId = GetZoneId(GetUnitZoneIndex("player"))
-		local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+		numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
 
 		local entry = {
 			dataType = NOTIFICATIONS_ALERT_DATA,
@@ -153,7 +183,7 @@ end
 
 function addon:AutoUnlockCancel()
 --	em:UnregisterForUpdate(updateName)
-  BMU.IsWayshrineDiscoveryActive = false
+  BMU_uwData.isStarted = false
 	self:UnregisterAutoUnlockEvents()
 end
 
@@ -179,55 +209,39 @@ end
 -- initialization
 function addon:StartAutoUnlock(zoneId, isChatLogging, loopType, loopZoneList)
   local BMU_createTable = BMU.createTable
-  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
-  local BMU_uwData = BMU.uwData
   BMU.IsWayshrineDiscoveryActive = true
 	provider.progress = var_AUTOUNLOCK_PROGRESS_ACTIVE
 	-- ensure unlock process is not already running
-	if not BMU_uwData or not BMU_uwData.isStarted then
-		local formattedZoneName = BMU.formatName(GetZoneNameById(zoneId), false)
-		local list = BMU_createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
-		-- check if list is empty
-		provider.formattedZoneName = formattedZoneName
-		local firstRecord = list[1]
-		if #list == 0 or not firstRecord or firstRecord.displayName == "" then
-			provider.progress = var_AUTOUNLOCK_PROGRESS_FAILED
-			return
-		end
 
-		-- get wayshrine discovery info for that current map
-		local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+	if not BMU_uwData or not BMU_uwData.isStarted or loopType ~= guildByGuildType then
+    local formattedZoneName = BMU.formatName(GetZoneNameById(zoneId), false)
+    local list = BMU_createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
+    -- check if list is empty
+    provider.formattedZoneName = formattedZoneName
+    local firstRecord = list[1]
+    if #list == 0 or not firstRecord or firstRecord.displayName == "" then
+      provider.progress = var_AUTOUNLOCK_PROGRESS_FAILED
+      return
+    end
 
-		-- set global variables
-		BMU.uwData = {
-			isStarted = true,
-			dialogName = "BMU_AutoUnlockInProgress",
-			zoneId = zoneId,
-			fZoneName = formattedZoneName,
-			unlockedWayshrines = 0,
-			displayNameList = {},
-			totalWayshrines = numWayshrines,
-			discoveredWayshrinesBefore = numWayshrinesDiscovered,
-			totalSteps = #list, -- store #list and update only if the new number is higher than before
-			loopType = loopType, -- can be nil
-			loopZoneList = loopZoneList, -- can be nil
-			gainedXP = 0,
-			isChatLogging = isChatLogging or false,
-		}
-		self:RegisterAutoUnlockEvents()
+    -- get wayshrine discovery info for that current map
+    BMU_uwData.totalSteps = #list
+  end
+  numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(BMU_uwData.zoneId)
+  BMU_uwData.totalWayshrines = numWayshrines
+  BMU_uwData.discoveredWayshrinesBefore = numWayshrinesDiscovered
+  BMU_uwData.isStarted = true
+  BMU_uwData.loopType = loopType
+  self:RegisterAutoUnlockEvents()
 
-		-- initiate fast travel loop
-		self:ProceedAutoUnlock()
-	end
+  -- initiate fast travel loop
+  self:ProceedAutoUnlock()
 end
 
 -- loop of the automatic teleportation
 function addon:ProceedAutoUnlock(nextPlayer)
   local BMU_createTable = BMU.createTable
-  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
-  local BMU_uwData = BMU.uwData
 	-- only proceed if feature is active
-
 	if BMU_uwData.isStarted then
 		local _, allUnlockedWayshrines = BMU_getZoneWayshrineCompletion(BMU_uwData.zoneId)
 
@@ -235,6 +249,10 @@ function addon:ProceedAutoUnlock(nextPlayer)
 		BMU_uwData.unlockedWayshrines = allUnlockedWayshrines - BMU_uwData.discoveredWayshrinesBefore
 
 		-- check if the zone is now complete
+		d("BMU_uwData.totalWayshrines")
+		d(BMU_uwData.totalWayshrines)
+		d("allUnlockedWayshrines")
+		d(allUnlockedWayshrines)
 		if allUnlockedWayshrines == BMU_uwData.totalWayshrines then
 			-- just finish
 			provider.progress = var_AUTOUNLOCK_PROGRESS_COMPLETE
@@ -243,57 +261,62 @@ function addon:ProceedAutoUnlock(nextPlayer)
 		end
 
 		-- get all travel options
-		local list = BMU_createTable({index=8, fZoneId=BMU_uwData.zoneId, dontDisplay=true})
+		if BMU_uwData.loopType ~= guildByGuildType then
+      local list = BMU_createTable({index=8, fZoneId=BMU_uwData.zoneId, dontDisplay=true})
 
-		if #list ~= 0 or list[1].displayName ~= "" then
-			-- re-calculate total steps in case new players come available during process
-			-- totalSteps = currentStep(#displayNameList) + number of players which are in list but not in displayNameList
-			BMU_uwData.totalSteps = #BMU_uwData.displayNameList
+      if #list ~= 0 or list[1].displayName ~= "" then
+        -- re-calculate total steps in case new players come available during process
+        -- totalSteps = currentStep(#displayNameList) + number of players which are in list but not in displayNameList
+        BMU_uwData.totalSteps = #BMU_uwData.displayNameList
 
-			-- shuffle list of players (sort randomly)
-			list = BMU.shuffle_table(list)
+        -- shuffle list of players (sort randomly)
+        list = BMU.shuffle_table(list)
 
-			for _, record in pairs(list) do
-				-- check list of players to which we traveled already
-				if record.displayName ~= "" and not BMU.has_value(BMU_uwData.displayNameList, record.displayName) then
-					-- open player
-					if not nextPlayer then
-						-- identify next player for jump if not already set
-						nextPlayer = record
-					end
-					-- count to determine the number of open players
-					BMU_uwData.totalSteps = BMU_uwData.totalSteps + 1
-					break
-				else
-					nextPlayer = nil
-				end
-			end
+        for _, record in pairs(list) do
+          -- check list of players to which we traveled already
+          if record.displayName ~= "" and not BMU.has_value(BMU_uwData.displayNameList, record.displayName) then
+            -- open player
+            if not nextPlayer then
+              -- identify next player for jump if not already set
+              nextPlayer = record
+            end
+            -- count to determine the number of open players
+            BMU_uwData.totalSteps = BMU_uwData.totalSteps + 1
+            break
+          else
+            nextPlayer = nil
+          end
+        end
 
-			self.nextPlayer = nextPlayer
-			if nextPlayer then
-				-- start travel
-				self:TryToJump()
-			--	BMU.PortalToPlayer(nextPlayer.displayName, nextPlayer.sourceIndexLeading, nextPlayer.zoneName, nextPlayer.zoneId, nextPlayer.category, false, false, false)
-				-- add player to list
-				table.insert(BMU_uwData.displayNameList, nextPlayer.displayName)
-				-- NOTE: handling of fast travel error in function BMU.FinishedAutoUnlock() in case of timeout
+        self.nextPlayer = nextPlayer
+        if nextPlayer then
+          -- start travel
+          self:TryToJump()
+        --	BMU.PortalToPlayer(nextPlayer.displayName, nextPlayer.sourceIndexLeading, nextPlayer.zoneName, nextPlayer.zoneId, nextPlayer.category, false, false, false)
+          -- add player to list
+          table.insert(BMU_uwData.displayNameList, nextPlayer.displayName)
+          -- NOTE: handling of fast travel error in function BMU.FinishedAutoUnlock() in case of timeout
 
-				zo_callLater(function()
-					if BMU.flagSocialErrorWhilePorting > 0 then
-						self:ProceedAutoUnlock(nextPlayer)
-					end
-				end, var_AUTOUNLOCK_COOLDOWN)
-				return
-			end
-		end
-		-- finish, no open player found
-		self:FinishedAutoUnlock("finished")
+          zo_callLater(function()
+            if BMU.flagSocialErrorWhilePorting > 0 then
+              self:ProceedAutoUnlock(nextPlayer)
+            end
+          end, var_AUTOUNLOCK_COOLDOWN)
+          return
+        end
+      end
+      -- finish, no open player found
+      self:FinishedAutoUnlock("finished")
+    else
+      zo_callLater(function()
+        self:StartAutoUnlockLoopGuildByGuild()
+      end, var_AUTOUNLOCK_COOLDOWN)
+    end
 	end
 end
 
 -- finalize auto unlock and show dialog
 function addon:FinishedAutoUnlock(reason)
-  local BMU_uwData = BMU.uwData
   BMU.IsWayshrineDiscoveryActive = false
 --	d( 'FinishedAutoUnlock', reason)
 	-- check if the timeout was caused by a fast travel error (loading screen)
@@ -366,11 +389,88 @@ function addon:FinishedAutoUnlock(reason)
 	end
 end
 
+local function isValueInTable(table, element)
+  for _, v in ipairs(table) do
+    if element == v then
+      return true
+    end
+  end
+return false
+end
+
+local function validateTravel(zoneId)
+  return not IsUnitInCombat("player") and
+    not isValueInTable({ 181, 584, 643 }, zoneId) and
+    CanLeaveCurrentLocationViaTeleport() and
+    not IsInCampaign() and
+    not IsUnitDead("player") and
+    CanJumpToPlayerInZone(zoneId) and
+    BMU.isZoneOverlandZone(zoneId)
+end
+
+
+function addon:checkStalled()
+  if BMU_uwData.isStarted then
+    if guildByGuildObj.prevJumps == guildByGuildObj.numJumps then
+      self:ProceedAutoUnlock()
+    end
+    guildByGuildObj.prevJumps = guildByGuildObj.numJumps
+  end
+end
+
+
+------------------------
+-- in the style of ThisIsTheWayshrine, goes guild by guild taking each player one at a time
+function addon:StartAutoUnlockLoopGuildByGuild()
+  if BMU_uwData.isStarted then
+    BMU_uwData.loopType = guildByGuildType
+    local memberIndex = guildByGuildObj.memberIndex or 1
+    local guildIndex = guildByGuildObj.guildIndex or 1
+    local guildId = GetGuildId(guildIndex)
+    local members = BMU_getGuildMembersCached(guildId, guildIndex)
+    local maxMembers = guildByGuildObj.maxMembers or BMU_maxGuildMembersOnline()
+    if memberIndex > maxMembers then
+      memberIndex = 1
+    end
+    local alreadyJumpedTo = guildByGuildObj.alreadyJumpedTo or {}
+    for mIndex = memberIndex, #members do
+      local e = members[mIndex]
+      if e.displayName ~= GetDisplayName() and alreadyJumpedTo[e.displayName] ~= e.zoneId then
+        -- do my own thing
+        if validateTravel(e.zoneId) then
+          d(GetGuildName(guildId).. ": "..e.displayName.." in "..e.zoneName)
+          JumpToGuildMember(e.displayName)
+          guildByGuildObj.numJumps = guildByGuildObj.numJumps + 1
+          BMU_uwData.zoneId = e.zoneId
+          if BMU_uwData.isChatLogging then
+            -- print summary into chat
+            BMU.printToChat(
+              string.format(GetGuildName(guildId), unlockProgress, BMU_uwData.fZoneName, tostring(unlockedWayshrinesString),
+                tostring(totalWayshrinesString), tostring(gainedXPString))
+              )
+          end
+          memberIndex = mIndex
+          break
+        end
+      end
+      alreadyJumpedTo[e.displayName] = e.zoneId
+    end
+    guildIndex = guildIndex + 1
+    if guildIndex > GetNumGuilds() then
+      guildIndex = 1
+    end
+    guildByGuildObj.maxMembers = memberIndex
+    guildByGuildObj.guildIndex = guildIndex
+    guildByGuildObj.memberIndex = memberIndex
+    guildByGuildObj.alreadyJumpedTo = alreadyJumpedTo
+    self:checkStalled()
+  end
+end
+
 ------------------------
 -- checks for zones that can be unlocked and picks a random one to start auto unlock
 function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
   local BMU_createTable = BMU.createTable
-  local BMU_getZoneWayshrineCompletion = BMU.getZoneWayshrineCompletion
 	local overlandZoneIds = {}
 	-- add all overlandZoneIds to a new table
 	for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
@@ -389,7 +489,7 @@ function addon:StartAutoUnlockLoopRandom(prevZoneId, loopType, isChatLogging)
 			local list = BMU_createTable({index=8, fZoneId=zoneId, noOwnHouses=true, dontDisplay=true})
 			-- check if list is empty
 			if #list > 0 and list[1] and list[1].displayName ~= "" then
-				local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
+				numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(zoneId)
 				if numWayshrinesDiscovered < numWayshrines then
 				  local unlocktimeout = 400
           if IsConsoleUI() then
@@ -417,7 +517,7 @@ function addon:StartAutoUnlockLoopSorted(zoneRecordList, loopType, isChatLogging
 				--table.insert(overlandZoneIds, overlandZoneId)
 				local resultList = BMU.createTable({index=8, fZoneId=overlandZoneId, noOwnHouses=true, dontDisplay=true})
 				if #resultList > 0 and resultList[1] and resultList[1].displayName ~= "" then
-					local numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(overlandZoneId)
+					numWayshrines, numWayshrinesDiscovered = BMU.getZoneWayshrineCompletion(overlandZoneId)
 					if numWayshrinesDiscovered < numWayshrines then
 						record = {}
 						record.zoneId = overlandZoneId

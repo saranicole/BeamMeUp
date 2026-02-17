@@ -170,6 +170,7 @@ local BMU_SI_Get 							= SI.get
 local BMU_colorizeText 						= BMU.colorizeText
 local BMU_printToChat 						= BMU.printToChat
 local BMU_getItemTypeIcon 					= BMU.getItemTypeIcon
+local BMU_getMapIndex               = BMU.getMapIndex
 
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
@@ -827,10 +828,10 @@ BMU_showDialogAutoUnlock = BMU.showDialogAutoUnlock
 -- 1. number of wayshrines that are located in the zone
 -- 2. number of discovered wayshrines that are located in the zone
 function BMU.getZoneWayshrineCompletion(zoneId)
-	BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
+	local BMU_getMapIndex = BMU_getMapIndex or BMU.getMapIndex
 	-- set the map to the correct one
 	local mapIndex = BMU_getMapIndex(zoneId)
-	if mapIndex ~= nil then
+	if mapIndex ~= nil and worldMapManager.globalPanel ~= nil then
 		-- switch to Tamriel and back to target map in order to reset any subzone or zoom
 		worldMapManager:SetMapByIndex(1)
 		worldMapManager:SetMapByIndex(mapIndex)
@@ -892,6 +893,10 @@ function BMU.PortalToPlayer(displayName, sourceIndex, zoneName, zoneId, zoneCate
 	local position = string.find(zoneName, "%(")
 	if position ~= nil then
 		zoneName = string.sub(zoneName, 1, position-2)
+	end
+
+	if zoneCategory == nil then
+    zoneCategory = BMU_ZONE_CATEGORY_OVERLAND
 	end
 
 	-- reset error flag

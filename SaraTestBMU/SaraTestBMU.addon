@@ -59,10 +59,12 @@ Console/core/listClassShared.lua
 Console/core/entryData.lua
 Console/core/categoryList.lua
 Console/core/telportList.lua
-Console/core/autoUnlock.lua
 Console/Settings.lua
 
 core/List.lua
+
+Console/core/autoUnlock.lua
+
 core/SettingsMenu.lua
 core/TeleAppUI.lua
 core/TeleSlashCommands.lua

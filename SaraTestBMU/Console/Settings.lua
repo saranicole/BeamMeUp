@@ -51,16 +51,17 @@ function CS.SetupOptionsMenu(index) --index == Addon name
          {
               type = LHAS.ST_CHECKBOX,
               label = BMU_SI_get(SI_TELE_SETTINGS_TOGGLE_DISCOVERY),
-              getFunction = function() return BMU.IsWayshrineDiscoveryActive end,
+              getFunction = function() return BMU.uwData.isStarted or false end,
               setFunction = function(value)
+                BMU.uwData.isStarted = value
                 if value then
-                  IJA_BMU_GAMEPAD_PLUGIN:StartAutoUnlockLoopRandom(nil, 'suffle', BMU_savedVarsAcc.autoUnlockChatLogging)
+                  IJA_BMU_GAMEPAD_PLUGIN:PrepareAutoUnlock(nil, true, "guildbyguild", nil)
                 else
                   IJA_BMU_GAMEPAD_PLUGIN:AutoUnlockCancel()
                 end
 
               end,
-			        default = BMU.IsWayshrineDiscoveryActive,
+			        default = BMU.uwData.isStarted or false,
 			           },
          {
               type = LHAS.ST_CHECKBOX,

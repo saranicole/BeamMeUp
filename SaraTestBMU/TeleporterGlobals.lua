@@ -2158,3 +2158,145 @@ function BMU.ThrottledUpdate(callbackName, timer, callback, ...)
     EVENT_MANAGER:UnregisterForUpdate(callbackName)
     EVENT_MANAGER:RegisterForUpdate(callbackName, timer, Update)
 end
+
+
+-- categorize zone and set category index
+function BMU.categorizeZone(zoneId)
+	-- just check against hashmap category list
+	local value = BMU.CategoryMap[zoneId]
+
+	if value ~= nil then
+		return value									-- category index
+	else
+		return BMU_ZONE_CATEGORY_UNKNOWN			-- category index (unknown)
+	end
+end
+
+
+-- return (geographical) parent zone id (if parent zone id can not be found -> parentZoneId = zoneId)
+function BMU.getParentZoneId(zoneId)
+	-- use LibZone function that already handles exceptions and returns true geographical parent zone
+	assert(BMU.LibZone, "BMU: LibZone is not loaded")
+
+	local parentZoneId = BMU.LibZone:GetZoneGeographicalParentZoneId(zoneId)
+
+	-- fallback: use API to get parent zone
+	if not parentZoneId or parentZoneId == 0 then
+		parentZoneId = GetParentZoneId(zoneId)
+	end
+
+	-- return zoneId if the parentZoneId can not be determined
+	if not parentZoneId or parentZoneId == 0 then
+		return zoneId
+	else
+		return parentZoneId
+	end
+end
+local BMU_getParentZoneId = BMU.getParentZoneId
+
+
+-- try to find map index by game or by own exceptions
+function BMU.getMapIndex(zoneId)
+	-- get map index by API (overland zones which are listed in the map list)
+	local mapIndex = GetMapIndexByZoneId(zoneId)
+
+	-- if zone is not a overland zone
+	if mapIndex == nil then
+		mapIndex = GetMapIndexByZoneId(BMU_getParentZoneId(zoneId))
+	end
+
+	-- in case the parent zone is also a sub zone (e.g. Asylum Sanctorium is in Brass Fortress is in Clockwork City)
+	if mapIndex == nil then
+		mapIndex = GetMapIndexByZoneId(BMU_getParentZoneId(BMU_getParentZoneId(zoneId)))
+	end
+
+	return mapIndex -- mapIndex can be nil
+end
+
+
+-- exception handling
+-- check if the zone belongs to another (main) zone which holds the map completion information
+-- returns the corresponding zoneId if the input zone is part of a zone realtionship
+function BMU.getMainZoneId(zoneId)
+	if zoneId == 1011 or zoneId == 1027 then
+		-- Summerset/Artaeum
+		return 1011
+	elseif zoneId == 1160 or zoneId == 1161 then
+		-- Blackreach/Western Skyrim
+		return 1160
+	elseif zoneId == 1207 or zoneId == 1208 then
+		-- Reach/Blackreach(Arkthzand)
+		return 1207
+	elseif zoneId == 1286 or zoneId == 1282 or zoneId == 1283 then
+		-- Deadlands/Fargrave(City)/The Shambles
+		return 1286
+	elseif zoneId == 1413 or zoneId == 1414 then
+		-- Telvanni Peninsula/Apocrypha
+		return 1413
+	else
+		return false
+	end
+end
+
+
+local BMU_GUILD_CACHE_TTL    = BMU.GUILD_CACHE_TTL or 5
+BMU.GuildCache = BMU.GuildCache or {}
+local BMU_GuildCache = BMU.GuildCache
+local function IsGuildCacheValid(guildId)
+    local cache = BMU_GuildCache[guildId]
+    if not cache then return false end
+    return (GetFrameTimeSeconds() - cache.timestamp) < BMU_GUILD_CACHE_TTL
+end
+
+
+local function GetGuildMemberStatusTable(guildId, guildIndex)
+    if IsGuildCacheValid(guildId) then
+        return BMU_GuildCache[guildId].members
+    end
+
+    local members    = {}
+    local e = {}
+
+    local numMembers = GetNumGuildMembers(guildId)
+
+    for j = 1, numMembers do
+        e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
+        e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
+        e.guildIndex = guildIndex
+        e.category = 1
+
+        if e.status ~= PLAYER_STATUS_OFFLINE then
+          table.insert(members, e)
+        end
+        e = {}
+    end
+
+    BMU_GuildCache[guildId] =
+    {
+        timestamp = GetFrameTimeSeconds(),
+        members   = members,
+    }
+    return members
+end
+
+function BMU.getGuildMembersCached(guildId, guildIndex)
+    local cache = BMU_GuildCache[guildId]
+    local now = GetGameTimeMilliseconds() / 1000
+    if cache and (now - cache.timestamp <= BMU_GUILD_CACHE_TTL) then
+        return cache.members
+    end
+    return GetGuildMemberStatusTable(guildId, guildIndex)
+end
+
+
+function BMU.maxGuildMembersOnline()
+  local max = 0
+  for i = 1, GetNumGuilds() do
+    local guildId = GetGuildId(i)
+    local totalGuildMembers = BMU.getGuildMembersCached(guildId, i)
+    if max > #totalGuildMembers then
+      max = #totalGuildMembers
+    end
+  end
+  return max
+end

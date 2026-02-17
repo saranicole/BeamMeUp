@@ -6,8 +6,7 @@ local SI = BMU.SI
 local portalPlayers = {}
 local TeleportAllPlayersTable = {}
 local allZoneIds              = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
-local BMU_GUILD_CACHE_TTL    = BMU.GUILD_CACHE_TTL or 5
-local BMU_GuildCache = BMU.GuildCache or {}
+local BMU_getGuildMembersCached = BMU.getGuildMembersCached
 
 -- -v- INS251229 Baertram BEGIN 0
 --Performance reference
@@ -35,6 +34,7 @@ local BMU_indexListOwnHouses				= BMU.indexListOwnHouses
 local BMU_indexListPTFHouses 				= BMU.indexListPTFHouses
 local BMU_indexListGuilds 					= BMU.indexListGuilds
 local BMU_indexListDungeons					= BMU.indexListDungeons
+local BMU_getMapIndex               = BMU.getMapIndex
 
 local BMU_SOURCE_INDEX_FRIEND 				= BMU.SOURCE_INDEX_FRIEND
 local BMU_SOURCE_INDEX_GROUP   				= BMU.SOURCE_INDEX_GROUP
@@ -98,6 +98,8 @@ local BMU_changeState 						= BMU.changeState
 local BMU_isFavoriteZone 					= BMU.isFavoriteZone
 local BMU_isFavoritePlayer 					= BMU.isFavoritePlayer
 local BMU_updateRelatedItemsCounterPanel 	= BMU.updateRelatedItemsCounterPanel
+local BMU_GetGuildMemberStatusTable = BMU.GetGuildMemberStatusTable
+local BMU_categorizeZone = BMU.categorizeZone
 
 ----variables (defined inline in code below, upon first usage, as they are still nil at this line)
 local BMU_LibZoneGivenZoneData
@@ -216,56 +218,6 @@ BMU_getCurrentZoneId = BMU.getCurrentZoneId
 -- filterSourceIndex: specific sourceIndex (filter the list according to that index e.g. guild1, or friends)
 -- dontResetSlider: flag if the slider/scroll bar should not be reset (reset to top of the list)
 -- noOwnHouses: flag if the owned houses shall not appear in result list
-
-local function Now()
-    return GetFrameTimeSeconds()
-end
-
-local function IsGuildCacheValid(guildId)
-    local cache = BMU_GuildCache[guildId]
-    if not cache then return false end
-    return (Now() - cache.timestamp) < BMU_GUILD_CACHE_TTL
-end
-
-
-function BMU.GetGuildMemberStatusTable(guildId, guildIndex)
-    if IsGuildCacheValid(guildId) then
-        return BMU_GuildCache[guildId].members
-    end
-
-    local members    = {}
-    local e = {}
-
-    local numMembers = GetNumGuildMembers(guildId)
-
-    for j = 1, numMembers do
-        e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
-        e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
-        e.guildIndex = guildIndex
-        if status ~= PLAYER_STATUS_OFFLINE then
-          table_insert(members, e)
-        end
-        e = {}
-    end
-
-    BMU_GuildCache[guildId] =
-    {
-        timestamp = Now(),
-        members   = members,
-    }
-    return members
-end
-local BMU_GetGuildMemberStatusTable = BMU.GetGuildMemberStatusTable
-
-function BMU.getGuildMembersCached(guildId, guildIndex)
-    local cache = BMU_GuildCache[guildId]
-    local now = GetGameTimeMilliseconds() / 1000
-    if cache and (now - cache.timestamp <= BMU_GUILD_CACHE_TTL) then
-        return cache.members
-    end
-    return BMU_GetGuildMemberStatusTable(guildId, guildIndex)
-end
-local BMU_getGuildMembersCached = BMU.getGuildMembersCached
 
 function BMU.createTable(args)
 	-- -v- INS251229 Baertram Local reference updates for functions further down below in the file
@@ -1150,27 +1102,7 @@ function BMU.getSetCollectionProgressString(zoneId, category, parentZoneId)
 		end
 		return itemCountSummaryStr .. ": " .. progressString
 	end
-end
-
-
--- try to find map index by game or by own exceptions
-function BMU.getMapIndex(zoneId)
-	-- get map index by API (overland zones which are listed in the map list)
-	local mapIndex = GetMapIndexByZoneId(zoneId)
-
-	-- if zone is not a overland zone
-	if mapIndex == nil then
-		mapIndex = GetMapIndexByZoneId(BMU_getParentZoneId(zoneId))
-	end
-
-	-- in case the parent zone is also a sub zone (e.g. Asylum Sanctorium is in Brass Fortress is in Clockwork City)
-	if mapIndex == nil then
-		mapIndex = GetMapIndexByZoneId(BMU_getParentZoneId(BMU_getParentZoneId(zoneId)))
-	end
-
-	return mapIndex -- mapIndex can be nil
-end
-BMU_getMapIndex = BMU.getMapIndex                                                      --INS251229 Baertram
+end                                                     --INS251229 Baertram
 
 
 function BMU.filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex)
@@ -1438,20 +1370,6 @@ function BMU.checkOnceOnly(activ, record)
 		return true
 	end
 end
-
-
--- categorize zone and set category index
-function BMU.categorizeZone(zoneId)
-	-- just check against hashmap category list
-	local value = BMU.CategoryMap[zoneId]
-
-	if value ~= nil then
-		return value									-- category index
-	else
-		return BMU_ZONE_CATEGORY_UNKNOWN			-- category index (unknown)
-	end
-end
-BMU_categorizeZone = BMU.categorizeZone
 
 
 -- connect survey and treasure maps from bags to port options and zones
@@ -2229,26 +2147,7 @@ end
 BMU_getDataMapInfo = BMU.getDataMapInfo
 
 
--- return (geographical) parent zone id (if parent zone id can not be found -> parentZoneId = zoneId)
-function BMU.getParentZoneId(zoneId)
-	-- use LibZone function that already handles exceptions and returns true geographical parent zone
-	assert(BMU_LibZone, "BMU: LibZone is not loaded")
 
-	local parentZoneId = BMU_LibZone:GetZoneGeographicalParentZoneId(zoneId)
-
-	-- fallback: use API to get parent zone
-	if not parentZoneId or parentZoneId == 0 then
-		parentZoneId = GetParentZoneId(zoneId)
-	end
-
-	-- return zoneId if the parentZoneId can not be determined
-	if not parentZoneId or parentZoneId == 0 then
-		return zoneId
-	else
-		return parentZoneId
-	end
-end
-BMU_getParentZoneId = BMU.getParentZoneId
 
 
 function BMU.createTableHouses()
@@ -3057,29 +2956,6 @@ function BMU.getZoneGuideDiscoveryInfo(zoneId, completionType)
 end
 
 
--- exception handling
--- check if the zone belongs to another (main) zone which holds the map completion information
--- returns the corresponding zoneId if the input zone is part of a zone realtionship
-function BMU.getMainZoneId(zoneId)
-	if zoneId == 1011 or zoneId == 1027 then
-		-- Summerset/Artaeum
-		return 1011
-	elseif zoneId == 1160 or zoneId == 1161 then
-		-- Blackreach/Western Skyrim
-		return 1160
-	elseif zoneId == 1207 or zoneId == 1208 then
-		-- Reach/Blackreach(Arkthzand)
-		return 1207
-	elseif zoneId == 1286 or zoneId == 1282 or zoneId == 1283 then
-		-- Deadlands/Fargrave(City)/The Shambles
-		return 1286
-	elseif zoneId == 1413 or zoneId == 1414 then
-		-- Telvanni Peninsula/Apocrypha
-		return 1413
-	else
-		return false
-	end
-end
 local BMU_getMainZoneId = BMU.getMainZoneId  	--INS251229 Baertram
 
 -- get completion info for specific zone and completionType
