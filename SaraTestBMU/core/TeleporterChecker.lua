@@ -1505,7 +1505,7 @@ function BMU.syncWithItems(p_portalPlayers)															--CHG251229 Baertram R
 		end
 
 		if not ZO_IsTableEmpty(leadsFound) then
-			table_sort(leadsFound)
+			--table_sort(leadsFound) --> error thrown table.sort with tabl < table not working
 			--Check found leads, in order of quality
 			for leadQuality=ANTIQUITY_QUALITY_ITERATION_BEGIN, ANTIQUITY_QUALITY_ITERATION_END, 1 do
 				local leadsPerQuality = leadsFound[leadQuality]
