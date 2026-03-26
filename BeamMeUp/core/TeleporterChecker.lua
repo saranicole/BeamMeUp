@@ -5,6 +5,7 @@ local teleporterVars = BMU.var --INS251229 Baertram
 local SI = BMU.SI
 local portalPlayers = {}
 local TeleportAllPlayersTable = {}
+
 local allZoneIds = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
 
 -- -v- INS251229 Baertram BEGIN 0
@@ -252,6 +253,8 @@ function BMU.createTable(args)
 	BMU_getParentZoneId = BMU_getParentZoneId or BMU.getParentZoneId
 	local BMU_savedVarsAcc = BMU.savedVarsAcc
 	local BMU_savedVarsChar = BMU.savedVarsChar
+	local BMU_savedVarsServ = BMU.savedVarsServ
+	
 	-- -^- INS251229 Baertram
 
 	local index = args.index or 0
@@ -266,8 +269,11 @@ function BMU.createTable(args)
 	if type(index) ~= numberType or (index == BMU_indexListSource and type(filterSourceIndex) ~= numberType) or (index == BMU_indexListZone and type(fZoneId) ~= numberType) then
 		return
 	end
-
-	local startTime = GetGameTimeMilliseconds() -- get start time
+	
+  local function resetTable(t)
+      local newT = setmetatable({}, getmetatable(t))
+      return newT
+  end
 
 	-- clear input fields
 	if index ~= BMU_indexListSearchPlayer and index ~= BMU_indexListSearchZone then
@@ -304,181 +310,194 @@ function BMU.createTable(args)
 
 	local TeleTotalFriends = GetNumFriends() -- number of friends
     local TeleTotalGuilds = GetNumGuilds() -- number of Guilds
-    TeleportAllPlayersTable = {} -- clear result table
-	--local currentZoneId = GetZoneId(GetCurrentMapZoneIndex()) -- get zone id of current zone
-	allZoneIds = {} -- clear zoneId list (see BMU.checkOnceOnly)
-	local consideredPlayers = {} -- contains at index displayName to track which player was already considered
 
-	-- 1. go over all group members
-	if IsPlayerInGroup(GetDisplayName()) then
-		local groupUnitTag = ""
-		for j = 1, GetGroupSize() do
-			groupUnitTag = GetGroupUnitTagByIndex(j)
-			local e = {}
-			-- gathering information (and prefiltering of offline players and other invalid entries)
-			if groupUnitTag ~= nil and GetUnitZoneIndex(groupUnitTag) ~= nil then
-				e.displayName = GetUnitDisplayName(groupUnitTag)
-				e.characterName = GetUnitName(groupUnitTag)
-				e.online = IsUnitOnline(groupUnitTag)
-				e.zoneName = GetUnitZone(groupUnitTag)
-				e.zoneId = GetZoneId(GetUnitZoneIndex(groupUnitTag))
-				e.level = GetUnitLevel(groupUnitTag)
-				e.championRank = GetUnitChampionPoints(groupUnitTag)
-				e.alliance = GetUnitAlliance(groupUnitTag)
-				e.isLeader = IsUnitGroupLeader(groupUnitTag)
-				e.groupMemberSameInstance = not IsGroupMemberInRemoteRegion(groupUnitTag)	-- IsGroupMemberInSameInstanceAsPlayer(groupUnitTag)
-				-- to ping group members
-				e.playerNameClickable = true
-				e.groupUnitTag = groupUnitTag
-			end
-
-			-- first big layer of filtering, second layer is placed in seperate function (mainly offline players)
-			-- consider only: other players ; online users ; valid zone names ; valid player names
-			if e.displayName ~= GetDisplayName() and e.online and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" then
-
-				-- save displayName
-				consideredPlayers[e.displayName] = true
-				-- add bunch of information to the record
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GROUP)
-
-				-- second big filter level
-				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-					-- add bunch of information to the record
-					e = BMU_addInfo_2(e)
-					-- insert into table
-					table_insert(TeleportAllPlayersTable, e)
-				end
-			end
-		end
-	end
-
-
-	-- 2. go over all friends
-    for j = 1, TeleTotalFriends do
-		-- gathering information
-        local e = {}
-        e.displayName, e.Note, e.status, e.secsSinceLogoff = GetFriendInfo(j)
-        e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetFriendCharacterInfo(j)
-
-		-- first big layer of filtering, second layer is placed in seperate function
-        -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
-		if e.displayName ~= GetDisplayName() and e.status ~= PLAYER_STATUS_OFFLINE and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
-
-			-- save displayName
-			consideredPlayers[e.displayName] = true
-			-- do some formating stuff
-			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_FRIEND)
-
-			-- second big filter level
-			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-				-- add bunch of information to the record
-				e = BMU_addInfo_2(e)
-				-- insert into table
-				table_insert(TeleportAllPlayersTable, e)
-			end
-		end
-	end
-
-
-	-- 3. go over all Guild members
-    for i = 1, TeleTotalGuilds do
-        local totalGuildMembers = GetNumGuildMembers(GetGuildId(i))
-
-        for j = 1, totalGuildMembers do
-			-- gathering information
-            local e = {}
-            e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(GetGuildId(i), j)
-            e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(GetGuildId(i), j)
-			e.guildIndex = i
-
-			-- first big layer of filtering, second layer is placed in seperate function
-            -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
-			if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
-				-- save displayName
-				consideredPlayers[e.displayName] = true
-				-- do some formating stuff
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
-
-				-- second big filter level
-				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-					-- add bunch of information to the record
-					e = BMU_addInfo_2(e)
-					-- insert into table
-					table_insert(TeleportAllPlayersTable, e)
-				end
-			end
-		end
-	end
-
-	--4. Own houses
-	if not BMU_savedVarsAcc.hideOwnHouses and not noOwnHouses then
-		-- 4. go over own houses
-		-- player can port outside own houses -> check own houses and add parent zone entries if not already in list
-		local ownedHouses = {}
-		if BMU_IsNotKeyboard() then
-		  ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
-		else
-		  ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
+  local startTime = GetGameTimeMilliseconds() -- get start time
+	
+  if TeleportAllPlayersTable.ttl == nil or (TeleportAllPlayersTable.currentTime ~= nil and (startTime - TeleportAllPlayersTable.currentTime > TeleportAllPlayersTable.ttl)) then
+    if TeleportAllPlayersTable.ttl ~= nil then
+      TeleportAllPlayersTable.currentTime = startTime
+    elseif BMU_savedVarsServ["preferPerformance"] then
+      local currentTime = GetGameTimeMilliseconds()
+      portalPlayers = BMU.CreateTTLTable(5000, currentTime)
+      TeleportAllPlayersTable = BMU.CreateTTLTable(5000, currentTime)
     end
-		for _, house in pairs(ownedHouses) do
-		  local houseId
-		  if BMU_IsNotKeyboard() then
-        houseId = house:GetReferenceId()
-      else
-        houseId = house.houseId
+    
+    TeleportAllPlayersTable = resetTable(TeleportAllPlayersTable) -- clear result table
+    --local currentZoneId = GetZoneId(GetCurrentMapZoneIndex()) -- get zone id of current zone
+    allZoneIds = {} -- clear zoneId list (see BMU.checkOnceOnly)
+    local consideredPlayers = {} -- contains at index displayName to track which player was already considered
+    
+    -- 1. go over all group members
+    if IsPlayerInGroup(GetDisplayName()) then
+      local groupUnitTag = ""
+      for j = 1, GetGroupSize() do
+        groupUnitTag = GetGroupUnitTagByIndex(j)
+        local e = {}
+        -- gathering information (and prefiltering of offline players and other invalid entries)
+        if groupUnitTag ~= nil and GetUnitZoneIndex(groupUnitTag) ~= nil then
+          e.displayName = GetUnitDisplayName(groupUnitTag)
+          e.characterName = GetUnitName(groupUnitTag)
+          e.online = IsUnitOnline(groupUnitTag)
+          e.zoneName = GetUnitZone(groupUnitTag)
+          e.zoneId = GetZoneId(GetUnitZoneIndex(groupUnitTag))
+          e.level = GetUnitLevel(groupUnitTag)
+          e.championRank = GetUnitChampionPoints(groupUnitTag)
+          e.alliance = GetUnitAlliance(groupUnitTag)
+          e.isLeader = IsUnitGroupLeader(groupUnitTag)
+          e.groupMemberSameInstance = not IsGroupMemberInRemoteRegion(groupUnitTag)	-- IsGroupMemberInSameInstanceAsPlayer(groupUnitTag)
+          -- to ping group members
+          e.playerNameClickable = true
+          e.groupUnitTag = groupUnitTag
+        end
+  
+        -- first big layer of filtering, second layer is placed in seperate function (mainly offline players)
+        -- consider only: other players ; online users ; valid zone names ; valid player names
+        if e.displayName ~= GetDisplayName() and e.online and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" then
+  
+          -- save displayName
+          consideredPlayers[e.displayName] = true
+          -- add bunch of information to the record
+          e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GROUP)
+  
+          -- second big filter level
+          if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+            -- add bunch of information to the record
+            e = BMU_addInfo_2(e)
+            -- insert into table
+            table_insert(TeleportAllPlayersTable, e)
+          end
+        end
       end
-			local houseZoneId = GetHouseZoneId(houseId)
-			--local mapIndex = BMU_getMapIndex(houseZoneId)
-			local parentZoneId = BMU_getParentZoneId(houseZoneId)
-			-- check if parent zone not already in result list
-			---if not allZoneIds[parentZoneId] then
-			local e = {}
-			-- add infos
-			e.parentZoneId = parentZoneId
-			e.parentZoneName = BMU_formatName(GetZoneNameById(e.parentZoneId))
-			e.zoneId = e.parentZoneId
-			e.displayName = ""
-			e.houseId = houseId
-			e.isOwnHouse = true
-			-- add flag to port outside the house
-			e.forceOutside = true
-			e.zoneName = GetZoneNameById(e.zoneId)
-			e.houseNameUnformatted = GetZoneNameById(houseZoneId)
-			e.houseNameFormatted = BMU_formatName(GetCollectibleDefaultNickname(e.collectibleId))
-			e.collectibleId = GetCollectibleIdForHouse(e.houseId)
-			e.nickName = BMU_formatName(GetCollectibleNickname(e.collectibleId))
-			e.houseTooltip = {e.houseNameFormatted, "\"" .. e.nickName .. "\""}
-
-			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, "")
-			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-				e = BMU_addInfo_2(e)
-				-- overwrite
-				e.mapIndex = BMU_getMapIndex(houseZoneId)
-				e.parentZoneId = BMU_getParentZoneId(houseZoneId)
-				-- add manually
-				--allZoneIds[e.zoneId] = allZoneIds[e.zoneId] + 1
-				table_insert(TeleportAllPlayersTable, e)
-			end
-		end
-	end
-
-	--5. Zones without players
-	if BMU_savedVarsAcc.showZonesWithoutPlayers2 or index == BMU_indexListSearchZone then
-		-- 5. add all overland zones without players
-		for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
-			local e = {}
-			e.zoneId = overlandZoneId
-			e.displayName = ""
-			e.zoneName = GetZoneNameById(overlandZoneId)
-			e.zoneWithoutPlayer = true
-			e = BMU_addInfo_1(e, currentZoneId, playersZoneId, "")
-			if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-				e = BMU_addInfo_2(e)
-				e.textColorDisplayName = colorRed
-				e.textColorZoneName = colorRed
-				table_insert(TeleportAllPlayersTable, e)
-			end
-		end
+    end
+  
+  
+    -- 2. go over all friends
+      for j = 1, TeleTotalFriends do
+      -- gathering information
+          local e = {}
+          e.displayName, e.Note, e.status, e.secsSinceLogoff = GetFriendInfo(j)
+          e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetFriendCharacterInfo(j)
+  
+      -- first big layer of filtering, second layer is placed in seperate function
+          -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
+      if e.displayName ~= GetDisplayName() and e.status ~= PLAYER_STATUS_OFFLINE and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+  
+        -- save displayName
+        consideredPlayers[e.displayName] = true
+        -- do some formating stuff
+        e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_FRIEND)
+  
+        -- second big filter level
+        if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+          -- add bunch of information to the record
+          e = BMU_addInfo_2(e)
+          -- insert into table
+          table_insert(TeleportAllPlayersTable, e)
+        end
+      end
+    end
+  
+  
+    -- 3. go over all Guild members
+      for i = 1, TeleTotalGuilds do
+          local totalGuildMembers = GetNumGuildMembers(GetGuildId(i))
+  
+          for j = 1, totalGuildMembers do
+        -- gathering information
+              local e = {}
+              e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(GetGuildId(i), j)
+              e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(GetGuildId(i), j)
+        e.guildIndex = i
+  
+        -- first big layer of filtering, second layer is placed in seperate function
+              -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
+        if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+          -- save displayName
+          consideredPlayers[e.displayName] = true
+          -- do some formating stuff
+          e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
+  
+          -- second big filter level
+          if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+            -- add bunch of information to the record
+            e = BMU_addInfo_2(e)
+            -- insert into table
+            table_insert(TeleportAllPlayersTable, e)
+          end
+        end
+      end
+    end
+  
+    --4. Own houses
+    if not BMU_savedVarsAcc.hideOwnHouses and not noOwnHouses then
+      -- 4. go over own houses
+      -- player can port outside own houses -> check own houses and add parent zone entries if not already in list
+      local ownedHouses = {}
+      if BMU_IsNotKeyboard() then
+        ownedHouses = ZO_COLLECTIBLE_DATA_MANAGER:GetAllCollectibleDataObjects({ ZO_CollectibleCategoryData.IsHousingCategory }, { ZO_CollectibleData.IsUnlocked })
+      else
+        ownedHouses = COLLECTIONS_BOOK_SINGLETON:GetOwnedHouses()
+      end
+      for _, house in pairs(ownedHouses) do
+        local houseId
+        if BMU_IsNotKeyboard() then
+          houseId = house:GetReferenceId()
+        else
+          houseId = house.houseId
+        end
+        local houseZoneId = GetHouseZoneId(houseId)
+        --local mapIndex = BMU_getMapIndex(houseZoneId)
+        local parentZoneId = BMU_getParentZoneId(houseZoneId)
+        -- check if parent zone not already in result list
+        ---if not allZoneIds[parentZoneId] then
+        local e = {}
+        -- add infos
+        e.parentZoneId = parentZoneId
+        e.parentZoneName = BMU_formatName(GetZoneNameById(e.parentZoneId))
+        e.zoneId = e.parentZoneId
+        e.displayName = ""
+        e.houseId = houseId
+        e.isOwnHouse = true
+        -- add flag to port outside the house
+        e.forceOutside = true
+        e.zoneName = GetZoneNameById(e.zoneId)
+        e.houseNameUnformatted = GetZoneNameById(houseZoneId)
+        e.houseNameFormatted = BMU_formatName(GetCollectibleDefaultNickname(e.collectibleId))
+        e.collectibleId = GetCollectibleIdForHouse(e.houseId)
+        e.nickName = BMU_formatName(GetCollectibleNickname(e.collectibleId))
+        e.houseTooltip = {e.houseNameFormatted, "\"" .. e.nickName .. "\""}
+  
+        e = BMU_addInfo_1(e, currentZoneId, playersZoneId, "")
+        if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+          e = BMU_addInfo_2(e)
+          -- overwrite
+          e.mapIndex = BMU_getMapIndex(houseZoneId)
+          e.parentZoneId = BMU_getParentZoneId(houseZoneId)
+          -- add manually
+          --allZoneIds[e.zoneId] = allZoneIds[e.zoneId] + 1
+          table_insert(TeleportAllPlayersTable, e)
+        end
+      end
+    end
+  
+    --5. Zones without players
+    if BMU_savedVarsAcc.showZonesWithoutPlayers2 or index == BMU_indexListSearchZone then
+      -- 5. add all overland zones without players
+      for overlandZoneId, _ in pairs(BMU.overlandDelvesPublicDungeons) do
+        local e = {}
+        e.zoneId = overlandZoneId
+        e.displayName = ""
+        e.zoneName = GetZoneNameById(overlandZoneId)
+        e.zoneWithoutPlayer = true
+        e = BMU_addInfo_1(e, currentZoneId, playersZoneId, "")
+        if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+          e = BMU_addInfo_2(e)
+          e.textColorDisplayName = colorRed
+          e.textColorZoneName = colorRed
+          table_insert(TeleportAllPlayersTable, e)
+        end
+      end
+    end
 	end
 
 	portalPlayers = TeleportAllPlayersTable

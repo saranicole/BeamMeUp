@@ -2205,3 +2205,24 @@ function BMU.GetConstByInputModeBase(constName, inputMode, placeholder)
   end
   return _G[name]
 end
+
+function BMU.CreateTTLTable(ttl, currentTime)
+    local meta = {}
+    meta.__index = meta
+    meta.__newindex = function(t, k, v)
+        if k == "ttl" or k == "currentTime" then
+            meta[k] = v
+        else
+            rawset(t, k, v)
+        end
+    end
+    meta.ttl = ttl
+    meta.currentTime = currentTime
+
+    local t = setmetatable({}, meta)
+
+    -- Expose a safe clear that won't destroy the metatable
+    meta.clear = function() ZO_ClearTable(t) end
+
+    return t
+end
