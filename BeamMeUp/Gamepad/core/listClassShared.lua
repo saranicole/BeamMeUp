@@ -575,12 +575,6 @@ function TeleportClass_Shared:BuildCheckbox(header, label, currentFilter, finish
 		end
 	end
 
-	local function onFilterSelected()
--- 		if not self.dialogData.ignoreTooltips then
--- 			GAMEPAD_TOOLTIPS:LayoutTitleAndDescriptionTooltip(GAMEPAD_LEFT_TOOLTIP, GetStringFromData(currentFilter.filterName), GetStringFromData(currentFilter.filterTooltip))
--- 		end
-	end
-
 	local function filterCheckboxEntrySetup(control, data, selected, reselectingDuringRebuild, enabled, active)
 		data.callback = onFilterToggled
 		data.onSelected = onFilterSelected
@@ -589,7 +583,6 @@ function TeleportClass_Shared:BuildCheckbox(header, label, currentFilter, finish
         text = text(data)
     end
     control.label:SetText(text)
-		--ZO_GamepadCheckBoxTemplate_Setup(control, data, selected, reselectingDuringRebuild, enabled, active)
     control.checkBox.toggleFunction = data.setChecked
 		local checked = currentFilter.checked
 		if type(checked) == 'function' then
