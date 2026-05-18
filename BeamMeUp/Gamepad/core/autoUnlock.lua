@@ -121,5 +121,9 @@ function AutoUnlockNotificationProvider:Decline(data)
 end
 
 function addon:AutoUnlockContinue()
-	BMU.proceedAutoUnlock()
+  if BMU.savedVarsServ.preferPerformance then
+    BMU.doAutoUnlockLoopGuildByGuild()
+  else
+	  BMU.proceedAutoUnlock()
+	end
 end

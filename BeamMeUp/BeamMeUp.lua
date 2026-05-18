@@ -530,6 +530,7 @@ function BMU.initializeBlacklist()
 		BMU_joinBlacklist(BMU.blacklistOthers)
 		BMU_joinBlacklist(BMU.blacklistRefuges)
 		BMU_joinBlacklist(BMU.blacklistSoloArenas)
+		BMU_joinBlacklist(BMU.blacklistNightMarket)
 	end
 	
 	-- hide PVP zones

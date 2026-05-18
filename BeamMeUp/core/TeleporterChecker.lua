@@ -383,42 +383,42 @@ function BMU.createTable(args)
 
 	-- 3. go over all Guild members
     for i = 1, TeleTotalGuilds do
-        local guildId = GetGuildId(i)
-        local totalGuildMembers = GetNumGuildMembers(guildId)
-        local members
-        
-        if BMU_savedVarsAcc.preferPerformance then
-          members = BMU_getGuildMembersCached(guildId, i)
-          totalGuildMembers = #members
+      local guildId = GetGuildId(i)
+      local totalGuildMembers = GetNumGuildMembers(guildId)
+      local members
+      
+      if BMU_savedVarsAcc.preferPerformance then
+        members = BMU_getGuildMembersCached(guildId, i)
+        totalGuildMembers = #members
+      end
+
+      for j = 1, totalGuildMembers do
+        -- gathering information
+              local e = {}
+              if BMU_savedVarsAcc.preferPerformance and members and next(members) then
+                e = members[j]
+              else
+                e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
+                e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
+                e.guildIndex = i
+              end
+        -- first big layer of filtering, second layer is placed in seperate function
+              -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
+        if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+          -- save displayName
+          consideredPlayers[e.displayName] = true
+          -- do some formating stuff
+          e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
+  
+          -- second big filter level
+          if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
+            -- add bunch of information to the record
+            e = BMU_addInfo_2(e)
+            -- insert into table
+            table_insert(TeleportAllPlayersTable, e)
+          end
         end
-
-        for j = 1, totalGuildMembers do
-			-- gathering information
-            local e = {}
-            if BMU_savedVarsAcc.preferPerformance and members and next(members) then
-              e = members[j]
-            else
-              e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
-              e.hasCharacter, e.characterName, e.zoneName, e.classType, e.alliance, e.level, e.championRank, e.zoneId = GetGuildMemberCharacterInfo(guildId, j)
-              e.guildIndex = i
-            end
-			-- first big layer of filtering, second layer is placed in seperate function
-            -- consider only: other players ; online users (state 1,2,3) ; valid zone names ; valid player names
-			if e.displayName ~= GetDisplayName() and e.status ~= 4 and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
-				-- save displayName
-				consideredPlayers[e.displayName] = true
-				-- do some formating stuff
-				e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[i])
-
-				-- second big filter level
-				if BMU_filterAndDecide(index, e, inputString, currentZoneId, fZoneId, filterSourceIndex) then
-					-- add bunch of information to the record
-					e = BMU_addInfo_2(e)
-					-- insert into table
-					table_insert(TeleportAllPlayersTable, e)
-				end
-			end
-		end
+      end
 	end
 
 	--4. Own houses

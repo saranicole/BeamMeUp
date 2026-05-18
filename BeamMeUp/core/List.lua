@@ -497,6 +497,7 @@ function BMU.proceedAutoUnlock()
 		local _, allUnlockedWayshrines = BMU_getZoneWayshrineCompletion(BMU.uwData.zoneId)
 
 		-- Note: multiple wayshrine can be discovered at once
+		BMU.uwData.discoveredWayshrinesBefore = BMU.uwData.discoveredWayshrinesBefore or 0
 		BMU.uwData.unlockedWayshrines = allUnlockedWayshrines - BMU.uwData.discoveredWayshrinesBefore
 
 		-- check if the zone is now complete
@@ -509,7 +510,7 @@ function BMU.proceedAutoUnlock()
 		-- get all travel options
 		local list = BMU_createTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
 
-		if #list ~= 0 or list[1].displayName ~= "" then
+		if list and (#list ~= 0 or list[1].displayName ~= "") then
 			-- re-calculate total steps in case new players come available during process
 			-- totalSteps = currentStep(#displayNameList) + number of players which are in list but not in displayNameList
 			BMU.uwData.totalSteps = #BMU.uwData.displayNameList
@@ -670,6 +671,7 @@ function BMU.finishedAutoUnlock(reason)
 		unlockedWayshrinesString = BMU_colorizeText(BMU.uwData.unlockedWayshrines, colorGreen)
 	end
 	local allUnlockedWayshrines = BMU.uwData.discoveredWayshrinesBefore + BMU.uwData.unlockedWayshrines
+	BMU.uwData.totalWayshrines = BMU.uwData.totalWayshrines or 0
 	local totalWayshrinesString = allUnlockedWayshrines .. "/" .. BMU.uwData.totalWayshrines
 	-- colorize if zone is complete
 	if allUnlockedWayshrines == BMU.uwData.totalWayshrines then
@@ -692,7 +694,7 @@ function BMU.finishedAutoUnlock(reason)
   local globalDialogName, dialogReference = BMU.reportAutoUnlockFinished(finishDialogTitle, finishDialogBody)
 	-- print summary into chat
 	BMU_printToChat(
-		BMU.uwData.fZoneName .. ": " ..
+		BMU.uwData.fZoneName or GetZoneNameById(BMU_getCurrentZoneId()) .. ": " ..
 		BMU_SI_Get(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_DISCOVERY) .. " " .. tos(unlockedWayshrinesString) .. " (" .. tos(totalWayshrinesString) .. ")  " ..
 		BMU_SI_Get(SI_TELE_DIALOG_PROCESS_AUTO_UNLOCK_BODY_PART_XP) .. " " .. tos(gainedXPString), BMU.MSG_UL)
 
@@ -839,48 +841,58 @@ function BMU.doAutoUnlockLoopGuildByGuild()
   BMU_maxGuildMembersOnline = BMU_maxGuildMembersOnline or BMU.maxGuildMembersOnline
   BMU_isBlacklisted = BMU_isBlacklisted or BMU.isBlacklisted
   BMU_savedVarsAcc = BMU_savedVarsAcc or BMU.savedVarsAcc
+  BMU_getCurrentZoneId = BMU_getCurrentZoneId or BMU.getCurrentZoneId
   table_insert = table_insert or table.insert
-  BMU_uwData = BMU_uwData or BMU.uwData or {
+  BMU.uwData = BMU.uwData or {
 			isStarted = true,
 			dialogName = "BMU_AutoUnlockInProgress",
 			unlockedWayshrines = 0,
 			displayNameList = {},
-			gainedXP = 0
+			gainedXP = 0,
+			guildIndex = 1,
+			memberIndex = 1,
+			isPorting = false
 		}
-  BMU_uwData.guildIndex = BMU_uwData.guildIndex or 1
-  BMU_uwData.memberIndex = BMU_uwData.memberIndex or 1
-  local guildIndex = BMU_uwData.guildIndex
-  local memberIndex = BMU_uwData.memberIndex or 1
-  local guildId = GetGuildId(guildIndex)
+  BMU_uwData = BMU_uwData or BMU.uwData
+  local guildId = GetGuildId(BMU_uwData.guildIndex)
   if BMU_uwData.isStarted then
-    members = BMU_getGuildMembersCached(guildId, guildIndex)
-    local e = members[memberIndex]
-    if e.displayName ~= GetDisplayName() and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+    members = BMU_getGuildMembersCached(guildId, BMU_uwData.guildIndex)
+    local e = members[BMU_uwData.memberIndex]
+    BMU_uwData.guildIndex = BMU_uwData.guildIndex + 1
+    if BMU_uwData.memberIndex > BMU_maxGuildMembersOnline() then
+      BMU_uwData.memberIndex = 1
+    end
+    if BMU_uwData.guildIndex > GetNumGuilds() then
+      BMU_uwData.memberIndex = BMU_uwData.memberIndex + 1
+      BMU_uwData.guildIndex = 1
+    end
+    if e and e.displayName ~= GetDisplayName() and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
       consideredPlayers[e.displayName] = true
-      local sourceIndexLeading = BMU_SOURCE_INDEX_GUILD[guildId]
-      if CanJumpToPlayerInZone(e.zoneId) and not BMU_isBlacklisted(e.zoneId, sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) then
-        d("Guild "..GetGuildName(guildId)..": "..e.displayName)
+      local sourceIndexLeading = BMU_uwData.guildIndex + 2
+      if CanJumpToPlayerInZone(e.zoneId) and not BMU_isBlacklisted(e.zoneId) then
         BMU_PortalToPlayer(e.displayName, sourceIndexLeading, e.zoneName, e.zoneId, BMU_categorizeZone(e.zoneId), false, false, false)
-        -- add player to list
-        table_insert(BMU_uwData.displayNameList, e.displayName)
-        -- NOTE: handling of fast travel error in function BMU.finishedAutoUnlock() in case of timeout
-        -- show dialog with all infos
-        BMU.reportAutoUnlockProgress(e)
+        if BMU.flagSocialErrorWhilePorting == 0 then
+          -- add player to list
+          table_insert(BMU_uwData.displayNameList, e.displayName)
+          -- NOTE: handling of fast travel error in function BMU.finishedAutoUnlock() in case of timeout
+          -- show dialog with all infos
+        end
       end
     end
-  end
-  memberIndex = memberIndex + 1
-  guildIndex = guildIndex + 1
-  if memberIndex > BMU_maxGuildMembersOnline() then
-    memberIndex = 1
-  end
-  if guildIndex > GetNumGuilds() then
-    guildIndex = 1
+    if (not BMU_uwData.isPorting or BMU.flagSocialErrorWhilePorting ~= 0) then
+      zo_callLater(BMU.doAutoUnlockLoopGuildByGuild, 0)
+    end
+    BMU.reportAutoUnlockProgress(e)
   end
 end
 
 function BMU.startAutoUnlockLoopGuildByGuild()
-  EVENT_MANAGER:RegisterForEvent("BMU_GuildByGuildDiscovery", EVENT_PLAYER_ACTIVATED, function() zo_callLater(BMU.doAutoUnlockLoopGuildByGuild, BMU.getAutoUnlockCooldown(400)) end)
+  EVENT_MANAGER:RegisterForEvent("BMU_GuildByGuildDiscovery", EVENT_PLAYER_ACTIVATED, function() 
+    zo_callLater(function()
+      BMU_uwData.isPorting = false
+      BMU.doAutoUnlockLoopGuildByGuild()
+    end, BMU.getAutoUnlockCooldown(1750)) 
+  end)
   BMU.doAutoUnlockLoopGuildByGuild()
 end
 
@@ -1149,6 +1161,7 @@ function BMU.PortalToPlayer(displayName, sourceIndex, zoneName, zoneId, zoneCate
 			-- sourceIndex > 3  -> guild 1-5
 			JumpToGuildMember(displayName)
 		end
+    BMU.uwData.isPorting = true
 
 		-- check if an error occurred while porting
 		zo_callLater(function()
@@ -1160,6 +1173,7 @@ function BMU.PortalToPlayer(displayName, sourceIndex, zoneName, zoneId, zoneCate
 				if tryAgainOnError then
 					BMU_decideTryAgainPorting(BMU.flagSocialErrorWhilePorting, zoneId, displayName, sourceIndex, updateSavedGold)
 				end
+				BMU.uwData.isPorting = false
 			else
 				-- update saved gold
 				if updateSavedGold then

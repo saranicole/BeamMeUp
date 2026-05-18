@@ -644,6 +644,8 @@ BMU.blacklistGroupZones = {890, 893, 895, 897, 899, 904, 906, 908, 907, 913, 909
 -- all Outlaws Refuges
 BMU.blacklistRefuges = {746, 747, 748, 479, 750, 751, 752, 753, 754, 755, 756, 757, 758, 759, 760, 761, 780, 837, 971, 982, 1028, 1088, 1178, 1252, 1293, 1319, 1367, 1412, 1465, 1515}
 
+-- Nightmarket
+BMU.blacklistNightMarket = {1283}
 --------
 
 -- just Cyrodiil
