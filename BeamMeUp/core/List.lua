@@ -97,7 +97,7 @@ local BMU_indexListDungeons					= BMU.indexListDungeons
 local BMU_SOURCE_INDEX_ALL					= BMU.SOURCE_INDEX_ALL
 local BMU_SOURCE_INDEX_FRIEND 				= BMU.SOURCE_INDEX_FRIEND
 local BMU_SOURCE_INDEX_GROUP 				= BMU.SOURCE_INDEX_GROUP
---local BMU_SOURCE_INDEX_GUILD				= BMU.SOURCE_INDEX_GUILD
+local BMU_SOURCE_INDEX_GUILD				= BMU.SOURCE_INDEX_GUILD
 local BMU_SOURCE_INDEX_OWNHOUSES			= BMU.SOURCE_INDEX_OWNHOUSES
 
 local formatStringFirstUppercase = teleporterVars.formatStringFirstUppercase
@@ -371,6 +371,7 @@ function BMU:UnregisterAutoUnlockEvents()
 	if not BMU_IsNotKeyboard() then
 	  EM:UnregisterForEvent(prefix .. "_AutoWayshrineUnlockFurniture", EVENT_PLAYER_ACTIVATED, BMU.updateHouseFurnitureCount)
 	end
+	EVENT_MANAGER:UnregisterForEvent("BMU_GuildByGuildDiscovery", EVENT_PLAYER_ACTIVATED)
 end
 
 ------------------------------------------------------------
@@ -830,6 +831,58 @@ function BMU.startAutoUnlockLoopSorted(zoneRecordList, loopType)
 	BMU.reportAutoUnlockFinished(BMU_SI_Get(SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_TITLE), BMU_SI_Get(SI_TELE_DIALOG_LOOP_FINISH_AUTO_UNLOCK_BODY))
 end
 
+local consideredPlayers = {}
+-- in the style of ThisIsTheWayshrine, goes guild by guild taking each player one at a time without creating a huge table
+function BMU.doAutoUnlockLoopGuildByGuild()
+  BMU_categorizeZone = BMU_categorizeZone or BMU.categorizeZone
+  BMU_getGuildMembersCached = BMU_getGuildMembersCached or BMU.getGuildMembersCached
+  BMU_maxGuildMembersOnline = BMU_maxGuildMembersOnline or BMU.maxGuildMembersOnline
+  BMU_isBlacklisted = BMU_isBlacklisted or BMU.isBlacklisted
+  BMU_savedVarsAcc = BMU_savedVarsAcc or BMU.savedVarsAcc
+  table_insert = table_insert or table.insert
+  BMU_uwData = BMU_uwData or BMU.uwData or {
+			isStarted = true,
+			dialogName = "BMU_AutoUnlockInProgress",
+			unlockedWayshrines = 0,
+			displayNameList = {},
+			gainedXP = 0
+		}
+  BMU_uwData.guildIndex = BMU_uwData.guildIndex or 1
+  BMU_uwData.memberIndex = BMU_uwData.memberIndex or 1
+  local guildIndex = BMU_uwData.guildIndex
+  local memberIndex = BMU_uwData.memberIndex or 1
+  local guildId = GetGuildId(guildIndex)
+  if BMU_uwData.isStarted then
+    members = BMU_getGuildMembersCached(guildId, guildIndex)
+    local e = members[memberIndex]
+    if e.displayName ~= GetDisplayName() and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
+      consideredPlayers[e.displayName] = true
+      local sourceIndexLeading = BMU_SOURCE_INDEX_GUILD[guildId]
+      if CanJumpToPlayerInZone(e.zoneId) and not BMU_isBlacklisted(e.zoneId, sourceIndexLeading, BMU_savedVarsAcc.onlyMaps) then
+        d("Guild "..GetGuildName(guildId)..": "..e.displayName)
+        BMU_PortalToPlayer(e.displayName, sourceIndexLeading, e.zoneName, e.zoneId, BMU_categorizeZone(e.zoneId), false, false, false)
+        -- add player to list
+        table_insert(BMU_uwData.displayNameList, e.displayName)
+        -- NOTE: handling of fast travel error in function BMU.finishedAutoUnlock() in case of timeout
+        -- show dialog with all infos
+        BMU.reportAutoUnlockProgress(e)
+      end
+    end
+  end
+  memberIndex = memberIndex + 1
+  guildIndex = guildIndex + 1
+  if memberIndex > BMU_maxGuildMembersOnline() then
+    memberIndex = 1
+  end
+  if guildIndex > GetNumGuilds() then
+    guildIndex = 1
+  end
+end
+
+function BMU.startAutoUnlockLoopGuildByGuild()
+  EVENT_MANAGER:RegisterForEvent("BMU_GuildByGuildDiscovery", EVENT_PLAYER_ACTIVATED, function() zo_callLater(BMU.doAutoUnlockLoopGuildByGuild, BMU.getAutoUnlockCooldown(400)) end)
+  BMU.doAutoUnlockLoopGuildByGuild()
+end
 
 -- shows confirmation dialog and starts AutoUnlock
 -- zoneId: optional, if not set use current zone (where the player actually is)

@@ -385,6 +385,17 @@ ZO_Dialogs_RegisterCustomDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG",
 		{
 			template = "ZO_GamepadTextFieldSubmitItem",
 			templateData = {
+				text = GetString(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0),
+				setup = zo_SharedGamepadEntry_OnSetup,
+				callback = function(dialog)
+					ReleaseDialog("BMU_GAMEPAD_AUTO_UNLOCK_DIALOG")
+					BMU.startAutoUnlockLoopGuildByGuild()
+				end,
+			},
+		},
+		{
+			template = "ZO_GamepadTextFieldSubmitItem",
+			templateData = {
 				text = GetString(SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1),
 				setup = zo_SharedGamepadEntry_OnSetup,
 				callback = function(dialog)

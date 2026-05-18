@@ -237,6 +237,7 @@ local strings = {
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "Durch Bestätigen startet BeamMeUp die Schnellreise zu allen verfügbaren Spielern in der aktuellen Zone. Auf diese Weise springst du automatisch von Wegschrein zu Wegschrein, um so viele wie möglich zu entdecken.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Dauerschleife über die Zonen ...",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "zufällig",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "guild by guild",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "nach Verhältnis der unentdeckten Wegschreine",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "nach Anzahl der Spieler",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION4"] = "nach Zonennamen",

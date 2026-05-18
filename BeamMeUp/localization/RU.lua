@@ -218,6 +218,7 @@ local strings = {
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "Начать авторазблокировку дорожных святилищ?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "После подтверждения BeamMeUp начнет сканировать всех доступных игроков в локации. Вы будете автоматически перемещаться между дорожными святилищами, чтобы разблокировать как можно больше.",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "Перемещение по зонам ...",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "guild by guild",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "случайный",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "по количеству неоткрытых дорожных святынь",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "по кол-ву игроков",

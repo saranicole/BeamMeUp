@@ -2256,3 +2256,15 @@ function BMU.getGuildMembersCached(guildId, guildIndex)
     end
     return GetGuildMemberStatusTable(guildId, guildIndex)
 end
+
+function BMU.maxGuildMembersOnline()
+  local max = 0
+  for i = 1, GetNumGuilds() do
+    local guildId = GetGuildId(i)
+    local totalGuildMembers = BMU.getGuildMembersCached(guildId, i)
+    if #totalGuildMembers > max then
+      max = #totalGuildMembers
+    end
+  end
+  return max
+end

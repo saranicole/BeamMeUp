@@ -218,6 +218,7 @@ local strings = {
     ["SI_TELE_DIALOG_AUTO_UNLOCK_TITLE"] = "开始自动解锁指路祭坛吗?",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_BODY"] = "确认后, BeamMeUp将开始自动传送当前区域中所有可传送的玩家。通过这种方法，您将自动在各个指路祭坛间传送以解锁尽可能多的指路祭坛。",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_LOOP_OPTION"] = "区域循环中…",
+    ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION0"] = "guild by guild",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION1"] = "随机传送",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION2"] = "按未发现数量",
     ["SI_TELE_DIALOG_AUTO_UNLOCK_ORDER_OPTION3"] = "按玩家数量",
