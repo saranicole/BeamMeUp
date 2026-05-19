@@ -2226,7 +2226,8 @@ local function GetGuildMemberStatusTable(guildId, guildIndex)
     local members    = {}
     local e = {}
 
-    local numMembers = GetNumGuildMembers(guildId)
+    local numMembers, numOnline, _, numInvitees = GetGuildInfo(guildId)
+    local online = 0
 
     for j = 1, numMembers do
         e.displayName, e.Note, e.GuildMemberRankIndex, e.status, e.secsSinceLogoff = GetGuildMemberInfo(guildId, j)
@@ -2236,6 +2237,10 @@ local function GetGuildMemberStatusTable(guildId, guildIndex)
           e.guildIndex = guildIndex
           e.category = 1
           table.insert(members, e)
+          online = online + 1
+          if online >= numOnline then
+            break
+          end
         end
         e = {}
     end

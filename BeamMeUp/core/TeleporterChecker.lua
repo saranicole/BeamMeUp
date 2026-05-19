@@ -6,6 +6,10 @@ local SI = BMU.SI
 local portalPlayers = {}
 local TeleportAllPlayersTable = {}
 local allZoneIds = {} -- stores the number of hits of a zoneId at index (allzoneIds[zoneId] = 1) | to know which zoneId is already added | to count the number of port options/alternatives
+local origRosterId = nil
+local origRoster = GUILD_ROSTER_MANAGER
+local consideredNextPlayers = {}
+local nextPlayers = {}
 
 -- -v- INS251229 Baertram BEGIN 0
 --Performance reference
@@ -227,6 +231,69 @@ end
 BMU_getCurrentZoneId = BMU.getCurrentZoneId
 
 
+local function evaluateForNext(guildIndex, memberIndex, max)
+  guildIndex = guildIndex + 1
+  if memberIndex >= max and guildIndex < GetNumGuilds() then
+    memberIndex = 1
+  end
+  if guildIndex > GetNumGuilds() then
+    guildIndex = 1
+    memberIndex = memberIndex + 1
+  end
+  guildId = GetGuildId(guildIndex)
+  local numGuildMembers, numOnline, _, numInvitees = GetGuildInfo(guildId)
+  if numOnline > max then
+    max = numOnline
+  end
+  return guildIndex, memberIndex, max
+end
+
+local function considerPlayer(e)
+  local playersZoneId = BMU_getPlayersZoneId() or 0
+	local currentZoneId = BMU_getCurrentZoneId() or 0
+	local index = guildIndex + 2
+  if e and e.displayName ~= GetDisplayName() and e.status ~= 4 and e.formattedZone ~= nil and e.formattedZone ~= "" and e.displayName ~= "" and not consideredNextPlayers[e.displayName] then
+    local hasCharacter, rawCharacterName, zoneName, class, alliance, level, championPoints, zoneId = GetGuildMemberCharacterInfo(guildId, memberIndex)
+    e.zoneId = zoneId
+    e.zoneName = e.formattedZone
+    -- save displayName
+    consideredNextPlayers[e.displayName] = true
+    -- do some formating stuff
+    e = BMU_addInfo_1(e, currentZoneId, playersZoneId, BMU_SOURCE_INDEX_GUILD[guildIndex])
+
+    -- second big filter level
+    if BMU_filterAndDecide(index, e, "", currentZoneId, nil, BMU_SOURCE_INDEX_GUILD[guildIndex]) and BMU_isZoneOverlandZone(e.zoneId) then
+      -- add bunch of information to the record
+      e = BMU_addInfo_2(e)
+      -- insert into table
+      return e
+    end
+  end
+end
+
+function BMU.GetNextPlayer(args)
+  BMU_isZoneOverlandZone = BMU_isZoneOverlandZone or BMU.isZoneOverlandZone
+  local args = args or { }
+  local max = args.max or 0
+  local guildIndex = args.guildIndex or 1
+  local memberIndex = args.memberIndex or 1
+  origRosterId = origRoster:GetGuildId()
+
+  local guildId = GetGuildId(guildIndex)
+  origRoster:SetGuildId(guildId)
+  if not origRoster.masterList then
+    origRoster:BuildMasterList()
+  end
+  e = considerPlayer(origRoster.masterList[memberIndex])
+
+  local guildIndex, memberIndex, max = evaluateForNext(guildIndex, memberIndex, max)
+  local numGuildMembers, numOnline, _, numInvitees = GetGuildInfo(guildId)
+  if not next(nextPlayers) and memberIndex < max then
+    e = considerPlayer(origRoster.masterList[memberIndex])
+  end
+  return e, { guildIndex = guildIndex, memberIndex = memberIndex, max = max }
+end
+
 -- index: choose scenario / filter action -> see globals
 -- inputString: search string
 -- fZoneId: specific zoneId (favorite)
@@ -384,8 +451,10 @@ function BMU.createTable(args)
 	-- 3. go over all Guild members
     for i = 1, TeleTotalGuilds do
         local guildId = GetGuildId(i)
-        local totalGuildMembers = GetNumGuildMembers(guildId)
+        local totalGuildMembers, numOnline, _, numInvitees = GetGuildInfo(guildId)
         local members
+        local online = online or {}
+        online[i] = 0
         
         if BMU_savedVarsAcc.preferPerformance then
           members = BMU_getGuildMembersCached(guildId, i)
@@ -417,6 +486,10 @@ function BMU.createTable(args)
 					-- insert into table
 					table_insert(TeleportAllPlayersTable, e)
 				end
+				if BMU_savedVarsAcc.preferPerformance and online[i] >= numOnline then
+				  break
+        end
+				online[i] = online[i] + 1
 			end
 		end
 	end

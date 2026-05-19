@@ -506,7 +506,19 @@ function BMU.proceedAutoUnlock()
 		end
 
 		-- get all travel options
-		local list = BMU_createTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
+		local list
+		
+		if BMU.savedVarsServ.preferPerformance then
+		  d("in preferPerformance")
+		  list, nArgs = BMU.GetNextPlayer(BMU.uwData.nextArgs)
+		  d("nArgs")
+		  d(nArgs)
+		  local playerIndex, player = next(list)
+		  d(player.displayName)
+		  BMU.uwData.nextArgs = nArgs
+		else
+		  list = BMU_createTable({index=BMU_indexListZone, fZoneId=BMU.uwData.zoneId, dontDisplay=true})
+    end
 
 		if #list ~= 0 or list[1].displayName ~= "" then
 			-- re-calculate total steps in case new players come available during process
