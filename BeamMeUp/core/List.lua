@@ -372,6 +372,7 @@ function BMU:UnregisterAutoUnlockEvents()
 	  EM:UnregisterForEvent(prefix .. "_AutoWayshrineUnlockFurniture", EVENT_PLAYER_ACTIVATED, BMU.updateHouseFurnitureCount)
 	end
 	EVENT_MANAGER:UnregisterForEvent("BMU_GuildByGuildDiscovery", EVENT_PLAYER_ACTIVATED)
+	EVENT_MANAGER:UnregisterForEvent("BMU_GuildByGuildXP", EVENT_DISCOVERY_EXPERIENCE)
 end
 
 ------------------------------------------------------------
@@ -842,17 +843,26 @@ function BMU.doAutoUnlockLoopGuildByGuild()
   BMU_isBlacklisted = BMU_isBlacklisted or BMU.isBlacklisted
   BMU_savedVarsAcc = BMU_savedVarsAcc or BMU.savedVarsAcc
   BMU_getCurrentZoneId = BMU_getCurrentZoneId or BMU.getCurrentZoneId
+  BMU_getZoneWayshrineCompletion = BMU_getZoneWayshrineCompletion or BMU.getZoneWayshrineCompletion
+  BMU_isZoneOverlandZone = BMU_isZoneOverlandZone or BMU.isZoneOverlandZone
   table_insert = table_insert or table.insert
+  local numWayshrines, numWayshrinesDiscovered = BMU_getZoneWayshrineCompletion(BMU_getCurrentZoneId())
+  
   BMU.uwData = BMU.uwData or {
 			isStarted = true,
 			dialogName = "BMU_AutoUnlockInProgress",
 			unlockedWayshrines = 0,
+      totalWayshrines = numWayshrines,
+			discoveredWayshrinesBefore = numWayshrinesDiscovered,
 			displayNameList = {},
 			gainedXP = 0,
 			guildIndex = 1,
 			memberIndex = 1,
-			isPorting = false
-		}
+			isPorting = false,
+  }
+  local allUnlockedWayshrines = BMU.uwData.discoveredWayshrinesBefore + BMU.uwData.unlockedWayshrines
+  BMU.uwData.unlockedWayshrines = allUnlockedWayshrines - BMU.uwData.discoveredWayshrinesBefore
+  
   BMU_uwData = BMU_uwData or BMU.uwData
   local guildId = GetGuildId(BMU_uwData.guildIndex)
   if BMU_uwData.isStarted then
@@ -869,7 +879,7 @@ function BMU.doAutoUnlockLoopGuildByGuild()
     if e and e.displayName ~= GetDisplayName() and e.zoneName ~= nil and e.zoneName ~= "" and e.zoneId ~= nil and e.zoneId ~= 0 and e.displayName ~= "" and not consideredPlayers[e.displayName] then
       consideredPlayers[e.displayName] = true
       local sourceIndexLeading = BMU_uwData.guildIndex + 2
-      if CanJumpToPlayerInZone(e.zoneId) and not BMU_isBlacklisted(e.zoneId) then
+      if CanJumpToPlayerInZone(e.zoneId) and BMU_isZoneOverlandZone(e.zoneId) and not BMU_isBlacklisted(e.zoneId) then
         BMU_PortalToPlayer(e.displayName, sourceIndexLeading, e.zoneName, e.zoneId, BMU_categorizeZone(e.zoneId), false, false, false)
         if BMU.flagSocialErrorWhilePorting == 0 then
           -- add player to list
@@ -880,6 +890,7 @@ function BMU.doAutoUnlockLoopGuildByGuild()
       end
     end
     if (not BMU_uwData.isPorting or BMU.flagSocialErrorWhilePorting ~= 0) then
+      BMU_uwData.memberIndex = BMU_uwData.memberIndex + 1
       zo_callLater(BMU.doAutoUnlockLoopGuildByGuild, 0)
     end
     BMU.reportAutoUnlockProgress(e)
@@ -893,6 +904,12 @@ function BMU.startAutoUnlockLoopGuildByGuild()
       BMU.doAutoUnlockLoopGuildByGuild()
     end, BMU.getAutoUnlockCooldown(1750)) 
   end)
+  EVENT_MANAGER:RegisterForEvent("BMU_GuildByGuildXP", EVENT_DISCOVERY_EXPERIENCE, function(eventCode, reason, level, previousExperience, currentExperience, championPoints)
+    if BMU.uwData.isStarted then
+      BMU.uwData.gainedXP = BMU.uwData.gainedXP + (currentExperience-previousExperience)
+    end
+  end)
+  
   BMU.doAutoUnlockLoopGuildByGuild()
 end
 
